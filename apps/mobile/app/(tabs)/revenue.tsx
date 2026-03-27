@@ -1,11 +1,10 @@
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { supabase } from '../../lib/supabase';
 import { useRealtimeSubscription } from '../../hooks/useRealtimeSubscription';
-import { StatCard } from '../../components/ui/StatCard';
-import { COLORS, SPACING, FONT_SIZE } from '../../constants/theme';
+import { COLORS, FONT_SIZE } from '../../constants/theme';
 
 const CHANNEL_ID = '00000000-0000-0000-0000-000000000001';
 
@@ -16,12 +15,7 @@ export default function RevenueScreen() {
   const { data: stats } = useQuery({
     queryKey: ['revenueStats'],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('dashboard_stats')
-        .select('*')
-        .eq('channel_id', CHANNEL_ID)
-        .eq('period', 'last_28_days')
-        .single();
+      const { data } = await supabase.from('dashboard_stats').select('*').eq('channel_id', CHANNEL_ID).eq('period', 'last_28_days').single();
       return data;
     },
   });
@@ -29,12 +23,7 @@ export default function RevenueScreen() {
   const { data: revenueData } = useQuery({
     queryKey: ['revenueData'],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('revenue')
-        .select('*')
-        .eq('channel_id', CHANNEL_ID)
-        .order('month', { ascending: false })
-        .limit(6);
+      const { data } = await supabase.from('revenue').select('*').eq('channel_id', CHANNEL_ID).order('month', { ascending: false }).limit(6);
       return data ?? [];
     },
   });
@@ -43,139 +32,106 @@ export default function RevenueScreen() {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Revenue Summary */}
-      <View style={styles.summaryCard}>
-        <Text style={styles.summaryLabel}>Estimated revenue</Text>
-        <Text style={styles.summaryValue}>
+      {/* Revenue Hero */}
+      <View style={styles.heroCard}>
+        <Text style={styles.heroLabel}>Estimated revenue</Text>
+        <Text style={styles.heroValue}>
           ${(stats?.estimated_revenue || 0).toFixed(2)}
         </Text>
-        <Text style={styles.summaryPeriod}>Last 28 days</Text>
+        <Text style={styles.heroPeriod}>Last 28 days</Text>
         {stats?.revenue_change_percent !== undefined && (
-          <Text
-            style={[
-              styles.summaryChange,
-              {
-                color:
-                  stats.revenue_change_percent >= 0
-                    ? COLORS.positive
-                    : COLORS.negative,
-              },
-            ]}
-          >
-            {stats.revenue_change_percent >= 0 ? '▲' : '▼'}{' '}
-            {Math.abs(stats.revenue_change_percent).toFixed(1)}% vs previous 28 days
-          </Text>
+          <View style={styles.heroChangeRow}>
+            <MaterialCommunityIcons
+              name={stats.revenue_change_percent >= 0 ? 'trending-up' : 'trending-down'}
+              size={16}
+              color={stats.revenue_change_percent >= 0 ? COLORS.positive : COLORS.negative}
+            />
+            <Text style={[styles.heroChange, { color: stats.revenue_change_percent >= 0 ? COLORS.positive : COLORS.negative }]}>
+              {Math.abs(stats.revenue_change_percent).toFixed(1)}%
+            </Text>
+            <Text style={styles.heroChangeSub}>vs previous period</Text>
+          </View>
         )}
+
+        {/* Mini chart from monthly data */}
+        <View style={styles.miniChart}>
+          {(revenueData || []).reverse().map((rev: any, i: number) => {
+            const max = Math.max(...(revenueData || []).map((r: any) => r.estimated_revenue), 1);
+            const h = (rev.estimated_revenue / max) * 50;
+            return (
+              <View key={rev.id} style={styles.miniBarWrap}>
+                <View style={[styles.miniBar, { height: Math.max(h, 2) }]} />
+                <Text style={styles.miniBarLabel}>
+                  {new Date(rev.month).toLocaleDateString('en', { month: 'short' })}
+                </Text>
+              </View>
+            );
+          })}
+        </View>
       </View>
 
       {/* RPM / CPM */}
-      <View style={styles.statsRow}>
-        <StatCard
-          title="RPM"
-          value={`$${(latestRevenue?.rpm || 0).toFixed(2)}`}
-          subtitle="Revenue per 1000 views"
-        />
-        <StatCard
-          title="CPM"
-          value={`$${(latestRevenue?.cpm || 0).toFixed(2)}`}
-          subtitle="Cost per 1000 impressions"
-        />
+      <View style={styles.metricsRow}>
+        <View style={[styles.metricCard, { marginRight: 6 }]}>
+          <Text style={styles.metricLabel}>RPM</Text>
+          <Text style={styles.metricValue}>${(latestRevenue?.rpm || 0).toFixed(2)}</Text>
+          <Text style={styles.metricSub}>Revenue per mille</Text>
+        </View>
+        <View style={[styles.metricCard, { marginLeft: 6 }]}>
+          <Text style={styles.metricLabel}>CPM</Text>
+          <Text style={styles.metricValue}>${(latestRevenue?.cpm || 0).toFixed(2)}</Text>
+          <Text style={styles.metricSub}>Cost per mille</Text>
+        </View>
       </View>
 
-      {/* Revenue Sources */}
+      {/* Revenue sources */}
       <View style={styles.sourcesCard}>
-        <Text style={styles.sourcesTitle}>Revenue sources</Text>
+        <Text style={styles.sectionTitle}>Revenue sources</Text>
         {latestRevenue && (
           <>
-            <RevenueSourceRow
-              icon="advertisements"
-              label="Ads"
-              amount={latestRevenue.ad_revenue}
-              total={latestRevenue.estimated_revenue}
-            />
-            <RevenueSourceRow
-              icon="account-group"
-              label="Memberships"
-              amount={latestRevenue.membership_revenue}
-              total={latestRevenue.estimated_revenue}
-            />
-            <RevenueSourceRow
-              icon="chat"
-              label="Super Chat & Stickers"
-              amount={latestRevenue.superchat_revenue}
-              total={latestRevenue.estimated_revenue}
-            />
-            <RevenueSourceRow
-              icon="shopping"
-              label="Merchandise"
-              amount={latestRevenue.merchandise_revenue}
-              total={latestRevenue.estimated_revenue}
-            />
-            <RevenueSourceRow
-              icon="youtube-subscription"
-              label="YouTube Premium"
-              amount={latestRevenue.premium_revenue}
-              total={latestRevenue.estimated_revenue}
-            />
+            <SourceRow label="Ads" amount={latestRevenue.ad_revenue} total={latestRevenue.estimated_revenue} icon="television-play" />
+            <SourceRow label="Memberships" amount={latestRevenue.membership_revenue} total={latestRevenue.estimated_revenue} icon="account-group" />
+            <SourceRow label="Super Chat" amount={latestRevenue.superchat_revenue} total={latestRevenue.estimated_revenue} icon="chat" />
+            <SourceRow label="Merchandise" amount={latestRevenue.merchandise_revenue} total={latestRevenue.estimated_revenue} icon="shopping" />
+            <SourceRow label="YouTube Premium" amount={latestRevenue.premium_revenue} total={latestRevenue.estimated_revenue} icon="youtube-subscription" isLast />
           </>
         )}
       </View>
 
-      {/* Monthly Revenue */}
+      {/* Monthly breakdown */}
       <View style={styles.monthlyCard}>
-        <Text style={styles.sourcesTitle}>Monthly revenue</Text>
+        <Text style={styles.sectionTitle}>Monthly earnings</Text>
         {(revenueData || []).map((rev: any) => (
           <View key={rev.id} style={styles.monthRow}>
             <Text style={styles.monthLabel}>
-              {new Date(rev.month).toLocaleDateString('en-US', {
-                month: 'short',
-                year: 'numeric',
-              })}
+              {new Date(rev.month).toLocaleDateString('en', { month: 'long', year: 'numeric' })}
             </Text>
-            <Text style={styles.monthValue}>
-              ${rev.estimated_revenue.toFixed(2)}
-            </Text>
+            <Text style={styles.monthValue}>${rev.estimated_revenue.toFixed(2)}</Text>
           </View>
         ))}
       </View>
 
-      <View style={styles.bottomSpacer} />
+      <View style={{ height: 32 }} />
     </ScrollView>
   );
 }
 
-function RevenueSourceRow({
-  icon,
-  label,
-  amount,
-  total,
-}: {
-  icon: string;
-  label: string;
-  amount: number;
-  total: number;
+function SourceRow({ label, amount, total, icon, isLast }: {
+  label: string; amount: number; total: number; icon: string; isLast?: boolean;
 }) {
-  const percentage = total > 0 ? (amount / total) * 100 : 0;
-
+  const pct = total > 0 ? (amount / total) * 100 : 0;
   return (
-    <View style={styles.sourceRow}>
-      <MaterialCommunityIcons
-        name={icon as any}
-        size={20}
-        color={COLORS.textSecondary}
-      />
+    <View style={[styles.sourceRow, !isLast && styles.sourceRowBorder]}>
+      <MaterialCommunityIcons name={icon as any} size={20} color={COLORS.textSecondary} />
       <View style={styles.sourceInfo}>
-        <Text style={styles.sourceLabel}>{label}</Text>
-        <View style={styles.sourceBar}>
-          <View
-            style={[
-              styles.sourceBarFill,
-              { width: `${Math.min(percentage, 100)}%` },
-            ]}
-          />
+        <View style={styles.sourceTop}>
+          <Text style={styles.sourceLabel}>{label}</Text>
+          <Text style={styles.sourceAmount}>${amount.toFixed(2)}</Text>
+        </View>
+        <View style={styles.barBg}>
+          <View style={[styles.barFill, { width: `${Math.min(pct, 100)}%` }]} />
         </View>
       </View>
-      <Text style={styles.sourceAmount}>${amount.toFixed(2)}</Text>
     </View>
   );
 }
@@ -185,91 +141,154 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  summaryCard: {
+  // Hero
+  heroCard: {
     backgroundColor: COLORS.surface,
-    margin: SPACING.lg,
+    margin: 16,
     borderRadius: 12,
-    padding: SPACING.xl,
-    alignItems: 'center',
+    padding: 20,
   },
-  summaryLabel: {
+  heroLabel: {
     color: COLORS.textSecondary,
     fontSize: FONT_SIZE.sm,
   },
-  summaryValue: {
+  heroValue: {
     color: COLORS.textPrimary,
     fontSize: 36,
     fontWeight: '700',
-    marginTop: SPACING.sm,
+    marginTop: 4,
   },
-  summaryPeriod: {
+  heroPeriod: {
+    color: COLORS.textTertiary,
+    fontSize: FONT_SIZE.sm,
+    marginTop: 2,
+  },
+  heroChangeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+    gap: 4,
+  },
+  heroChange: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: '600',
+  },
+  heroChangeSub: {
+    color: COLORS.textTertiary,
+    fontSize: FONT_SIZE.sm,
+  },
+  miniChart: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    marginTop: 20,
+    gap: 4,
+  },
+  miniBarWrap: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  miniBar: {
+    width: '80%',
+    backgroundColor: COLORS.primary,
+    borderRadius: 2,
+    minHeight: 2,
+  },
+  miniBarLabel: {
+    color: COLORS.textTertiary,
+    fontSize: FONT_SIZE.xxs,
+    marginTop: 4,
+  },
+  // Metrics row
+  metricsRow: {
+    flexDirection: 'row',
+    marginHorizontal: 16,
+    marginBottom: 12,
+  },
+  metricCard: {
+    flex: 1,
+    backgroundColor: COLORS.surface,
+    borderRadius: 12,
+    padding: 16,
+  },
+  metricLabel: {
     color: COLORS.textSecondary,
     fontSize: FONT_SIZE.sm,
-    marginTop: SPACING.xs,
   },
-  summaryChange: {
-    fontSize: FONT_SIZE.sm,
-    marginTop: SPACING.sm,
+  metricValue: {
+    color: COLORS.textPrimary,
+    fontSize: FONT_SIZE.xxl,
+    fontWeight: '600',
+    marginTop: 4,
   },
-  statsRow: {
-    flexDirection: 'row',
-    paddingHorizontal: SPACING.md,
-    marginBottom: SPACING.sm,
+  metricSub: {
+    color: COLORS.textTertiary,
+    fontSize: FONT_SIZE.xxs,
+    marginTop: 2,
   },
+  // Sources
   sourcesCard: {
     backgroundColor: COLORS.surface,
-    margin: SPACING.lg,
+    marginHorizontal: 16,
+    marginBottom: 12,
     borderRadius: 12,
-    padding: SPACING.lg,
+    padding: 16,
   },
-  sourcesTitle: {
+  sectionTitle: {
     color: COLORS.textPrimary,
     fontSize: FONT_SIZE.lg,
     fontWeight: '600',
-    marginBottom: SPACING.lg,
+    marginBottom: 14,
   },
   sourceRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: SPACING.lg,
-    gap: SPACING.md,
+    paddingVertical: 12,
+    gap: 12,
+  },
+  sourceRowBorder: {
+    borderBottomWidth: 0.5,
+    borderBottomColor: COLORS.border,
   },
   sourceInfo: {
     flex: 1,
   },
+  sourceTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
   sourceLabel: {
     color: COLORS.textPrimary,
     fontSize: FONT_SIZE.md,
-    marginBottom: SPACING.xs,
-  },
-  sourceBar: {
-    height: 4,
-    backgroundColor: COLORS.surfaceLight,
-    borderRadius: 2,
-  },
-  sourceBarFill: {
-    height: '100%',
-    backgroundColor: COLORS.primary,
-    borderRadius: 2,
   },
   sourceAmount: {
     color: COLORS.textPrimary,
     fontSize: FONT_SIZE.md,
     fontWeight: '600',
-    minWidth: 70,
-    textAlign: 'right',
   },
+  barBg: {
+    height: 3,
+    backgroundColor: COLORS.surfaceElevated,
+    borderRadius: 2,
+  },
+  barFill: {
+    height: '100%',
+    backgroundColor: COLORS.primary,
+    borderRadius: 2,
+  },
+  // Monthly
   monthlyCard: {
     backgroundColor: COLORS.surface,
-    margin: SPACING.lg,
+    marginHorizontal: 16,
     borderRadius: 12,
-    padding: SPACING.lg,
+    padding: 16,
   },
   monthRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: SPACING.md,
-    borderBottomWidth: 1,
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 0.5,
     borderBottomColor: COLORS.border,
   },
   monthLabel: {
@@ -280,8 +299,5 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     fontSize: FONT_SIZE.md,
     fontWeight: '600',
-  },
-  bottomSpacer: {
-    height: 40,
   },
 });

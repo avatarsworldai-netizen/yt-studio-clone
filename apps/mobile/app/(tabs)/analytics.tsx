@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { supabase } from '../../lib/supabase';
 import { useRealtimeSubscription } from '../../hooks/useRealtimeSubscription';
-import { StatCard } from '../../components/ui/StatCard';
 import { COLORS, SPACING, FONT_SIZE } from '../../constants/theme';
 
 const CHANNEL_ID = '00000000-0000-0000-0000-000000000001';
-const screenWidth = Dimensions.get('window').width;
 
 const PERIODS = [
   { key: 'last_7_days', label: '7 days' },
@@ -21,7 +20,7 @@ const TABS = ['Overview', 'Reach', 'Engagement', 'Audience'] as const;
 function formatNumber(num: number): string {
   if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
   if (num >= 1_000) return `${(num / 1_000).toFixed(1)}K`;
-  return num.toString();
+  return num.toLocaleString();
 }
 
 export default function AnalyticsScreen() {
@@ -34,12 +33,7 @@ export default function AnalyticsScreen() {
   const { data: stats } = useQuery({
     queryKey: ['analyticsStats', selectedPeriod],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('dashboard_stats')
-        .select('*')
-        .eq('channel_id', CHANNEL_ID)
-        .eq('period', selectedPeriod)
-        .single();
+      const { data } = await supabase.from('dashboard_stats').select('*').eq('channel_id', CHANNEL_ID).eq('period', selectedPeriod).single();
       return data;
     },
   });
@@ -47,43 +41,29 @@ export default function AnalyticsScreen() {
   const { data: timeseries } = useQuery({
     queryKey: ['timeseries'],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('analytics_timeseries')
-        .select('*')
-        .eq('channel_id', CHANNEL_ID)
-        .eq('metric_type', 'views')
-        .order('date', { ascending: true })
-        .limit(30);
+      const { data } = await supabase.from('analytics_timeseries').select('*').eq('channel_id', CHANNEL_ID).eq('metric_type', 'views').order('date', { ascending: true }).limit(30);
       return data ?? [];
     },
   });
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Period Selector */}
-      <View style={styles.periodRow}>
-        {PERIODS.map((period) => (
+      {/* Period chips */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.periodRow}>
+        {PERIODS.map((p) => (
           <TouchableOpacity
-            key={period.key}
-            style={[
-              styles.periodChip,
-              selectedPeriod === period.key && styles.periodChipActive,
-            ]}
-            onPress={() => setSelectedPeriod(period.key)}
+            key={p.key}
+            style={[styles.periodChip, selectedPeriod === p.key && styles.periodChipActive]}
+            onPress={() => setSelectedPeriod(p.key)}
           >
-            <Text
-              style={[
-                styles.periodText,
-                selectedPeriod === period.key && styles.periodTextActive,
-              ]}
-            >
-              {period.label}
+            <Text style={[styles.periodText, selectedPeriod === p.key && styles.periodTextActive]}>
+              {p.label}
             </Text>
           </TouchableOpacity>
         ))}
-      </View>
+      </ScrollView>
 
-      {/* Sub Tabs */}
+      {/* Sub-tabs */}
       <View style={styles.tabRow}>
         {TABS.map((tab) => (
           <TouchableOpacity
@@ -98,70 +78,91 @@ export default function AnalyticsScreen() {
         ))}
       </View>
 
-      {/* Mini Chart Placeholder */}
-      <View style={styles.chartContainer}>
-        <Text style={styles.chartTitle}>Views</Text>
+      {/* Chart card */}
+      <View style={styles.chartCard}>
+        <Text style={styles.chartLabel}>Views</Text>
         <Text style={styles.chartValue}>{formatNumber(stats?.views || 0)}</Text>
-        <View style={styles.chartPlaceholder}>
-          {(timeseries || []).map((point: any, index: number) => {
-            const maxVal = Math.max(...(timeseries || []).map((p: any) => Number(p.value)));
-            const height = maxVal > 0 ? (Number(point.value) / maxVal) * 100 : 0;
+        {stats?.views_change_percent !== undefined && stats?.views_change_percent !== 0 && (
+          <Text style={[styles.chartChange, { color: stats.views_change_percent >= 0 ? COLORS.positive : COLORS.negative }]}>
+            {stats.views_change_percent >= 0 ? '↑' : '↓'} {Math.abs(stats.views_change_percent).toFixed(1)}%
+          </Text>
+        )}
+        {/* Line chart visualization */}
+        <View style={styles.chartArea}>
+          {(timeseries || []).map((point: any, i: number) => {
+            const values = (timeseries || []).map((p: any) => Number(p.value));
+            const maxVal = Math.max(...values, 1);
+            const h = (Number(point.value) / maxVal) * 80;
             return (
-              <View
-                key={index}
-                style={[
-                  styles.chartBar,
-                  {
-                    height: Math.max(height, 2),
-                    backgroundColor: COLORS.primary,
-                  },
-                ]}
-              />
+              <View key={i} style={styles.chartBarWrap}>
+                <View style={[styles.chartBar, { height: Math.max(h, 2) }]} />
+              </View>
             );
           })}
         </View>
       </View>
 
-      {/* Stats Grid */}
-      <View style={styles.statsRow}>
-        <StatCard
-          title="Views"
+      {/* Metrics list */}
+      <View style={styles.metricsCard}>
+        <MetricRow
+          icon="eye-outline"
+          label="Views"
           value={formatNumber(stats?.views || 0)}
-          changePercent={stats?.views_change_percent}
+          change={stats?.views_change_percent}
         />
-        <StatCard
-          title="Watch time (hrs)"
+        <MetricRow
+          icon="clock-outline"
+          label="Watch time (hours)"
           value={formatNumber(stats?.watch_time_hours || 0)}
-          changePercent={stats?.watch_time_change_percent}
+          change={stats?.watch_time_change_percent}
         />
-      </View>
-
-      <View style={styles.statsRow}>
-        <StatCard
-          title="Subscribers"
+        <MetricRow
+          icon="account-plus-outline"
+          label="Subscribers"
           value={`+${formatNumber(stats?.subscribers_net || 0)}`}
-          changePercent={stats?.subscribers_change_percent}
+          change={stats?.subscribers_change_percent}
         />
-        <StatCard
-          title="Impressions"
+        <MetricRow
+          icon="image-multiple-outline"
+          label="Impressions"
           value={formatNumber(stats?.impressions || 0)}
         />
-      </View>
-
-      <View style={styles.statsRow}>
-        <StatCard
-          title="Impressions CTR"
+        <MetricRow
+          icon="cursor-default-click-outline"
+          label="Impressions CTR"
           value={`${(stats?.impression_ctr || 0).toFixed(1)}%`}
         />
-        <StatCard
-          title="Revenue"
-          value={`$${(stats?.estimated_revenue || 0).toFixed(0)}`}
-          changePercent={stats?.revenue_change_percent}
+        <MetricRow
+          icon="currency-usd"
+          label="Estimated revenue"
+          value={`$${(stats?.estimated_revenue || 0).toFixed(2)}`}
+          change={stats?.revenue_change_percent}
+          isLast
         />
       </View>
 
-      <View style={styles.bottomSpacer} />
+      <View style={{ height: 32 }} />
     </ScrollView>
+  );
+}
+
+function MetricRow({ icon, label, value, change, isLast }: {
+  icon: string; label: string; value: string; change?: number; isLast?: boolean;
+}) {
+  const isPositive = (change ?? 0) >= 0;
+  return (
+    <View style={[styles.metricRow, !isLast && styles.metricRowBorder]}>
+      <MaterialCommunityIcons name={icon as any} size={20} color={COLORS.textSecondary} />
+      <Text style={styles.metricLabel}>{label}</Text>
+      <View style={styles.metricRight}>
+        <Text style={styles.metricValue}>{value}</Text>
+        {change !== undefined && change !== 0 && (
+          <Text style={[styles.metricChange, { color: isPositive ? COLORS.positive : COLORS.negative }]}>
+            {isPositive ? '↑' : '↓'}{Math.abs(change).toFixed(1)}%
+          </Text>
+        )}
+      </View>
+    </View>
   );
 }
 
@@ -172,84 +173,121 @@ const styles = StyleSheet.create({
   },
   periodRow: {
     flexDirection: 'row',
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.md,
-    gap: SPACING.sm,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    gap: 8,
   },
   periodChip: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderRadius: 16,
-    backgroundColor: COLORS.surfaceLight,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 8,
+    backgroundColor: COLORS.surfaceElevated,
   },
   periodChipActive: {
     backgroundColor: COLORS.primary,
   },
   periodText: {
     color: COLORS.textPrimary,
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,
     fontWeight: '500',
   },
   periodTextActive: {
     color: COLORS.black,
+    fontWeight: '600',
   },
   tabRow: {
     flexDirection: 'row',
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: COLORS.border,
   },
   tab: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: SPACING.md,
+    paddingVertical: 12,
     borderBottomWidth: 2,
     borderBottomColor: 'transparent',
   },
   tabActive: {
-    borderBottomColor: COLORS.textPrimary,
+    borderBottomColor: COLORS.white,
   },
   tabText: {
-    color: COLORS.textSecondary,
+    color: COLORS.textTertiary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '500',
   },
   tabTextActive: {
-    color: COLORS.textPrimary,
+    color: COLORS.white,
   },
-  chartContainer: {
-    margin: SPACING.lg,
+  // Chart
+  chartCard: {
     backgroundColor: COLORS.surface,
+    margin: 16,
     borderRadius: 12,
-    padding: SPACING.lg,
+    padding: 16,
   },
-  chartTitle: {
+  chartLabel: {
     color: COLORS.textSecondary,
     fontSize: FONT_SIZE.sm,
   },
   chartValue: {
     color: COLORS.textPrimary,
-    fontSize: FONT_SIZE.xxl,
+    fontSize: FONT_SIZE.xxxl,
     fontWeight: '700',
-    marginTop: SPACING.xs,
-    marginBottom: SPACING.md,
+    marginTop: 2,
   },
-  chartPlaceholder: {
+  chartChange: {
+    fontSize: FONT_SIZE.sm,
+    marginTop: 2,
+  },
+  chartArea: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    height: 100,
-    gap: 2,
+    height: 80,
+    marginTop: 16,
+    gap: 1.5,
+  },
+  chartBarWrap: {
+    flex: 1,
+    justifyContent: 'flex-end',
   },
   chartBar: {
-    flex: 1,
-    borderRadius: 2,
+    backgroundColor: COLORS.primary,
+    borderRadius: 1,
+    width: '100%',
     minHeight: 2,
   },
-  statsRow: {
-    flexDirection: 'row',
-    paddingHorizontal: SPACING.md,
-    marginBottom: SPACING.sm,
+  // Metrics
+  metricsCard: {
+    backgroundColor: COLORS.surface,
+    marginHorizontal: 16,
+    borderRadius: 12,
+    paddingHorizontal: 16,
   },
-  bottomSpacer: {
-    height: 40,
+  metricRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    gap: 12,
+  },
+  metricRowBorder: {
+    borderBottomWidth: 0.5,
+    borderBottomColor: COLORS.border,
+  },
+  metricLabel: {
+    flex: 1,
+    color: COLORS.textPrimary,
+    fontSize: FONT_SIZE.md,
+  },
+  metricRight: {
+    alignItems: 'flex-end',
+  },
+  metricValue: {
+    color: COLORS.textPrimary,
+    fontSize: FONT_SIZE.md,
+    fontWeight: '600',
+  },
+  metricChange: {
+    fontSize: FONT_SIZE.xs,
+    marginTop: 2,
   },
 });
