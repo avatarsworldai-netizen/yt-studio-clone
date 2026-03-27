@@ -1,0 +1,10 @@
+{
+  "name": "@yt-studio/supabase",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "db:reset": "supabase db reset",
+    "db:migrate": "supabase migration up",
+    "db:seed": "supabase db seed"
+  }
+}
