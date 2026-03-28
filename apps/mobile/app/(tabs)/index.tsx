@@ -1,478 +1,209 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { supabase } from '../../lib/supabase';
 import { useRealtimeSubscription } from '../../hooks/useRealtimeSubscription';
-import { COLORS, SPACING, FONT_SIZE } from '../../constants/theme';
+import { C, F } from '../../constants/theme';
 
-const CHANNEL_ID = '00000000-0000-0000-0000-000000000001';
+const CID = '00000000-0000-0000-0000-000000000001';
 
-function formatNumber(num: number): string {
-  if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
-  if (num >= 1_000) return `${(num / 1_000).toFixed(1)}K`;
-  return num.toLocaleString();
+// Figma icon assets
+const IC = {
+  arrowDown: require('../../assets/figma/arrow_down.png'),
+  chart: require('../../assets/figma/stat_icon_chart.png'),
+  like: require('../../assets/figma/stat_icon_like.png'),
+  comment: require('../../assets/figma/stat_icon_comment.png'),
+  money: require('../../assets/figma/stat_icon_money.png'),
+  chevDown: require('../../assets/figma/chevron_down.png'),
+  chevUp: require('../../assets/figma/chevron_up.png'),
+};
+
+function n(v: number) {
+  if (v >= 1e6) return `${(v / 1e6).toFixed(1).replace('.', ',')} M`;
+  if (v >= 1e3) return `${(v / 1e3).toFixed(1).replace('.', ',')} K`;
+  return v.toLocaleString('es-ES');
 }
 
-function formatCompact(num: number): string {
-  if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
-  if (num >= 1_000) return `${(num / 1_000).toFixed(1)}K`;
-  return num.toString();
+function since(d: string | null) {
+  if (!d) return '';
+  const h = Math.floor((Date.now() - new Date(d).getTime()) / 36e5);
+  const dy = Math.floor(h / 24);
+  if (dy === 0) return `Primeras ${h} horas`;
+  return `Primeros ${dy} días y ${h % 24} horas`;
 }
 
-function timeAgo(dateStr: string | null): string {
-  if (!dateStr) return '';
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  if (hours < 1) return 'Just now';
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days === 1) return '1 day ago';
-  if (days < 7) return `${days} days ago`;
-  if (days < 30) return `${Math.floor(days / 7)}w ago`;
-  return `${Math.floor(days / 30)}mo ago`;
-}
+export default function Dashboard() {
+  const r = useRouter();
+  const [exp, setExp] = useState<string | null>(null);
 
-export default function DashboardScreen() {
-  const router = useRouter();
+  useRealtimeSubscription('dashboard_stats', ['ds']);
+  useRealtimeSubscription('channel', ['ch']);
+  useRealtimeSubscription('videos', ['lv']);
 
-  useRealtimeSubscription('dashboard_stats', ['dashboardStats']);
-  useRealtimeSubscription('realtime_stats', ['realtimeStats']);
-  useRealtimeSubscription('channel', ['channel']);
-  useRealtimeSubscription('videos', ['latestVideos']);
-
-  const { data: channel } = useQuery({
-    queryKey: ['channel'],
-    queryFn: async () => {
-      const { data } = await supabase.from('channel').select('*').eq('id', CHANNEL_ID).single();
-      return data;
-    },
-  });
-
-  const { data: stats } = useQuery({
-    queryKey: ['dashboardStats'],
-    queryFn: async () => {
-      const { data } = await supabase.from('dashboard_stats').select('*').eq('channel_id', CHANNEL_ID).eq('period', 'last_28_days').single();
-      return data;
-    },
-  });
-
-  const { data: realtimeData } = useQuery({
-    queryKey: ['realtimeStats'],
-    queryFn: async () => {
-      const { data } = await supabase.from('realtime_stats').select('*').eq('channel_id', CHANNEL_ID).single();
-      return data;
-    },
-  });
-
-  const { data: latestVideos } = useQuery({
-    queryKey: ['latestVideos'],
-    queryFn: async () => {
-      const { data } = await supabase.from('videos').select('*').eq('channel_id', CHANNEL_ID).eq('status', 'published').eq('visibility', 'public').order('published_at', { ascending: false }).limit(5);
-      return data ?? [];
-    },
-  });
+  const { data: ch } = useQuery({ queryKey: ['ch'], queryFn: async () => { const { data } = await supabase.from('channel').select('*').eq('id', CID).single(); return data } });
+  const { data: st } = useQuery({ queryKey: ['ds'], queryFn: async () => { const { data } = await supabase.from('dashboard_stats').select('*').eq('channel_id', CID).eq('period', 'last_28_days').single(); return data } });
+  const { data: vids } = useQuery({ queryKey: ['lv'], queryFn: async () => { const { data } = await supabase.from('videos').select('*').eq('channel_id', CID).eq('status', 'published').eq('visibility', 'public').order('published_at', { ascending: false }).limit(3); return data ?? [] } });
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Subscriber count card */}
-      <TouchableOpacity style={styles.subscriberCard} onPress={() => router.push('/profile')}>
-        <View style={styles.subscriberTop}>
-          <Image
-            source={{ uri: channel?.avatar_url || 'https://picsum.photos/200/200' }}
-            style={styles.channelAvatar}
-          />
-          <View style={styles.subscriberInfo}>
-            <Text style={styles.subscriberLabel}>Current subscribers</Text>
-            <Text style={styles.subscriberCount}>
-              {formatNumber(channel?.subscriber_count || 0)}
-            </Text>
-          </View>
-          <MaterialCommunityIcons name="chevron-right" size={20} color={COLORS.textTertiary} />
+    <ScrollView style={s.root} showsVerticalScrollIndicator={false}>
+      {/* ── Channel row ── */}
+      <TouchableOpacity style={s.chRow} activeOpacity={0.7} onPress={() => r.push('/profile')}>
+        <Image source={{ uri: ch?.avatar_url || 'https://picsum.photos/200/200' }} style={s.chAva} />
+        <View style={s.chMeta}>
+          <Text style={s.chName} numberOfLines={1}>{ch?.name || ''}</Text>
+          <Text style={s.chSubs}>{n(ch?.subscriber_count || 0)}</Text>
+          <Text style={s.chLabel}>Suscriptores totales</Text>
         </View>
       </TouchableOpacity>
 
-      {/* Channel analytics summary card */}
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>Channel analytics</Text>
-          <Text style={styles.cardSubtitle}>Last 28 days</Text>
+      {/* ── Estadísticas del canal ── */}
+      <View style={s.sec}>
+        <View style={s.secHead}>
+          <Text style={s.secTitle}>Estadísticas del canal</Text>
+          <Text style={s.secRight}>Últimos 28 días</Text>
         </View>
-
-        <View style={styles.analyticsGrid}>
-          <AnalyticMetric
-            label="Views"
-            value={formatCompact(stats?.views || 0)}
-            change={stats?.views_change_percent}
-          />
-          <View style={styles.metricDivider} />
-          <AnalyticMetric
-            label="Watch time (hours)"
-            value={formatCompact(stats?.watch_time_hours || 0)}
-            change={stats?.watch_time_change_percent}
-          />
-          <View style={styles.metricDivider} />
-          <AnalyticMetric
-            label="Subscribers"
-            value={`+${formatCompact(stats?.subscribers_net || 0)}`}
-            change={stats?.subscribers_change_percent}
-          />
-        </View>
-
-        <TouchableOpacity style={styles.goToAnalytics}>
-          <Text style={styles.goToAnalyticsText}>GO TO CHANNEL ANALYTICS</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Realtime card */}
-      <View style={styles.card}>
-        <View style={styles.realtimeHeader}>
-          <View style={styles.realtimeDot} />
-          <Text style={styles.realtimeLabel}>REALTIME</Text>
-        </View>
-        <Text style={styles.realtimeValue}>
-          {formatNumber(realtimeData?.views_last_48h || 0)}
-        </Text>
-        <Text style={styles.realtimeSubtext}>Views · Last 48 hours</Text>
-        <View style={styles.realtimeMini}>
-          <Text style={styles.realtimeMiniText}>
-            {formatCompact(realtimeData?.views_last_60min || 0)}/hr now
-          </Text>
-          <View style={styles.realtimeViewers}>
-            <View style={styles.liveDot} />
-            <Text style={styles.realtimeViewersText}>
-              {realtimeData?.current_viewers || 0} watching
-            </Text>
-          </View>
-        </View>
-        {/* Mini bar chart */}
-        <View style={styles.miniChart}>
-          {(realtimeData?.hourly_data || []).slice(0, 24).map((point: any, i: number) => {
-            const maxVal = Math.max(...(realtimeData?.hourly_data || []).map((p: any) => p.views || 0), 1);
-            const h = Math.max((point.views / maxVal) * 40, 1);
-            return (
-              <View key={i} style={[styles.miniBar, { height: h, backgroundColor: point.views > 0 ? COLORS.primary : COLORS.surfaceLight }]} />
-            );
-          })}
+        <View style={s.grid}>
+          <MCard label="Visualizaciones" value={n(st?.views || 0)} down={(st?.views_change_percent || 0) < 0} />
+          <MCard label="Tiempo de visualización (ho..." value={n(st?.watch_time_hours || 0)} down={(st?.watch_time_change_percent || 0) < 0} />
+          <MCard label="Suscriptores" value={`${(st?.subscribers_net || 0) >= 0 ? '' : ''}${n(st?.subscribers_net || 0)}`} hideArrow />
+          <MCard label="Ingresos estimados" value={`${(st?.estimated_revenue || 0).toFixed(2).replace('.', ',')}€`} down={(st?.revenue_change_percent || 0) < 0} />
         </View>
       </View>
 
-      {/* Latest published content */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Latest published content</Text>
-        {(latestVideos || []).map((video: any) => (
-          <TouchableOpacity
-            key={video.id}
-            style={styles.videoRow}
-            onPress={() => router.push(`/video/${video.id}`)}
-            activeOpacity={0.7}
-          >
-            <View style={styles.videoThumbWrap}>
-              <Image
-                source={{ uri: video.thumbnail_url || 'https://picsum.photos/640/360' }}
-                style={styles.videoThumb}
-              />
-              {video.duration && video.duration !== '0:00' && (
-                <View style={styles.durationBadge}>
-                  <Text style={styles.durationText}>{video.duration}</Text>
+      {/* ── Último contenido publicado ── */}
+      <View style={s.sec}>
+        <Text style={s.secTitle}>Último contenido publicado</Text>
+        {(vids || []).map((v: any) => {
+          const open = exp === v.id;
+          return (
+            <View key={v.id} style={s.vCard}>
+              {/* Thumbnail + title */}
+              <TouchableOpacity style={s.vTop} activeOpacity={0.7} onPress={() => r.push(`/video/${v.id}`)}>
+                <Image source={{ uri: v.thumbnail_url || 'https://picsum.photos/640/360' }} style={s.vThumb} />
+                <View style={s.vInfo}>
+                  <Text style={s.vTitle} numberOfLines={2}>{v.title}</Text>
+                  <Text style={s.vDate}>{since(v.published_at)}</Text>
+                </View>
+              </TouchableOpacity>
+
+              {/* Divider */}
+              <View style={s.vDiv} />
+
+              {/* Quick stats — exact Figma gaps: money-18-chart-6-views-25-like-6-likes-25-comment-5-text */}
+              <View style={s.vQuick}>
+                {v.estimated_revenue > 0 && <Image source={IC.money} style={s.qIcon} resizeMode="contain" />}
+                <Image source={IC.chart} style={s.qIconSm} resizeMode="contain" />
+                <Text style={s.qText}>{n(v.view_count)}</Text>
+                <Image source={IC.like} style={s.qIconSm} resizeMode="contain" />
+                <Text style={[s.qText, { marginRight: 25 }]}>{n(v.like_count)}</Text>
+                <Image source={IC.comment} style={[s.qIconSm, { marginRight: 5 }]} resizeMode="contain" />
+                <Text style={[s.qText, { marginRight: 0 }]}>{v.comment_count}</Text>
+                <View style={{ flex: 1 }} />
+                <TouchableOpacity onPress={() => setExp(open ? null : v.id)} hitSlop={12}>
+                  <Image source={open ? IC.chevUp : IC.chevDown} style={s.chevron} resizeMode="contain" />
+                </TouchableOpacity>
+              </View>
+
+              {/* Expanded */}
+              {open && (
+                <View style={s.vExp}>
+                  <ERow label="Clasificación por visualizaciones" value="2 de 10" chevron />
+                  <ERow label="Visualizaciones" value={n(v.view_count)} up />
+                  <ERow label="Porcentaje de clics de las impresiones" value={`${v.impression_ctr} %`} up />
+                  <ERow label="Duración media de las visualizaciones" value={v.average_view_duration} up />
+                  <View style={{ height: 10 }} />
+                  <ERow label="Comentarios" value={String(v.comment_count)} />
+                  <Text style={s.noReply}>No hay comentarios sin responder</Text>
                 </View>
               )}
             </View>
-            <View style={styles.videoInfo}>
-              <Text style={styles.videoTitle} numberOfLines={2}>{video.title}</Text>
-              <Text style={styles.videoMeta}>
-                {timeAgo(video.published_at)} · {formatCompact(video.view_count)} views
-              </Text>
-              <View style={styles.videoStats}>
-                <View style={styles.videoStatItem}>
-                  <MaterialCommunityIcons name="thumb-up-outline" size={12} color={COLORS.textTertiary} />
-                  <Text style={styles.videoStatText}>{formatCompact(video.like_count)}</Text>
-                </View>
-                <View style={styles.videoStatItem}>
-                  <MaterialCommunityIcons name="comment-outline" size={12} color={COLORS.textTertiary} />
-                  <Text style={styles.videoStatText}>{formatCompact(video.comment_count)}</Text>
-                </View>
-              </View>
-            </View>
-            <MaterialCommunityIcons name="dots-vertical" size={18} color={COLORS.textTertiary} />
-          </TouchableOpacity>
-        ))}
+          );
+        })}
       </View>
 
-      {/* Revenue summary */}
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>Revenue</Text>
-          <Text style={styles.cardSubtitle}>Last 28 days</Text>
-        </View>
-        <Text style={styles.revenueValue}>
-          ${(stats?.estimated_revenue || 0).toFixed(2)}
-        </Text>
-        <Text style={styles.revenueChange}>
-          {(stats?.revenue_change_percent || 0) >= 0 ? '↑' : '↓'}{' '}
-          {Math.abs(stats?.revenue_change_percent || 0).toFixed(1)}% vs previous 28 days
-        </Text>
-      </View>
-
-      <View style={{ height: 32 }} />
+      <View style={{ height: 40 }} />
     </ScrollView>
   );
 }
 
-function AnalyticMetric({ label, value, change }: { label: string; value: string; change?: number }) {
-  const isPositive = (change ?? 0) >= 0;
+/* ── Components ── */
+
+function MCard({ label, value, down, hideArrow }: { label: string; value: string; down?: boolean; hideArrow?: boolean }) {
   return (
-    <View style={styles.metricItem}>
-      <Text style={styles.metricLabel}>{label}</Text>
-      <Text style={styles.metricValue}>{value}</Text>
-      {change !== undefined && change !== 0 && (
-        <Text style={[styles.metricChange, { color: isPositive ? COLORS.positive : COLORS.negative }]}>
-          {isPositive ? '↑' : '↓'} {Math.abs(change).toFixed(1)}%
-        </Text>
-      )}
+    <View style={s.mBox}>
+      <Text style={s.mLabel} numberOfLines={1}>{label}</Text>
+      <View style={s.mValRow}>
+        <Text style={s.mValue}>{value}</Text>
+        {!hideArrow && (
+          <Image source={IC.arrowDown} style={[s.arrowIcon, !down && { transform: [{ rotate: '180deg' }] }]} resizeMode="contain" />
+        )}
+      </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  // Subscriber card
-  subscriberCard: {
-    backgroundColor: COLORS.surface,
-    marginHorizontal: 16,
-    marginTop: 12,
-    borderRadius: 12,
-    padding: 16,
-  },
-  subscriberTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  channelAvatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: COLORS.surfaceElevated,
-  },
-  subscriberInfo: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  subscriberLabel: {
-    color: COLORS.textSecondary,
-    fontSize: FONT_SIZE.sm,
-  },
-  subscriberCount: {
-    color: COLORS.textPrimary,
-    fontSize: FONT_SIZE.xxxl,
-    fontWeight: '600',
-    marginTop: 2,
-  },
-  // Card
-  card: {
-    backgroundColor: COLORS.surface,
-    marginHorizontal: 16,
-    marginTop: 12,
-    borderRadius: 12,
-    padding: 16,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  cardTitle: {
-    color: COLORS.textPrimary,
-    fontSize: FONT_SIZE.lg,
-    fontWeight: '600',
-  },
-  cardSubtitle: {
-    color: COLORS.textTertiary,
-    fontSize: FONT_SIZE.sm,
-  },
-  // Analytics grid
-  analyticsGrid: {
-    flexDirection: 'row',
-    marginBottom: 16,
-  },
-  metricItem: {
-    flex: 1,
-  },
-  metricDivider: {
-    width: 1,
-    backgroundColor: COLORS.border,
-    marginHorizontal: 12,
-  },
-  metricLabel: {
-    color: COLORS.textSecondary,
-    fontSize: FONT_SIZE.xs,
-    marginBottom: 4,
-  },
-  metricValue: {
-    color: COLORS.textPrimary,
-    fontSize: FONT_SIZE.xxl,
-    fontWeight: '600',
-  },
-  metricChange: {
-    fontSize: FONT_SIZE.xs,
-    marginTop: 4,
-  },
-  goToAnalytics: {
-    borderTopWidth: 0.5,
-    borderTopColor: COLORS.border,
-    paddingTop: 14,
-    alignItems: 'center',
-  },
-  goToAnalyticsText: {
-    color: COLORS.primary,
-    fontSize: FONT_SIZE.sm,
-    fontWeight: '600',
-    letterSpacing: 0.5,
-  },
-  // Realtime
-  realtimeHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-    gap: 6,
-  },
-  realtimeDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: COLORS.positive,
-  },
-  realtimeLabel: {
-    color: COLORS.positive,
-    fontSize: FONT_SIZE.xs,
-    fontWeight: '700',
-    letterSpacing: 1,
-  },
-  realtimeValue: {
-    color: COLORS.textPrimary,
-    fontSize: 32,
-    fontWeight: '700',
-  },
-  realtimeSubtext: {
-    color: COLORS.textSecondary,
-    fontSize: FONT_SIZE.sm,
-    marginTop: 2,
-  },
-  realtimeMini: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  realtimeMiniText: {
-    color: COLORS.textTertiary,
-    fontSize: FONT_SIZE.sm,
-  },
-  realtimeViewers: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  liveDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: COLORS.youtubeRed,
-  },
-  realtimeViewersText: {
-    color: COLORS.textTertiary,
-    fontSize: FONT_SIZE.sm,
-  },
-  miniChart: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    height: 44,
-    marginTop: 12,
-    gap: 2,
-  },
-  miniBar: {
-    flex: 1,
-    borderRadius: 1,
-    minHeight: 1,
-  },
-  // Video list
-  videoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderTopWidth: 0.5,
-    borderTopColor: COLORS.border,
-  },
-  videoThumbWrap: {
-    width: 120,
-    height: 68,
-    borderRadius: 8,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  videoThumb: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: COLORS.surfaceElevated,
-  },
-  durationBadge: {
-    position: 'absolute',
-    bottom: 4,
-    right: 4,
-    backgroundColor: COLORS.overlay,
-    borderRadius: 4,
-    paddingHorizontal: 4,
-    paddingVertical: 1,
-  },
-  durationText: {
-    color: COLORS.white,
-    fontSize: FONT_SIZE.xxs,
-    fontWeight: '500',
-  },
-  videoInfo: {
-    flex: 1,
-    marginLeft: 12,
-    marginRight: 8,
-  },
-  videoTitle: {
-    color: COLORS.textPrimary,
-    fontSize: FONT_SIZE.md,
-    fontWeight: '500',
-    lineHeight: 18,
-  },
-  videoMeta: {
-    color: COLORS.textTertiary,
-    fontSize: FONT_SIZE.xs,
-    marginTop: 4,
-  },
-  videoStats: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 4,
-  },
-  videoStatItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-  },
-  videoStatText: {
-    color: COLORS.textTertiary,
-    fontSize: FONT_SIZE.xs,
-  },
-  // Revenue
-  revenueValue: {
-    color: COLORS.textPrimary,
-    fontSize: FONT_SIZE.xxxl,
-    fontWeight: '600',
-  },
-  revenueChange: {
-    color: COLORS.positive,
-    fontSize: FONT_SIZE.sm,
-    marginTop: 4,
-  },
+function ERow({ label, value, up, chevron }: { label: string; value: string; up?: boolean; chevron?: boolean }) {
+  return (
+    <View style={s.eRow}>
+      <Text style={s.eLabel} numberOfLines={1}>{label}</Text>
+      <View style={s.eRight}>
+        <Text style={s.eVal}>{value}</Text>
+        {chevron && <Text style={{ fontSize: 16, color: C.textSec }}>{'>'}</Text>}
+        {up && (
+          <Image source={IC.arrowDown} style={[s.arrowIconSm, { transform: [{ rotate: '180deg' }] }]} resizeMode="contain" />
+        )}
+      </View>
+    </View>
+  );
+}
+
+/* ── Styles (exact Figma values / 3) ── */
+const s = StyleSheet.create({
+  root: { flex: 1, backgroundColor: C.bg },
+
+  // Channel — avatar at 15pt from left, text at 109pt from left
+  chRow: { flexDirection: 'row', alignItems: 'center', paddingLeft: 15, paddingRight: 20, paddingTop: 10, paddingBottom: 18 },
+  chAva: { width: 77, height: 77, borderRadius: 39, backgroundColor: C.sectionBg },
+  chMeta: { marginLeft: 17, flex: 1 },
+  chName: { fontSize: F.s18, fontWeight: '700', color: C.text },
+  chSubs: { fontSize: F.s23, fontWeight: '700', color: '#1d1d1d', marginTop: 2 },
+  chLabel: { fontSize: F.s14, fontWeight: '400', color: '#757575', marginTop: 1 },
+
+  // Section
+  sec: { paddingHorizontal: 13, marginBottom: 10 },
+  secHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
+  secTitle: { fontSize: F.s17, fontWeight: '700', color: '#202020' },
+  secRight: { fontSize: F.s12, fontWeight: '400', color: '#707070' },
+
+  // 2x2 metric grid — 204x80pt cards, 4pt gap, 13pt margin
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 4 },
+  mBox: { width: '49%', backgroundColor: C.cardBg, borderRadius: 8, borderWidth: 1, borderColor: C.cardBorder, paddingVertical: 14, paddingHorizontal: 14, height: 80 },
+  mLabel: { fontSize: F.s12, fontWeight: '400', color: '#737373', marginBottom: 6 },
+  mValRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  mValue: { fontSize: F.s18, fontWeight: '700', color: '#171717' },
+  arrowIcon: { width: 15, height: 15 },
+  arrowIconSm: { width: 14, height: 14 },
+
+  // Video card — padding 19pt, thumb 79x44, gap 12pt
+  vCard: { backgroundColor: C.cardBg, borderRadius: 12, borderWidth: 1, borderColor: C.cardBorder, marginTop: 10, overflow: 'hidden' },
+  vTop: { flexDirection: 'row', padding: 19, paddingBottom: 14, gap: 12 },
+  vThumb: { width: 79, height: 44, borderRadius: 6, backgroundColor: C.sectionBg },
+  vInfo: { flex: 1, justifyContent: 'center' },
+  vTitle: { fontSize: F.s14, fontWeight: '400', color: '#323232', lineHeight: 18 },
+  vDate: { fontSize: F.s14, fontWeight: '400', color: '#727272', marginTop: 3 },
+  vDiv: { height: 1, backgroundColor: C.divider, marginHorizontal: 19 },
+  vQuick: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 19, paddingVertical: 10 },
+  qIcon: { width: 17, height: 17, marginRight: 18 },
+  qIconSm: { width: 15, height: 15, marginRight: 6 },
+  qText: { fontSize: F.s14, fontWeight: '400', color: '#272727', marginRight: 25 },
+  chevron: { width: 14, height: 9 },
+
+  // Expanded
+  vExp: { paddingHorizontal: 14, paddingBottom: 14, borderTopWidth: 1, borderTopColor: C.divider },
+  eRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 13, borderBottomWidth: 0.5, borderBottomColor: C.divider },
+  eLabel: { fontSize: F.s14, fontWeight: '400', color: C.text, flex: 1, marginRight: 8 },
+  eRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  eVal: { fontSize: F.s14, fontWeight: '600', color: C.text },
+  noReply: { fontSize: F.s12, fontWeight: '400', color: '#757575', marginTop: 4 },
 });

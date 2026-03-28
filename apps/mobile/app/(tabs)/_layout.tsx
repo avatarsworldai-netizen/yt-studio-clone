@@ -1,172 +1,100 @@
 import React from 'react';
-import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { Tabs, useRouter } from 'expo-router';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { COLORS } from '../../constants/theme';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { Tabs } from 'expo-router';
+import { C, F } from '../../constants/theme';
 
-function HeaderRight() {
+// Figma icon assets
+const ICONS = {
+  panel: require('../../assets/figma/tab_panel.png'),
+  contenido: require('../../assets/figma/tab_contenido.png'),
+  estadisticas: require('../../assets/figma/tab_estadisticas.png'),
+  comunidad: require('../../assets/figma/tab_comunidad.png'),
+  ingresos: require('../../assets/figma/tab_ingresos.png'),
+  ytLogo: require('../../assets/figma/yt_logo.png'),
+  plus: require('../../assets/figma/header_plus.png'),
+  bell: require('../../assets/figma/header_bell.png'),
+};
+
+function Logo() {
   return (
-    <View style={styles.headerRight}>
-      <TouchableOpacity style={styles.headerIcon}>
-        <MaterialCommunityIcons name="bell-outline" size={22} color={COLORS.white} />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.headerIcon}>
-        <MaterialCommunityIcons name="magnify" size={22} color={COLORS.white} />
-      </TouchableOpacity>
+    <View style={st.logoWrap}>
+      <Image source={ICONS.ytLogo} style={st.ytLogo} resizeMode="contain" />
+      <Text style={st.studioText}>Studio</Text>
+    </View>
+  );
+}
+
+function RightIcons() {
+  return (
+    <View style={st.right}>
+      <TouchableOpacity><Image source={ICONS.plus} style={st.headerIcon} resizeMode="contain" /></TouchableOpacity>
+      <TouchableOpacity><Image source={ICONS.bell} style={st.headerIcon} resizeMode="contain" /></TouchableOpacity>
       <TouchableOpacity>
-        <Image
-          source={{ uri: 'https://picsum.photos/seed/avatar/200/200' }}
-          style={styles.headerAvatar}
-        />
+        <Image source={{ uri: 'https://picsum.photos/seed/avatar/200/200' }} style={st.avatar} />
       </TouchableOpacity>
     </View>
   );
 }
 
-function HeaderLeft() {
-  return (
-    <View style={styles.headerLeft}>
-      <Image
-        source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/120px-YouTube_full-color_icon_%282017%29.svg.png' }}
-        style={styles.ytLogo}
-        resizeMode="contain"
-      />
-    </View>
-  );
+function TabIcon({ source, color }: { source: any; color: string }) {
+  return <Image source={source} style={[st.tabIcon, { tintColor: color }]} resizeMode="contain" />;
 }
 
 export default function TabLayout() {
   return (
-    <Tabs
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: COLORS.background,
-          shadowColor: 'transparent',
-          elevation: 0,
-          borderBottomWidth: 0,
-        },
-        headerTintColor: COLORS.white,
-        headerTitleStyle: {
-          fontSize: 18,
-          fontWeight: '600',
-        },
-        tabBarStyle: {
-          backgroundColor: COLORS.tabBarBg,
-          borderTopColor: COLORS.border,
-          borderTopWidth: 0.5,
-          height: 49,
-          paddingBottom: 4,
-          paddingTop: 4,
-        },
-        tabBarActiveTintColor: COLORS.tabBarActive,
-        tabBarInactiveTintColor: COLORS.tabBarInactive,
-        tabBarLabelStyle: {
-          fontSize: 10,
-          fontWeight: '500',
-          marginTop: -2,
-        },
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Dashboard',
-          headerTitle: 'Studio',
-          headerLeft: () => <HeaderLeft />,
-          headerRight: () => <HeaderRight />,
-          tabBarIcon: ({ color, focused }) => (
-            <MaterialCommunityIcons
-              name={focused ? 'view-dashboard' : 'view-dashboard-outline'}
-              size={22}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="content"
-        options={{
-          title: 'Content',
-          headerRight: () => <HeaderRight />,
-          tabBarIcon: ({ color, focused }) => (
-            <MaterialCommunityIcons
-              name={focused ? 'play-box-multiple' : 'play-box-multiple-outline'}
-              size={22}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="analytics"
-        options={{
-          title: 'Analytics',
-          headerRight: () => <HeaderRight />,
-          tabBarIcon: ({ color, focused }) => (
-            <MaterialCommunityIcons
-              name={focused ? 'chart-box' : 'chart-box-outline'}
-              size={22}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="comments"
-        options={{
-          title: 'Comments',
-          headerRight: () => <HeaderRight />,
-          tabBarIcon: ({ color, focused }) => (
-            <MaterialCommunityIcons
-              name={focused ? 'comment-text' : 'comment-text-outline'}
-              size={22}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="revenue"
-        options={{
-          title: 'Earn',
-          headerRight: () => <HeaderRight />,
-          tabBarIcon: ({ color, focused }) => (
-            <MaterialCommunityIcons
-              name={focused ? 'currency-usd-circle' : 'currency-usd-circle-outline'}
-              size={22}
-              color={color}
-            />
-          ),
-        }}
-      />
+    <Tabs screenOptions={{
+      headerStyle: { backgroundColor: C.white, elevation: 0, shadowOpacity: 0, borderBottomWidth: 0 },
+      headerShadowVisible: false,
+      tabBarStyle: { backgroundColor: C.white, borderTopColor: C.divider, borderTopWidth: 0.5, height: 56, paddingTop: 6, paddingBottom: 6 },
+      tabBarActiveTintColor: C.tabText,
+      tabBarInactiveTintColor: C.tabText,
+      tabBarLabelStyle: { fontSize: F.s10, fontWeight: '400', marginTop: 2 },
+    }}>
+      <Tabs.Screen name="index" options={{
+        title: 'Panel',
+        headerTitle: () => <Logo />,
+        headerLeft: () => <View style={{ width: 6 }} />,
+        headerRight: () => <RightIcons />,
+        tabBarIcon: ({ color }) => <TabIcon source={ICONS.panel} color={color} />,
+      }} />
+      <Tabs.Screen name="content" options={{
+        title: 'Contenido',
+        headerTitle: () => <Logo />,
+        headerLeft: () => <View style={{ width: 6 }} />,
+        headerRight: () => <RightIcons />,
+        tabBarIcon: ({ color }) => <TabIcon source={ICONS.contenido} color={color} />,
+      }} />
+      <Tabs.Screen name="analytics" options={{
+        title: 'Estadísticas',
+        headerTitle: () => <Logo />,
+        headerLeft: () => <View style={{ width: 6 }} />,
+        headerRight: () => <RightIcons />,
+        tabBarIcon: ({ color }) => <TabIcon source={ICONS.estadisticas} color={color} />,
+      }} />
+      <Tabs.Screen name="comments" options={{
+        title: 'Comunidad',
+        headerTitle: () => <Logo />,
+        headerLeft: () => <View style={{ width: 6 }} />,
+        headerRight: () => <RightIcons />,
+        tabBarIcon: ({ color }) => <TabIcon source={ICONS.comunidad} color={color} />,
+      }} />
+      <Tabs.Screen name="revenue" options={{
+        title: 'Ingresos',
+        headerTitle: () => <Logo />,
+        headerLeft: () => <View style={{ width: 6 }} />,
+        headerRight: () => <RightIcons />,
+        tabBarIcon: ({ color }) => <TabIcon source={ICONS.ingresos} color={color} />,
+      }} />
     </Tabs>
   );
 }
 
-const styles = StyleSheet.create({
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-    marginRight: 16,
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 16,
-  },
-  headerIcon: {
-    padding: 2,
-  },
-  headerAvatar: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: COLORS.surfaceElevated,
-  },
-  ytLogo: {
-    width: 28,
-    height: 20,
-    marginRight: 4,
-  },
+const st = StyleSheet.create({
+  logoWrap: { flexDirection: 'row', alignItems: 'center', gap: 2 },
+  ytLogo: { width: 29, height: 20 },
+  studioText: { fontSize: F.s25, fontWeight: '700', color: '#292929', marginLeft: 1 },
+  right: { flexDirection: 'row', alignItems: 'center', gap: 20, paddingRight: 14 },
+  headerIcon: { width: 22, height: 22 },
+  avatar: { width: 24, height: 24, borderRadius: 12, backgroundColor: C.sectionBg },
+  tabIcon: { width: 20, height: 20 },
 });
