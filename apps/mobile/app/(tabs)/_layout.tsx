@@ -11,6 +11,7 @@ const ICONS = {
   comunidad: require('../../assets/figma/tab_comunidad.png'),
   ingresos: require('../../assets/figma/tab_ingresos.png'),
   ytLogo: require('../../assets/figma/yt_logo.png'),
+  studioText: require('../../assets/figma/studio_text.png'),
   plus: require('../../assets/figma/header_plus.png'),
   bell: require('../../assets/figma/header_bell.png'),
 };
@@ -19,7 +20,7 @@ function Logo() {
   return (
     <View style={st.logoWrap}>
       <Image source={ICONS.ytLogo} style={st.ytLogo} resizeMode="contain" />
-      <Text style={st.studioText}>Studio</Text>
+      <Image source={ICONS.studioText} style={st.studioImg} resizeMode="contain" />
     </View>
   );
 }
@@ -45,10 +46,11 @@ export default function TabLayout() {
     <Tabs screenOptions={{
       headerStyle: { backgroundColor: C.white, elevation: 0, shadowOpacity: 0, borderBottomWidth: 0 },
       headerShadowVisible: false,
-      tabBarStyle: { backgroundColor: C.white, borderTopColor: C.divider, borderTopWidth: 0.5, height: 56, paddingTop: 6, paddingBottom: 6 },
+      tabBarStyle: { backgroundColor: C.white, borderTopColor: C.divider, borderTopWidth: 0.5, height: 95, paddingBottom: 34, paddingTop: 8 },
       tabBarActiveTintColor: C.tabText,
       tabBarInactiveTintColor: C.tabText,
-      tabBarLabelStyle: { fontSize: F.s10, fontWeight: '400', marginTop: 2 },
+      tabBarLabelStyle: { fontSize: F.s10, fontWeight: '400', marginTop: 4 },
+      tabBarItemStyle: { justifyContent: 'center', alignItems: 'center' },
     }}>
       <Tabs.Screen name="index" options={{
         title: 'Panel',
@@ -90,9 +92,9 @@ export default function TabLayout() {
 }
 
 const st = StyleSheet.create({
-  logoWrap: { flexDirection: 'row', alignItems: 'center', gap: 2 },
+  logoWrap: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   ytLogo: { width: 29, height: 20 },
-  studioText: { fontSize: F.s25, fontWeight: '700', color: '#292929', marginLeft: 1 },
+  studioImg: { width: 50, height: 22, marginLeft: 1 },
   right: { flexDirection: 'row', alignItems: 'center', gap: 20, paddingRight: 14 },
   headerIcon: { width: 22, height: 22 },
   avatar: { width: 24, height: 24, borderRadius: 12, backgroundColor: C.sectionBg },

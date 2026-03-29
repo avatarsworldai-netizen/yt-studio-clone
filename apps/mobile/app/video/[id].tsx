@@ -40,7 +40,7 @@ function DR({ l, v, last }: { l: string; v: string; last?: boolean }) { return <
 const s = StyleSheet.create({
   root: { flex: 1, backgroundColor: C.bg }, thumb: { width: '100%', height: 210, backgroundColor: C.sectionBg },
   titleSec: { padding: 16, borderBottomWidth: 0.5, borderBottomColor: C.divider }, title: { fontSize: F.s18, fontWeight: '600', color: C.text }, date: { fontSize: F.s12, color: C.textTer, marginTop: 4 },
-  card: { backgroundColor: C.cardBg, borderRadius: 12, borderWidth: 1, borderColor: C.cardBorder, margin: 16, marginBottom: 0, padding: 16 }, secT: { fontSize: F.s17, fontWeight: '700', color: C.text, marginBottom: 12 },
+  card: { backgroundColor: C.cardBg, borderRadius: 12, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 2, margin: 16, marginBottom: 0, padding: 16 }, secT: { fontSize: F.s17, fontWeight: '700', color: C.text, marginBottom: 12 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 }, mb: { width: '48%', backgroundColor: C.bg, borderRadius: 8, padding: 12, borderWidth: 0.5, borderColor: C.divider }, mbV: { fontSize: F.s18, fontWeight: '700', color: C.text }, mbL: { fontSize: 10, color: C.textTer, marginTop: 4 },
   dr: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 13 }, drL: { fontSize: F.s14, color: C.text }, drV: { fontSize: F.s14, fontWeight: '600', color: C.text },
 });

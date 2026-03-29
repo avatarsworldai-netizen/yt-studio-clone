@@ -178,7 +178,7 @@ const s = StyleSheet.create({
 
   // 2x2 metric grid — 204x80pt cards, 4pt gap, 13pt margin
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 4 },
-  mBox: { width: '49%', backgroundColor: C.cardBg, borderRadius: 8, borderWidth: 1, borderColor: C.cardBorder, paddingVertical: 14, paddingHorizontal: 14, height: 80 },
+  mBox: { width: '49%', backgroundColor: C.cardBg, borderRadius: 12, paddingVertical: 14, paddingHorizontal: 14, height: 80, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 2 },
   mLabel: { fontSize: F.s12, fontWeight: '400', color: '#737373', marginBottom: 6 },
   mValRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   mValue: { fontSize: F.s18, fontWeight: '700', color: '#171717' },
@@ -186,7 +186,7 @@ const s = StyleSheet.create({
   arrowIconSm: { width: 14, height: 14 },
 
   // Video card — padding 19pt, thumb 79x44, gap 12pt
-  vCard: { backgroundColor: C.cardBg, borderRadius: 12, borderWidth: 1, borderColor: C.cardBorder, marginTop: 10, overflow: 'hidden' },
+  vCard: { backgroundColor: C.cardBg, borderRadius: 12, marginTop: 10, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 2 },
   vTop: { flexDirection: 'row', padding: 19, paddingBottom: 14, gap: 12 },
   vThumb: { width: 79, height: 44, borderRadius: 6, backgroundColor: C.sectionBg },
   vInfo: { flex: 1, justifyContent: 'center' },

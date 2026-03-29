@@ -38,7 +38,7 @@ const s = StyleSheet.create({
   profile: { alignItems: 'center', paddingVertical: 20 }, ava: { width: 80, height: 80, borderRadius: 40, marginTop: -40, borderWidth: 3, borderColor: C.white, backgroundColor: C.sectionBg },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12 }, name: { fontSize: F.s23, fontWeight: '700', color: C.text },
   handle: { fontSize: F.s14, color: C.textSec, marginTop: 2 }, stats: { fontSize: F.s12, color: C.textTer, marginTop: 4 },
-  card: { backgroundColor: C.cardBg, borderRadius: 12, borderWidth: 1, borderColor: C.cardBorder, marginHorizontal: 16, marginBottom: 12, padding: 16 },
+  card: { backgroundColor: C.cardBg, borderRadius: 12, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 2, marginHorizontal: 16, marginBottom: 12, padding: 16 },
   secT: { fontSize: F.s17, fontWeight: '700', color: C.text, marginBottom: 12 }, desc: { fontSize: F.s14, color: C.textSec, lineHeight: 22 },
   sr: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 13 }, srL: { fontSize: F.s14, color: C.textSec }, srV: { fontSize: F.s14, fontWeight: '500', color: C.text },
 });
