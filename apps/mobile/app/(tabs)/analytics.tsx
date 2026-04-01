@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useCallback } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, RefreshControl, Dimensions } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Carousel } from '../../components/ui/Carousel';
 import { supabase } from '../../lib/supabase';
 import { useRealtimeSubscription } from '../../hooks/useRealtimeSubscription';
 import { C, F } from '../../constants/theme';
@@ -14,12 +16,94 @@ function fmt(v: number) {
   return v.toLocaleString('es-ES');
 }
 
-const TABS = ['Vista General', 'Contenido', 'Audiencia', 'Ingresos', 'Te...'];
-const FILTER_CHIPS = ['Todo', 'Anuncios de la página de vi...', 'Anuncios del feed'];
+const TABS = ['Vista General', 'Contenido', 'Audiencia', 'Ingresos', 'Tendencias'];
+
+// Tendencias data
+const TEND_SEARCHES = [
+  'useless coin price\nprediction',
+  'how to create\ncoin/token',
+];
+
+const TEND_VIDEOS = [
+  { title: 'Bitcoin NO VOLVERA a los 80.000$ hasta 2027|Esto NAD...', channel: 'Plan BTC', views: '40,8 K visualizaciones', time: 'hace 3 sema...', duration: '29:37', thumb: require('../../assets/figma/tend_vid1.png') },
+  { title: 'Bitcoin a 74k: ER trampa institucio', channel: 'KManuS88', views: '21,9K visu', time: '', duration: '', thumb: require('../../assets/figma/tend_vid2.png') },
+];
+const FILTER_CHIPS = ['Todo', 'Anuncios de la página de vi...', 'Anuncios del feed de Shorts', 'Supers'];
+
+const AD_TYPES = [
+  { label: 'Anuncios de video saltables (subasta)', pct: '70,7%' },
+  { label: 'Anuncios de display (subasta)', pct: '17,0 %' },
+  { label: 'Anuncios de bumper (subasta)', pct: '7,9 %' },
+  { label: 'Anuncios de video no saltables (subasta)', pct: '3,9 %' },
+  { label: 'Anuncios de video no saltables (reservado)', pct: '0,2 %' },
+];
+
+const TEAL = '#1db4a5';
+
+// Vista General data
+const VG_CHARTS = [
+  { label: 'Visualizaciones', value: '4,2K', sub: '2,2 K menos de lo habitual', chart: require('../../assets/figma/vg_chart_views.png'), arrow: require('../../assets/figma/vg_arrow_down_sm.png'), yLabels: ['990', '660', '330', '0'], xLabels: ['2 mar', '29mar'] },
+  { label: 'Tiempo de visualización (horas)', value: '294', sub: '225 menos de lo habitual', chart: require('../../assets/figma/vg_chart_time_real.png'), arrow: require('../../assets/figma/vg_arrow_down_sm.png'), yLabels: ['108', '72,2', '36,1', '0,0'], xLabels: ['3 mar', '29 mar'] },
+  { label: 'Suscriptores', value: '-74', sub: '37 % más que los últimos 28 días', chart: require('../../assets/figma/vg_chart_subs_real.png'), arrow: require('../../assets/figma/arrow_green_up.png'), yLabels: ['5', '0', '-5', '-10'], xLabels: ['2 mar', '29 mar'], subGreen: true, fullImage: require('../../assets/figma/vg_subs_card_full.png') },
+  { label: 'Ingresos estimados', value: '15,24€', sub: '', chart: require('../../assets/figma/vg_chart_ingresos.png'), arrow: null, yLabels: ['4,20€', '2,80€', '1,40€', '0€'], xLabels: ['2 mar', '29 mar'] },
+];
+
+const VG_TIPS = [
+  { title: 'Cómo encuentran tus\nvídeos los usuarios', icon: require('../../assets/figma/vg_binoculars.png') },
+  { fullImg: require('../../assets/figma/vg_tip2_card.png') },
+  { fullImg: require('../../assets/figma/vg_tip3_card.png') },
+];
+
+const VG_POPULAR = [
+  { thumb: require('../../assets/figma/vg_vid1.png'), title: 'Tutorial BRIDGE FLORK a DUMP (Pa...', views: '1,9K' },
+  { thumb: require('../../assets/figma/vg_vid2.png'), title: 'CALCULA TU TIER & RELLENA el FO...', views: '923' },
+  { thumb: require('../../assets/figma/vg_vid3.png'), title: 'Bridge de FLORK a DUMP + PROYE...', views: '708' },
+  { thumb: require('../../assets/figma/vg_vid4.png'), title: 'Así fue el lanzamiento de $Awl I C6...', views: '111' },
+];
+
+// Contenido tab data
+// Audiencia tab data
+const AUD_CHARTS = [
+  { fullImage: require('../../assets/figma/aud_card_mensual.png') },
+  { fullImage: require('../../assets/figma/vg_subs_card_full.png') },
+];
+const AUD_POPULAR_NUEVOS = [
+  { thumb: require('../../assets/figma/vg_vid1.png'), title: 'Tutorial BRIDGE FLORK...', views: '157' },
+  { thumb: require('../../assets/figma/vg_vid2.png'), title: 'CALCULA TU TIER & RE...', views: '115' },
+  { thumb: require('../../assets/figma/vg_vid3.png'), title: 'Bridge de FLORK a DUM...', views: '71' },
+];
+
+const CV_CHIPS = ['Todo', 'Vídeos', 'Shorts', 'En directo', 'Publicaciones'];
+const CV_CHARTS = [
+  { label: 'Visualizaciones', value: '4,2K', sub: '957 menos de lo habitual', chart: require('../../assets/figma/vg_chart_views.png'), arrow: require('../../assets/figma/vg_arrow_down_sm.png'), yLabels: ['990', '660', '330', '0'], xLabels: ['2 mar', '29mar'] },
+  { label: 'Impresiones', value: '40,5K', sub: '61 % menos que', chart: require('../../assets/figma/cv_chart_impresiones.png'), arrow: require('../../assets/figma/vg_arrow_down_sm.png'), yLabels: ['5,7K', '3,8 K', '1,9K', '0'], xLabels: ['2 mar', ''] },
+];
+const CV_VIDEOS = [
+  { thumb: require('../../assets/figma/vg_vid1.png'), title: 'Tutorial BRIDGE FLORK a DUMP (Pa...', views: '1,9K' },
+  { thumb: require('../../assets/figma/vg_vid2.png'), title: 'CALCULA TU TIER & RELLENA el FO...', views: '923' },
+  { thumb: require('../../assets/figma/vg_vid3.png'), title: 'Bridge de FLORK a DUMP + PROYE...', views: '708' },
+  { thumb: require('../../assets/figma/vg_vid4.png'), title: 'Así fue el lanzamiento de $Awl 1 C6...', views: '111' },
+  { thumb: require('../../assets/figma/cv_vid5.png'), title: 'Descubre en que TIER calificas y co...', views: '70' },
+];
+
+const IE_VIDEOS = [
+  { thumb: require('../../assets/figma/ie_vid1.png'), title: 'Tutorial BRIDGE FLORK a DUMP (Paso a...', amount: '8,26 €' },
+  { thumb: require('../../assets/figma/ie_vid2.png'), title: 'CALCULA TU TIER & RELLENA el FORM...', amount: '3,69€' },
+  { thumb: require('../../assets/figma/ie_vid3.png'), title: 'Bridge de FLORK a DUMP + PROYECTO...', amount: '2,25€' },
+  { thumb: require('../../assets/figma/ie_vid4.png'), title: '$FLORK Revoluciona el Juego: ¡Des...', amount: '0,45 €' },
+  { thumb: require('../../assets/figma/ie_vid5.png'), title: 'FECHA DEL BRIDGE de FLORK a DUMP...', amount: '0,35€' },
+];
+const IE_PERIODS = ['7D', '28 D', '90 D', '365 D', 'Mar', 'Feb', 'Ene'];
 
 export default function AnalyticsScreen() {
-  const [activeTab, setActiveTab] = useState(3); // Ingresos active by default
+  const router = useRouter();
+  const qc = useQueryClient();
+  const screenW = Dimensions.get('window').width;
+  const [activeTab, setActiveTab] = useState(0);
   const [activeChip, setActiveChip] = useState(0);
+  const [showIngresosDetail, setShowIngresosDetail] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(async () => { setRefreshing(true); await qc.invalidateQueries(); setRefreshing(false); }, [qc]);
 
   useRealtimeSubscription('dashboard_stats', ['as3']);
   useRealtimeSubscription('analytics_timeseries', ['ts3']);
@@ -29,7 +113,6 @@ export default function AnalyticsScreen() {
   const { data: ts } = useQuery({ queryKey: ['ts3'], queryFn: async () => { const { data } = await supabase.from('analytics_timeseries').select('*').eq('channel_id', CID).eq('metric_type', 'revenue').order('date', { ascending: true }).limit(30); return data ?? [] } });
   const { data: rev } = useQuery({ queryKey: ['rv3'], queryFn: async () => { const { data } = await supabase.from('revenue').select('*').eq('channel_id', CID).order('month', { ascending: false }).limit(6); return data ?? [] } });
 
-  // Build SVG line chart points
   const chartW = 338;
   const chartH = 100;
   function buildPoints() {
@@ -41,21 +124,527 @@ export default function AnalyticsScreen() {
     return vals.map((v, i) => `${(i / (vals.length - 1)) * chartW},${chartH - ((v - mn) / rng) * (chartH - 10)}`).join(' ');
   }
 
-  // Y-axis labels
-  const vals = (ts || []).map((d: any) => Number(d.value));
-  const maxVal = Math.max(...vals, 1);
-  const yLabels = [maxVal, maxVal * 0.66, maxVal * 0.33, 0].map(v => `${v.toFixed(2).replace('.', ',')} €`);
-
-  // X-axis labels
+  const yLabels = ['4,20 €', '2,80 €', '1,40 €', '0 €'];
   const firstDate = ts?.length ? new Date(ts[0].date).toLocaleDateString('es', { day: 'numeric', month: 'short' }) : '';
   const lastDate = ts?.length ? new Date(ts[ts.length - 1].date).toLocaleDateString('es', { day: 'numeric', month: 'short' }) : '';
-
-  // Max revenue for progress bars
   const maxRev = Math.max(...(rev || []).map((r: any) => r.estimated_revenue), 1);
 
+  /* ── Shared chart component ── */
+  function ChartCard() {
+    return (
+      <View style={s.chartCard}>
+        <Text style={s.chartLabel}>Ingresos estimados</Text>
+        <Text style={s.chartValue}>{(st?.estimated_revenue || 0).toFixed(2).replace('.', ',')} €</Text>
+        <View style={s.chartArea}>
+          <View style={s.yAxisLabels}>
+            {yLabels.map((label, i) => <Text key={i} style={s.axisText}>{label}</Text>)}
+          </View>
+          <View style={s.chartSvgWrap}>
+            <View style={s.gridContainer}>
+              {[0, 1, 2, 3].map(i => <View key={i} style={[s.gridLine, { top: i * (chartH / 3) }]} />)}
+            </View>
+            <View style={s.svgLayer}>
+              <Svg width={chartW} height={chartH}>
+                <Polyline points={buildPoints()} fill="none" stroke={TEAL} strokeWidth="2.5" />
+              </Svg>
+            </View>
+          </View>
+        </View>
+        <View style={s.xAxisRow}>
+          <Text style={s.axisText}>{firstDate}</Text>
+          <Text style={s.axisText}>{lastDate}</Text>
+        </View>
+      </View>
+    );
+  }
+
+  /* ── "Todo" content ── */
+  function TodoContent() {
+    return (
+      <>
+        <TouchableOpacity activeOpacity={0.7} onPress={() => setShowIngresosDetail(true)}>
+          <ChartCard />
+        </TouchableOpacity>
+        <View style={s.earningsCard}>
+          <Text style={s.earningsTitle}>Cuánto estás ganando</Text>
+          <Text style={s.earningsSub}>Estimación · Últimos 6 meses</Text>
+          {(rev || []).map((r: any, i: number) => {
+            const pct = (r.estimated_revenue / maxRev) * 100;
+            const monthName = new Date(r.month).toLocaleDateString('es-ES', { month: 'long', year: i >= 3 ? 'numeric' : undefined });
+            return (
+              <View key={r.id} style={s.monthRow}>
+                <View style={s.monthTop}>
+                  <Text style={s.monthName}>{monthName.charAt(0).toUpperCase() + monthName.slice(1)}{i === 0 ? ' (en curso)' : ''}</Text>
+                  <Text style={s.monthValue}>{r.estimated_revenue.toFixed(2).replace('.', ',')} €</Text>
+                </View>
+                <View style={s.barBg}><View style={[s.barFill, { width: `${Math.min(pct, 100)}%` }]} /></View>
+              </View>
+            );
+          })}
+        </View>
+      </>
+    );
+  }
+
+  /* ── "Anuncios de la página de vídeo" content ── */
+  function AnunciosVideoContent() {
+    return (
+      <>
+        <ChartCard />
+        <View style={s.earningsCard}>
+          <Text style={s.earningsTitle}>Cuánto pagan los anunciantes</Text>
+          <Text style={s.earningsSub}>Últimos 28 días</Text>
+          <Text style={s.cpmValue}>6,55 €</Text>
+          <Text style={s.cpmDesc}>Coste por cada 1000 reproducciones (CPM basado en reproducciones)</Text>
+        </View>
+        <View style={s.earningsCard}>
+          <Text style={s.earningsTitle}>Earnings by ad type</Text>
+          <Text style={s.earningsSub}>Ingresos publicitarios de YouTube · Últimos 28 días</Text>
+          {AD_TYPES.map((ad, i) => (
+            <View key={i} style={s.adRow}>
+              <Text style={s.adLabel}>{ad.label}</Text>
+              <Text style={s.adPct}>{ad.pct}</Text>
+            </View>
+          ))}
+        </View>
+      </>
+    );
+  }
+
+  /* ── "Anuncios del feed de Shorts" content ── */
+  function AnunciosFeedContent() {
+    return (
+      <>
+        {/* Chart card with 0€ values */}
+        <View style={s.chartCard}>
+          <Text style={s.chartLabel}>Ingresos estimados</Text>
+          <Text style={[s.chartValue, { fontSize: 20 }]}>0€</Text>
+          <View style={s.chartArea}>
+            <View style={s.yAxisLabels}>
+              <Text style={s.axisText}>0€</Text>
+              <Text style={s.axisText}>0€</Text>
+              <Text style={s.axisText}>0€</Text>
+              <Text style={s.axisText}>0€</Text>
+            </View>
+            <View style={s.chartSvgWrap}>
+              <View style={s.gridContainer}>
+                {[0, 1, 2, 3].map(i => <View key={i} style={[s.gridLine, { top: i * (chartH / 3) }]} />)}
+              </View>
+              <View style={s.svgLayer}>
+                <Svg width={chartW} height={chartH}>
+                  <Polyline points={`0,${chartH - 5} ${chartW},${chartH - 5}`} fill="none" stroke={TEAL} strokeWidth="2.5" />
+                </Svg>
+              </View>
+            </View>
+          </View>
+          <View style={s.xAxisRow}>
+            <Text style={s.axisText}>{firstDate}</Text>
+            <Text style={s.axisText}>{lastDate}</Text>
+          </View>
+        </View>
+
+        {/* Shorts con mayores ingresos */}
+        <View style={s.earningsCard}>
+          <Text style={s.earningsTitle}>Shorts con mayores ingresos</Text>
+          <Text style={s.earningsSub}>Anuncios del feed de Shorts · Últimos 28 días</Text>
+          <View style={s.shortRow}>
+            <Image source={{ uri: 'https://picsum.photos/seed/short1/200/280' }} style={s.shortThumb} />
+            <View style={s.shortInfo}>
+              <Text style={s.shortDate}>27 de diciembre de 2024</Text>
+              <Text style={s.shortAmount}>0,00€</Text>
+            </View>
+          </View>
+        </View>
+      </>
+    );
+  }
+
+  /* ── "Audiencia" tab content ── */
+  function AudienciaTabContent() {
+    return (
+      <>
+        {/* Chart cards carousel */}
+        <Carousel itemWidth={Math.round(screenW * 0.75)}>
+          {AUD_CHARTS.map((item, idx) => (
+            <View key={idx} style={s.vgChartOuter}>
+              <View style={s.vgChartCardFixed}>
+                <Image source={item.fullImage} style={s.vgFullCardImg} resizeMode="contain" />
+              </View>
+            </View>
+          ))}
+        </Carousel>
+
+        {/* Audiencia por comportamiento */}
+        <View style={s.vgPopCard}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <Text style={s.vgPopTitle}>Audiencia por comportamiento de visualización</Text>
+          </View>
+          <Text style={s.vgPopSub}>Audiencia mensual · 29 mar 2026</Text>
+          <View style={s.audNoDataBox}>
+            <Image source={require('../../assets/figma/info_icon.png')} style={s.noDataInfoIcon} resizeMode="contain" />
+            <Text style={s.audNoDataText}>No hay suficientes datos para mostrar este informe</Text>
+          </View>
+        </View>
+
+        {/* Popular entre usuarios nuevos */}
+        <View style={s.vgPopCard}>
+          <Text style={s.vgPopTitle}>Popular entre usuarios nuevos</Text>
+          <Text style={s.vgPopSub}>Visualizaciones · Últimos 28 dias</Text>
+          {AUD_POPULAR_NUEVOS.map((vid, i) => (
+            <View key={i} style={s.vgPopRow}>
+              <Image source={vid.thumb} style={s.vgPopThumb} resizeMode="cover" />
+              <Text style={s.vgPopVidTitle} numberOfLines={1}>{vid.title}</Text>
+              <Text style={s.vgPopViews}>{vid.views}</Text>
+            </View>
+          ))}
+        </View>
+      </>
+    );
+  }
+
+  /* ── "Contenido" tab content ── */
+  const [cvChip, setCvChip] = useState(1); // Vídeos active by default
+
+  function ContenidoTabContent() {
+    return (
+      <>
+        {/* Filter chips */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chipsRow}>
+          {CV_CHIPS.map((chip, i) => (
+            <TouchableOpacity key={chip} style={[s.chip, cvChip === i && s.chipActive]} onPress={() => setCvChip(i)}>
+              <Text style={[s.chipText, cvChip === i && s.chipTextActive]}>{chip}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        {/* Chart cards carousel */}
+        <Carousel itemWidth={Math.round(screenW * 0.75)}>
+          {CV_CHARTS.map((item, idx) => (
+            <View key={idx} style={s.vgChartOuter}>
+              <View style={s.vgChartCardFixed}>
+                <Text style={s.vgChartLabel}>{item.label}</Text>
+                <View style={s.vgValRow}>
+                  <Text style={s.vgChartVal}>{item.value}</Text>
+                  {item.arrow && <Image source={item.arrow} style={s.vgArrow} resizeMode="contain" />}
+                </View>
+                {item.sub ? <Text style={s.vgChartSub}>{item.sub}</Text> : null}
+                <View style={s.vgChartImgWrap}>
+                  <View style={s.vgYAxis}>
+                    {item.yLabels.map((l, i) => <Text key={i} style={s.axisText}>{l}</Text>)}
+                  </View>
+                  <Image source={item.chart} style={s.vgChartImg} resizeMode="contain" />
+                </View>
+                <View style={s.vgXAxis}>
+                  {item.xLabels.map((l, i) => <Text key={i} style={s.axisText}>{l}</Text>)}
+                </View>
+              </View>
+            </View>
+          ))}
+        </Carousel>
+
+        {/* Vídeos principales */}
+        <View style={s.vgPopCard}>
+          <Text style={s.vgPopTitle}>Vídeos principales</Text>
+          <Text style={s.vgPopSub}>Visualizaciones · Últimos 28 dias</Text>
+          {CV_VIDEOS.map((vid, i) => (
+            <View key={i} style={s.vgPopRow}>
+              <Image source={vid.thumb} style={s.vgPopThumb} resizeMode="cover" />
+              <Text style={s.vgPopVidTitle} numberOfLines={1}>{vid.title}</Text>
+              <Text style={s.vgPopViews}>{vid.views}</Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Bottom bar */}
+        <View style={s.cvBottomBar}>
+          <Text style={s.cvBottomText}>Cómo encuentran tus vídeos los</Text>
+          <Text style={s.cvBottomLink}>Términos</Text>
+        </View>
+      </>
+    );
+  }
+
+  /* ── "Vista General" content ── */
+
+  function VistaGeneralContent() {
+    return (
+      <>
+        {/* Chart cards carousel — 72% width, 6pt gap to peek next card */}
+        <Carousel itemWidth={Math.round(screenW * 0.75)}>
+          {VG_CHARTS.map((item, idx) => (
+            <View key={idx} style={s.vgChartOuter}>
+              {item.fullImage ? (
+                <View style={s.vgChartCardFixed}>
+                  <Image source={item.fullImage} style={s.vgFullCardImg} resizeMode="contain" />
+                </View>
+              ) : (
+                <View style={s.vgChartCardFixed}>
+                  <Text style={s.vgChartLabel}>{item.label}</Text>
+                  <View style={s.vgValRow}>
+                    <Text style={s.vgChartVal}>{item.value}</Text>
+                    {item.arrow && <Image source={item.arrow} style={s.vgArrow} resizeMode="contain" />}
+                  </View>
+                  {item.sub ? <Text style={[s.vgChartSub, item.subGreen && { color: '#508650' }]}>{item.sub}</Text> : null}
+                  <View style={s.vgChartImgWrap}>
+                    <View style={s.vgYAxis}>
+                      {item.yLabels.map((l, i) => <Text key={i} style={s.axisText}>{l}</Text>)}
+                    </View>
+                    <Image source={item.chart} style={s.vgChartImg} resizeMode="contain" />
+                  </View>
+                  <View style={s.vgXAxis}>
+                    {item.xLabels.map((l, i) => <Text key={i} style={s.axisText}>{l}</Text>)}
+                  </View>
+                </View>
+              )}
+            </View>
+          ))}
+        </Carousel>
+
+        {/* Tips carousel — 75% width like chart cards */}
+        <Carousel itemWidth={Math.round(screenW * 0.75)}>
+          {VG_TIPS.map((item, idx) => (
+            <View key={idx} style={s.vgTipOuter}>
+              <View style={s.vgTipCardFull}>
+                {item.fullImg ? (
+                  <Image source={item.fullImg} style={s.vgTipFullImg} resizeMode="contain" />
+                ) : (
+                  <View style={s.vgTipCodeCard}>
+                    <Text style={s.vgTipCodeTitle}>{item.title}</Text>
+                    <Image source={item.icon} style={s.vgTipCodeImg} resizeMode="contain" />
+                  </View>
+                )}
+              </View>
+            </View>
+          ))}
+        </Carousel>
+
+        {/* Contenido más popular — inside shadow card */}
+        <View style={s.vgPopCard}>
+          <Text style={s.vgPopTitle}>Contenido mas popular</Text>
+          <Text style={s.vgPopSub}>Visualizaciones · Últimos 28 dias</Text>
+          {VG_POPULAR.map((vid, i) => (
+            <View key={i}>
+              <View style={s.vgPopRow}>
+                <Image source={vid.thumb} style={s.vgPopThumb} resizeMode="cover" />
+                <Text style={s.vgPopVidTitle} numberOfLines={1}>{vid.title}</Text>
+                <Text style={s.vgPopViews}>{vid.views}</Text>
+              </View>
+              </View>
+          ))}
+        </View>
+      </>
+    );
+  }
+
+  /* ── "Supers" content ── */
+
+  const supersCharts = [
+    { label: 'Ingresos estimados', value: '0 €', yLabels: ['0 €', '0 €', '0 €', '0 €'] },
+    { label: 'Compras', value: '0', yLabels: ['3', '2', '1', '0'] },
+  ];
+
+  function SupersContent() {
+    return (
+      <>
+        <Carousel>
+          {supersCharts.map((item, idx) => (
+            <View key={idx} style={s.vgCardPad}>
+              <View style={s.carouselCard}>
+                <Text style={s.chartLabel}>{item.label}</Text>
+                <Text style={s.chartValue}>{item.value}</Text>
+                <View style={[s.chartArea, { overflow: 'hidden' }]}>
+                  <View style={s.yAxisLabels}>
+                    {item.yLabels.map((l, i) => <Text key={i} style={s.axisText}>{l}</Text>)}
+                  </View>
+                  <View style={[s.chartSvgWrap, { overflow: 'hidden' }]}>
+                    <View style={s.gridContainer}>
+                      {[0, 1, 2, 3].map(i => <View key={i} style={[s.gridLine, { top: i * (chartH / 3) }]} />)}
+                    </View>
+                    <View style={[s.svgLayer, { overflow: 'hidden' }]}>
+                      <Svg width={screenW - 100} height={chartH}>
+                        <Polyline points={`0,${chartH - 2} ${screenW - 100},${chartH - 2}`} fill="none" stroke={TEAL} strokeWidth="2.5" />
+                      </Svg>
+                    </View>
+                  </View>
+                </View>
+                <View style={s.xAxisRow}>
+                  <Text style={s.axisText}>{firstDate}</Text>
+                  <Text style={s.axisText}>{lastDate}</Text>
+                </View>
+              </View>
+            </View>
+          ))}
+        </Carousel>
+
+        {/* How supers generate money */}
+        <View style={s.earningsCard}>
+          <Text style={s.earningsTitle}>Cómo generan dinero los Supers y los regalos</Text>
+          <Text style={s.earningsSub}>Estimación · Últimos 28 días</Text>
+          <View style={s.noDataBox}>
+            <Image source={require('../../assets/figma/info_icon.png')} style={s.noDataInfoIcon} resizeMode="contain" />
+            <Text style={s.noDataText}>No hay nada que mostrar para estas fechas</Text>
+          </View>
+        </View>
+      </>
+    );
+  }
+
+  /* ── Ingresos estimados detail view ── */
+  const [iePeriod, setIePeriod] = useState(1);
+
+  if (showIngresosDetail) {
+    return (
+      <ScrollView style={s.root} showsVerticalScrollIndicator={false}>
+        {/* Header with back arrow */}
+        <View style={s.ieHeader}>
+          <TouchableOpacity onPress={() => setShowIngresosDetail(false)} hitSlop={12}>
+            <Text style={s.ieBack}>{'‹'}</Text>
+          </TouchableOpacity>
+          <Text style={s.ieHeaderTitle}>Ingresos estimados</Text>
+        </View>
+
+        {/* Period chips */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chipsRow}>
+          {IE_PERIODS.map((p, i) => (
+            <TouchableOpacity key={p} style={[s.chip, iePeriod === i && s.chipActive]} onPress={() => setIePeriod(i)}>
+              <Text style={[s.chipText, iePeriod === i && s.chipTextActive]}>{p}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        {/* Chart */}
+        <View style={s.ieChartArea}>
+          <View style={s.yAxisLabels}>
+            <Text style={s.axisText}>4,20€</Text>
+            <Text style={s.axisText}>2,80€</Text>
+            <Text style={s.axisText}>1,40€</Text>
+            <Text style={s.axisText}>0€</Text>
+          </View>
+          <View style={[s.chartSvgWrap, { height: 140 }]}>
+            <View style={s.gridContainer}>
+              {[0, 1, 2, 3].map(i => <View key={i} style={[s.gridLine, { top: i * (140 / 3) }]} />)}
+            </View>
+            <View style={s.svgLayer}>
+              <Image source={require('../../assets/figma/ie_chart.png')} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+            </View>
+          </View>
+        </View>
+        <View style={s.ieXAxis}>
+          <Text style={s.axisText}>1mar</Text>
+          <Text style={s.axisText}>14 mar</Text>
+          <Text style={s.axisText}>28 mar</Text>
+        </View>
+
+        {/* Summary */}
+        <View style={s.ieSummary}>
+          <Image source={require('../../assets/figma/ie_dot_green.png')} style={s.ieDot} resizeMode="contain" />
+          <Text style={s.ieSumLabel}>Ingresos estimados</Text>
+          <Text style={s.ieSumValue}>15,72€</Text>
+        </View>
+        <View style={s.ieDivider} />
+
+        {/* Contenido con mayores ingresos */}
+        <Text style={s.ieSecTitle}>Contenido con mayores ingresos</Text>
+
+        <View style={s.ieWarningBox}>
+          <Image source={require('../../assets/figma/ie_warning.png')} style={s.ieWarningIcon} resizeMode="contain" />
+          <Text style={s.ieWarningText}>Los importes se convierten de USD a EUR segun el tipo de cambio historico de la fecha que corresponda</Text>
+        </View>
+
+        {IE_VIDEOS.map((vid, i) => (
+          <View key={i}>
+            <View style={s.ieVideoRow}>
+              <Image source={vid.thumb} style={s.ieVideoThumb} resizeMode="cover" />
+              <Text style={s.ieVideoTitle} numberOfLines={1}>{vid.title}</Text>
+              <Text style={s.ieVideoAmt}>{vid.amount}</Text>
+            </View>
+            {i < IE_VIDEOS.length - 1 && <View style={s.ieVideoDivider} />}
+          </View>
+        ))}
+
+        <View style={{ height: 40 }} />
+      </ScrollView>
+    );
+  }
+
+  /* ── Tendencias tab ── */
+  function TendenciasContent() {
+    return (
+      <>
+        {/* Explora temas */}
+        <View style={s.tendSection}>
+          <View style={s.tendHeaderRow}>
+            <Text style={s.tendTitle}>Explora temas</Text>
+            <Image source={require('../../assets/figma/tend_question.png')} style={{ width: 24, height: 24, marginLeft: 8 }} resizeMode="contain" />
+            <View style={{ flex: 1 }} />
+            <Image source={require('../../assets/figma/tend_heart.png')} style={{ width: 22, height: 20 }} resizeMode="contain" />
+            <Text style={{ fontSize: 16, color: '#282828', marginLeft: 6 }}>0</Text>
+          </View>
+
+          {/* Search bar */}
+          <View style={s.tendSearchBar}>
+            <Text style={{ fontSize: 18, color: '#999', marginRight: 10 }}>🔍</Text>
+            <Text style={{ fontSize: 15, color: '#747474' }}>Buscar</Text>
+          </View>
+        </View>
+
+        {/* Búsquedas principales */}
+        <View style={s.tendSection}>
+          <View style={s.tendHeaderRow}>
+            <Text style={s.tendTitle}>Búsquedas principales</Text>
+            <View style={{ flex: 1 }} />
+            <Image source={require('../../assets/figma/tend_chevron.png')} style={{ width: 9, height: 14 }} resizeMode="contain" />
+          </View>
+
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingTop: 12 }}>
+            {TEND_SEARCHES.map((search, i) => (
+              <View key={i} style={s.tendSearchCard}>
+                <Text style={s.tendSearchText}>{search}</Text>
+                <View style={{ flex: 1 }} />
+                <View style={s.tendSearchActions}>
+                  <Image source={require('../../assets/figma/tend_heart.png')} style={{ width: 20, height: 18 }} resizeMode="contain" />
+                  <Image source={require('../../assets/figma/tend_dots.png')} style={{ width: 20, height: 20 }} resizeMode="contain" />
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+
+        {/* Vídeos recientes */}
+        <View style={s.tendSection}>
+          <View style={s.tendHeaderRow}>
+            <Text style={s.tendTitle}>Vídeos recientes</Text>
+            <View style={{ flex: 1 }} />
+            <Image source={require('../../assets/figma/tend_chevron.png')} style={{ width: 9, height: 14 }} resizeMode="contain" />
+          </View>
+
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingTop: 12 }}>
+            {TEND_VIDEOS.map((vid, i) => (
+              <View key={i} style={s.tendVideoCard}>
+                <View style={s.tendVideoThumbWrap}>
+                  <Image source={vid.thumb} style={s.tendVideoThumb} resizeMode="cover" />
+                  {vid.duration ? (
+                    <View style={s.tendDurationBadge}>
+                      <Text style={s.tendDurationText}>{vid.duration}</Text>
+                    </View>
+                  ) : null}
+                </View>
+                <View style={s.tendVideoInfo}>
+                  <Text style={s.tendVideoTitle} numberOfLines={2}>{vid.title}</Text>
+                  <Image source={require('../../assets/figma/tend_dots.png')} style={{ width: 18, height: 18, marginLeft: 4 }} resizeMode="contain" />
+                </View>
+                <Text style={s.tendVideoMeta} numberOfLines={1}>{vid.channel} · {vid.views}{vid.time ? ' · ' + vid.time : ''}</Text>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      </>
+    );
+  }
+
   return (
-    <ScrollView style={s.root} showsVerticalScrollIndicator={false}>
-      {/* ── Sub-tabs ── */}
+    <ScrollView style={s.root} showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={TEAL} />}>
+      {/* ── Sub-tabs (siempre visibles) ── */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.tabsRow}>
         {TABS.map((t, i) => (
           <TouchableOpacity key={t} style={s.tabItem} onPress={() => setActiveTab(i)}>
@@ -66,86 +655,46 @@ export default function AnalyticsScreen() {
       </ScrollView>
       <View style={s.tabDivider} />
 
-      {/* ── Filter chips ── */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chipsRow}>
-        {FILTER_CHIPS.map((chip, i) => (
-          <TouchableOpacity
-            key={chip}
-            style={[s.chip, activeChip === i && s.chipActive]}
-            onPress={() => setActiveChip(i)}
-          >
-            <Text style={[s.chipText, activeChip === i && s.chipTextActive]}>{chip}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      {/* ── Vista General tab ── */}
+      {activeTab === 0 && <VistaGeneralContent />}
 
-      {/* ── Revenue chart card ── */}
-      <View style={s.chartCard}>
-        <Text style={s.chartLabel}>Ingresos estimados</Text>
-        <Text style={s.chartValue}>{(st?.estimated_revenue || 0).toFixed(2).replace('.', ',')} €</Text>
+      {/* ── Ingresos tab with filter chips ── */}
+      {activeTab === 3 && <>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chipsRow}>
+          {FILTER_CHIPS.map((chip, i) => (
+            <TouchableOpacity
+              key={chip}
+              style={[s.chip, activeChip === i && s.chipActive]}
+              onPress={() => setActiveChip(i)}
+            >
+              <Text style={[s.chipText, activeChip === i && s.chipTextActive]}>{chip}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+        {activeChip === 0 && <TodoContent />}
+        {activeChip === 1 && <AnunciosVideoContent />}
+        {activeChip === 2 && <AnunciosFeedContent />}
+        {activeChip === 3 && <SupersContent />}
+      </>}
 
-        {/* Chart with Y-axis */}
-        <View style={s.chartArea}>
-          <View style={s.yAxisLabels}>
-            {yLabels.map((label, i) => (
-              <Text key={i} style={s.axisText}>{label}</Text>
-            ))}
-          </View>
-          <View style={s.chartSvgWrap}>
-            {/* Grid lines */}
-            {[0, 1, 2, 3].map(i => (
-              <View key={i} style={[s.gridLine, { top: i * (chartH / 3) }]} />
-            ))}
-            <Svg width={chartW} height={chartH}>
-              <Polyline points={buildPoints()} fill="none" stroke="#1db4a5" strokeWidth="2.5" />
-            </Svg>
-          </View>
-        </View>
+      {/* ── Contenido tab ── */}
+      {activeTab === 1 && <ContenidoTabContent />}
 
-        {/* X-axis */}
-        <View style={s.xAxisRow}>
-          <Text style={s.axisText}>{firstDate}</Text>
-          <Text style={s.axisText}>{lastDate}</Text>
-        </View>
-      </View>
+      {/* ── Audiencia tab ── */}
+      {activeTab === 2 && <AudienciaTabContent />}
 
-      {/* ── Monthly earnings card ── */}
-      <View style={s.earningsCard}>
-        <Text style={s.earningsTitle}>Cuánto estás ganando</Text>
-        <Text style={s.earningsSub}>Estimación · Últimos 6 meses</Text>
-
-        {(rev || []).map((r: any, i: number) => {
-          const pct = (r.estimated_revenue / maxRev) * 100;
-          const monthName = new Date(r.month).toLocaleDateString('es-ES', { month: 'long', year: i >= 3 ? 'numeric' : undefined });
-          const isCurrentMonth = i === 0;
-          return (
-            <View key={r.id} style={s.monthRow}>
-              <View style={s.monthTop}>
-                <Text style={s.monthName}>
-                  {monthName.charAt(0).toUpperCase() + monthName.slice(1)}
-                  {isCurrentMonth ? ' (en curso)' : ''}
-                </Text>
-                <Text style={s.monthValue}>{r.estimated_revenue.toFixed(2).replace('.', ',')} €</Text>
-              </View>
-              <View style={s.barBg}>
-                <View style={[s.barFill, { width: `${Math.min(pct, 100)}%` }]} />
-              </View>
-            </View>
-          );
-        })}
-      </View>
+      {/* ── Tendencias tab ── */}
+      {activeTab === 4 && <TendenciasContent />}
 
       <View style={{ height: 40 }} />
     </ScrollView>
   );
 }
 
-const TEAL = '#1db4a5';
-
 const s = StyleSheet.create({
   root: { flex: 1, backgroundColor: C.bg },
 
-  // Sub-tabs — fs=15pt, inactive=#6c6c6c, active=#2b2b2b with underline
+  // Sub-tabs
   tabsRow: { paddingHorizontal: 12 },
   tabItem: { paddingHorizontal: 10, paddingTop: 12, paddingBottom: 10, position: 'relative' },
   tabText: { fontSize: 15, fontWeight: '500', color: '#6c6c6c' },
@@ -153,36 +702,139 @@ const s = StyleSheet.create({
   tabUnderline: { position: 'absolute', bottom: 0, left: 10, right: 10, height: 3, backgroundColor: C.black, borderRadius: 1.5 },
   tabDivider: { height: 1, backgroundColor: C.divider },
 
-  // Filter chips — active: bg=#0e0e0e text=#efefef, inactive: bg=#f1f1f1 text=#252525
-  chipsRow: { paddingHorizontal: 12, paddingVertical: 12, gap: 8 },
-  chip: { paddingHorizontal: 16, paddingVertical: 10, borderRadius: 8, backgroundColor: '#f1f1f1' },
+  // Filter chips
+  chipsRow: { paddingHorizontal: 12, paddingVertical: 10, gap: 6 },
+  chip: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, backgroundColor: '#f1f1f1' },
   chipActive: { backgroundColor: '#0e0e0e' },
-  chipText: { fontSize: 14, fontWeight: '600', color: '#252525' },
+  chipText: { fontSize: 13, fontWeight: '600', color: '#252525' },
   chipTextActive: { color: '#efefef' },
 
-  // Revenue chart card
+  // Chart card
   chartCard: { backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 4, padding: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 2 },
   chartLabel: { fontSize: 14, fontWeight: '600', color: '#717171' },
   chartValue: { fontSize: 23, fontWeight: '700', color: '#1e1e1e', marginTop: 4 },
-
-  // Chart area
   chartArea: { flexDirection: 'row', marginTop: 16, height: 100 },
   yAxisLabels: { width: 45, justifyContent: 'space-between', paddingRight: 6 },
-  chartSvgWrap: { flex: 1, position: 'relative' },
+  chartSvgWrap: { flex: 1, position: 'relative', height: 100 },
+  gridContainer: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0 },
   gridLine: { position: 'absolute', left: 0, right: 0, height: 1, backgroundColor: '#ececec' },
+  svgLayer: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1 },
   axisText: { fontSize: 10, fontWeight: '500', color: '#7a7a7a' },
   xAxisRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6, paddingLeft: 45 },
 
   // Monthly earnings card
-  earningsCard: { backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 12, padding: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 2 },
-  earningsTitle: { fontSize: 17, fontWeight: '700', color: '#212121' },
-  earningsSub: { fontSize: 14, fontWeight: '400', color: '#747474', marginTop: 4, marginBottom: 16 },
-
-  // Month rows
+  earningsCard: { backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 14, padding: 18, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 2 },
+  earningsTitle: { fontSize: 19, fontWeight: '700', color: '#212121', lineHeight: 26 },
+  earningsSub: { fontSize: 14, fontWeight: '400', color: '#747474', marginTop: 4, marginBottom: 18 },
   monthRow: { marginBottom: 16 },
   monthTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
   monthName: { fontSize: 13, fontWeight: '400', color: '#313131' },
   monthValue: { fontSize: 14, fontWeight: '600', color: '#2b2b2b' },
-  barBg: { height: 9, backgroundColor: '#ececec', borderRadius: 5 },
-  barFill: { height: '100%', backgroundColor: TEAL, borderRadius: 5 },
+  barBg: { height: 5, backgroundColor: '#ececec', borderRadius: 3 },
+  barFill: { height: '100%', backgroundColor: TEAL, borderRadius: 3 },
+
+  // CPM (anuncios pages)
+  cpmValue: { fontSize: 18, fontWeight: '700', color: '#252525' },
+  cpmDesc: { fontSize: 13, fontWeight: '400', color: '#787878', marginTop: 4, lineHeight: 18 },
+
+  // Ad types
+  adRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 0.5, borderBottomColor: C.divider },
+  adLabel: { fontSize: 13, fontWeight: '400', color: '#3e3e3e', flex: 1, marginRight: 8 },
+  adPct: { fontSize: 14, fontWeight: '600', color: '#222222' },
+
+  // Shorts feed
+  shortRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, gap: 12 },
+  shortThumb: { width: 32, height: 44, borderRadius: 4, backgroundColor: C.divider },
+  shortInfo: { flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  shortDate: { fontSize: 13, fontWeight: '400', color: '#2e2e2e' },
+  shortAmount: { fontSize: 14, fontWeight: '600', color: '#282828' },
+
+  // Supers carousel
+  carouselRow: { paddingTop: 4 },
+  carouselCard: { backgroundColor: C.cardBg, borderRadius: 12, padding: 16, marginHorizontal: 12, marginBottom: 6, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.12, shadowRadius: 10, elevation: 4 },
+  // dots kept for reference but managed by Carousel component
+  dotsRow: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginTop: 14 },
+  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#d5d5d5' },
+  dotActive: { backgroundColor: '#333' },
+
+  // No data box — exact Figma: bg=#f2f2f2, icon 22x22, text #7b7b7b
+  noDataBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f2f2f2', borderRadius: 12, padding: 16, gap: 12 },
+  noDataInfoIcon: { width: 24, height: 24 },
+  noDataText: { fontSize: 14, fontWeight: '400', color: '#7b7b7b', flex: 1 },
+
+  // Vista General
+  vgCardPad: { paddingLeft: 12, paddingRight: 6, paddingTop: 8, paddingBottom: 6 },
+  vgChartOuter: { paddingLeft: 14, paddingRight: 6, paddingTop: 14, paddingBottom: 8 },
+  vgChartCardFixed: { backgroundColor: C.cardBg, borderRadius: 12, padding: 16, height: 253, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3, overflow: 'hidden' },
+  vgFullCardImg: { width: '100%', height: '100%', borderRadius: 12 },
+  vgChartLabel: { fontSize: 14, fontWeight: '600', color: '#727272' },
+  vgValRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
+  vgChartVal: { fontSize: 23, fontWeight: '700', color: '#161616' },
+  vgArrow: { width: 17, height: 17 },
+  vgChartSub: { fontSize: 12, fontWeight: '400', color: '#9c9c9c', marginTop: 2 },
+  vgChartImgWrap: { flexDirection: 'row', marginTop: 12, flex: 1 },
+  vgYAxis: { width: 36, justifyContent: 'space-between', paddingRight: 4 },
+  vgChartImg: { flex: 1, height: '100%' },
+  vgXAxis: { flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 36, marginTop: 4 },
+  vgTipOuter: { paddingLeft: 14, paddingRight: 6, paddingTop: 14, paddingBottom: 8 },
+  vgTipCardFull: { backgroundColor: C.cardBg, borderRadius: 12, height: 82, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3, overflow: 'hidden' },
+  vgTipFullImg: { width: '100%', height: '100%' },
+  vgTipCodeCard: { flex: 1, justifyContent: 'center' },
+  vgTipCodeTitle: { fontSize: 15, fontWeight: '600', color: '#252525', lineHeight: 21, paddingLeft: 20, paddingRight: 90 },
+  vgTipCodeImg: { width: 70, height: 48, position: 'absolute', right: 16, top: 17 },
+  vgPopCard: { backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 20, padding: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 },
+  vgPopTitle: { fontSize: 17, fontWeight: '700', color: '#202020', marginBottom: 4 },
+  vgPopSub: { fontSize: 14, fontWeight: '400', color: '#777777', marginBottom: 12 },
+  vgPopRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, gap: 10 },
+  vgPopThumb: { width: 56, height: 32, borderRadius: 4, backgroundColor: '#f0f0f0' },
+  vgPopVidTitle: { flex: 1, fontSize: 13, fontWeight: '400', color: '#343434' },
+  vgPopViews: { fontSize: 13, fontWeight: '700', color: '#212121' },
+  vgPopDivider: { height: 0.5, backgroundColor: C.divider },
+
+  // Audiencia no data
+  audNoDataBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f2f2f2', borderRadius: 10, padding: 14, gap: 10 },
+  audNoDataText: { fontSize: 13, fontWeight: '400', color: '#787878', flex: 1, lineHeight: 18 },
+
+  // Contenido tab bottom bar
+  cvBottomBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 12, marginTop: 16, backgroundColor: '#f5f5f5', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14 },
+  cvBottomText: { fontSize: 10, fontWeight: '900', color: '#272727' },
+  cvBottomLink: { fontSize: 10, fontWeight: '900', color: '#1f1f1f' },
+
+  // Ingresos estimados detail view
+  ieHeader: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14, gap: 10 },
+  ieBack: { fontSize: 32, fontWeight: '300', color: '#333', marginTop: -4 },
+  ieHeaderTitle: { fontSize: 17, fontWeight: '700', color: '#1a1a1a' },
+  ieChartArea: { flexDirection: 'row', marginHorizontal: 16, marginTop: 8, height: 140 },
+  ieXAxis: { flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 56, paddingRight: 16, marginTop: 4 },
+  ieSummary: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 16, gap: 8 },
+  ieDot: { width: 8, height: 8 },
+  ieSumLabel: { fontSize: 16, fontWeight: '700', color: '#262626', flex: 1 },
+  ieSumValue: { fontSize: 16, fontWeight: '700', color: '#252525' },
+  ieDivider: { height: 0.5, backgroundColor: C.divider, marginHorizontal: 16 },
+  ieSecTitle: { fontSize: 17, fontWeight: '700', color: '#252525', paddingHorizontal: 16, paddingTop: 20, paddingBottom: 14 },
+  ieWarningBox: { flexDirection: 'row', alignItems: 'flex-start', marginHorizontal: 16, marginBottom: 16, backgroundColor: '#f5f5f5', borderRadius: 10, padding: 14, gap: 10 },
+  ieWarningIcon: { width: 22, height: 21, marginTop: 2 },
+  ieWarningText: { fontSize: 14, fontWeight: '400', color: '#757575', flex: 1, lineHeight: 20 },
+  ieVideoRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 10, gap: 10 },
+  ieVideoThumb: { width: 56, height: 32, borderRadius: 4, backgroundColor: '#f0f0f0' },
+  ieVideoTitle: { flex: 1, fontSize: 14, fontWeight: '400', color: '#343434' },
+  ieVideoAmt: { fontSize: 14, fontWeight: '700', color: '#292929' },
+  ieVideoDivider: { height: 0.5, backgroundColor: C.divider, marginHorizontal: 16 },
+
+  // Tendencias
+  tendSection: { paddingHorizontal: 16, paddingTop: 20 },
+  tendHeaderRow: { flexDirection: 'row', alignItems: 'center' },
+  tendTitle: { fontSize: 17, fontWeight: '700', color: '#1e1e1e' },
+  tendSearchBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f2f2f2', borderRadius: 20, paddingHorizontal: 16, paddingVertical: 12, marginTop: 12 },
+  tendSearchCard: { width: 240, backgroundColor: C.cardBg, borderRadius: 12, padding: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 2, minHeight: 130 },
+  tendSearchText: { fontSize: 19, fontWeight: '700', color: '#222', lineHeight: 26 },
+  tendSearchActions: { flexDirection: 'row', gap: 16, marginTop: 12 },
+  tendVideoCard: { width: 280 },
+  tendVideoThumbWrap: { position: 'relative', borderRadius: 10, overflow: 'hidden' },
+  tendVideoThumb: { width: '100%', height: 160, borderRadius: 10 },
+  tendDurationBadge: { position: 'absolute', bottom: 8, right: 8, backgroundColor: 'rgba(0,0,0,0.8)', borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2 },
+  tendDurationText: { fontSize: 12, fontWeight: '600', color: '#fff' },
+  tendVideoInfo: { flexDirection: 'row', marginTop: 8, alignItems: 'flex-start' },
+  tendVideoTitle: { fontSize: 14, fontWeight: '700', color: '#1f1f1f', flex: 1, lineHeight: 20 },
+  tendVideoMeta: { fontSize: 12, fontWeight: '400', color: '#767676', marginTop: 4 },
 });

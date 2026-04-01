@@ -6,8 +6,13 @@ import { C, F } from '../../constants/theme';
 // Figma icon assets
 const ICONS = {
   panel: require('../../assets/figma/tab_panel.png'),
+  panelInactive: require('../../assets/figma/tab_panel_inactive.png'),
   contenido: require('../../assets/figma/tab_contenido.png'),
   estadisticas: require('../../assets/figma/tab_estadisticas.png'),
+  contenidoActive: require('../../assets/figma/tab_contenido_active.png'),
+  estadisticasActive: require('../../assets/figma/tab_estadisticas_active.png'),
+  comunidadActive: require('../../assets/figma/tab_comunidad_active.png'),
+  ingresosActive: require('../../assets/figma/tab_ingresos_active.png'),
   comunidad: require('../../assets/figma/tab_comunidad.png'),
   ingresos: require('../../assets/figma/tab_ingresos.png'),
   ytLogo: require('../../assets/figma/yt_logo.png'),
@@ -57,35 +62,44 @@ export default function TabLayout() {
         headerTitle: () => <Logo />,
         headerLeft: () => <View style={{ width: 6 }} />,
         headerRight: () => <RightIcons />,
-        tabBarIcon: ({ color }) => <TabIcon source={ICONS.panel} color={color} />,
+        tabBarIcon: ({ color, focused }) => <TabIcon source={focused ? ICONS.panel : ICONS.panelInactive} color={color} />,
       }} />
       <Tabs.Screen name="content" options={{
         title: 'Contenido',
         headerTitle: () => <Logo />,
         headerLeft: () => <View style={{ width: 6 }} />,
         headerRight: () => <RightIcons />,
-        tabBarIcon: ({ color }) => <TabIcon source={ICONS.contenido} color={color} />,
+        tabBarIcon: ({ color, focused }) => focused
+          ? <Image source={ICONS.contenidoActive} style={st.tabIconActive} resizeMode="contain" />
+          : <TabIcon source={ICONS.contenido} color={color} />,
       }} />
       <Tabs.Screen name="analytics" options={{
         title: 'Estadísticas',
         headerTitle: () => <Logo />,
         headerLeft: () => <View style={{ width: 6 }} />,
         headerRight: () => <RightIcons />,
-        tabBarIcon: ({ color }) => <TabIcon source={ICONS.estadisticas} color={color} />,
+        tabBarIcon: ({ color, focused }) => focused
+          ? <Image source={ICONS.estadisticasActive} style={st.tabIconActive} resizeMode="contain" />
+          : <TabIcon source={ICONS.estadisticas} color={color} />,
+
       }} />
       <Tabs.Screen name="comments" options={{
         title: 'Comunidad',
         headerTitle: () => <Logo />,
         headerLeft: () => <View style={{ width: 6 }} />,
         headerRight: () => <RightIcons />,
-        tabBarIcon: ({ color }) => <TabIcon source={ICONS.comunidad} color={color} />,
+        tabBarIcon: ({ color, focused }) => focused
+          ? <Image source={ICONS.comunidadActive} style={st.tabIconActive} resizeMode="contain" />
+          : <TabIcon source={ICONS.comunidad} color={color} />,
       }} />
       <Tabs.Screen name="revenue" options={{
         title: 'Ingresos',
         headerTitle: () => <Logo />,
         headerLeft: () => <View style={{ width: 6 }} />,
         headerRight: () => <RightIcons />,
-        tabBarIcon: ({ color }) => <TabIcon source={ICONS.ingresos} color={color} />,
+        tabBarIcon: ({ color, focused }) => focused
+          ? <Image source={ICONS.ingresosActive} style={st.tabIconActive} resizeMode="contain" />
+          : <TabIcon source={ICONS.ingresos} color={color} />,
       }} />
     </Tabs>
   );
@@ -99,4 +113,5 @@ const st = StyleSheet.create({
   headerIcon: { width: 22, height: 22 },
   avatar: { width: 24, height: 24, borderRadius: 12, backgroundColor: C.sectionBg },
   tabIcon: { width: 20, height: 20 },
+  tabIconActive: { width: 24, height: 24, borderRadius: 5 },
 });

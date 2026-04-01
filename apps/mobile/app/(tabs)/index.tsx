@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useRealtimeSubscription } from '../../hooks/useRealtimeSubscription';
 import { C, F } from '../../constants/theme';
@@ -15,8 +15,15 @@ const IC = {
   like: require('../../assets/figma/stat_icon_like.png'),
   comment: require('../../assets/figma/stat_icon_comment.png'),
   money: require('../../assets/figma/stat_icon_money.png'),
-  chevDown: require('../../assets/figma/chevron_down.png'),
-  chevUp: require('../../assets/figma/chevron_up.png'),
+  chevDown: require('../../assets/figma/chevron_down_desp.png'),
+  chevUp: require('../../assets/figma/chevron_up_desp.png'),
+  // Desplegable icons
+  greenUp: require('../../assets/figma/arrow_green_up.png'),
+  blueDown: require('../../assets/figma/arrow_blue_down.png'),
+  checkGreen: require('../../assets/figma/check_green.png'),
+  infoCircle: require('../../assets/figma/info_circle.png'),
+  chevRight: require('../../assets/figma/chevron_right.png'),
+  moneyCircle: require('../../assets/figma/money_circle.png'),
 };
 
 function n(v: number) {
@@ -35,7 +42,15 @@ function since(d: string | null) {
 
 export default function Dashboard() {
   const r = useRouter();
+  const qc = useQueryClient();
   const [exp, setExp] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await qc.invalidateQueries();
+    setRefreshing(false);
+  }, [qc]);
 
   useRealtimeSubscription('dashboard_stats', ['ds']);
   useRealtimeSubscription('channel', ['ch']);
@@ -46,7 +61,7 @@ export default function Dashboard() {
   const { data: vids } = useQuery({ queryKey: ['lv'], queryFn: async () => { const { data } = await supabase.from('videos').select('*').eq('channel_id', CID).eq('status', 'published').eq('visibility', 'public').order('published_at', { ascending: false }).limit(3); return data ?? [] } });
 
   return (
-    <ScrollView style={s.root} showsVerticalScrollIndicator={false}>
+    <ScrollView style={s.root} showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#1db4a5" />}>
       {/* ── Channel row ── */}
       <TouchableOpacity style={s.chRow} activeOpacity={0.7} onPress={() => r.push('/profile')}>
         <Image source={{ uri: ch?.avatar_url || 'https://picsum.photos/200/200' }} style={s.chAva} />
@@ -101,19 +116,41 @@ export default function Dashboard() {
                 <Text style={[s.qText, { marginRight: 0 }]}>{v.comment_count}</Text>
                 <View style={{ flex: 1 }} />
                 <TouchableOpacity onPress={() => setExp(open ? null : v.id)} hitSlop={12}>
-                  <Image source={open ? IC.chevUp : IC.chevDown} style={s.chevron} resizeMode="contain" />
+                  <Image source={IC.chevUp} style={[s.chevron, !open && { transform: [{ rotate: '180deg' }] }]} resizeMode="contain" />
                 </TouchableOpacity>
               </View>
 
-              {/* Expanded */}
+              {/* Expanded — exact Figma desplegable design */}
               {open && (
                 <View style={s.vExp}>
-                  <ERow label="Clasificación por visualizaciones" value="2 de 10" chevron />
-                  <ERow label="Visualizaciones" value={n(v.view_count)} up />
-                  <ERow label="Porcentaje de clics de las impresiones" value={`${v.impression_ctr} %`} up />
-                  <ERow label="Duración media de las visualizaciones" value={v.average_view_duration} up />
-                  <View style={{ height: 10 }} />
-                  <ERow label="Comentarios" value={String(v.comment_count)} />
+                  <View style={s.eRow}>
+                    <Text style={s.eLabel}>Clasificacion por visualizaciones</Text>
+                    <Text style={s.eVal}>2 de 10</Text>
+                    <Image source={IC.chevRight} style={s.chevRightIcon} resizeMode="contain" />
+                  </View>
+                  <View style={s.eRow}>
+                    <Text style={s.eLabel}>Visualizaciones</Text>
+                    <Text style={s.eVal}>{n(v.view_count)}</Text>
+                    <Image source={IC.greenUp} style={s.eCircleIcon} resizeMode="contain" />
+                  </View>
+                  <View style={s.eRow}>
+                    <View style={s.eLabelWrap}>
+                      <Text style={s.eLabel}>Porcentaje de clics de las impresiones</Text>
+                      <Image source={IC.infoCircle} style={s.eInfoIcon} resizeMode="contain" />
+                    </View>
+                    <Text style={s.eVal}>{v.impression_ctr}%</Text>
+                    <Image source={v.impression_ctr >= 10 ? IC.checkGreen : IC.greenUp} style={s.eCircleIcon} resizeMode="contain" />
+                  </View>
+                  <View style={s.eRow}>
+                    <Text style={s.eLabel}>Duracion media de las visualizaciones</Text>
+                    <Text style={s.eVal}>{v.average_view_duration}</Text>
+                    <Image source={Number(v.average_view_duration?.split(':')[0]) >= 5 ? IC.greenUp : IC.blueDown} style={s.eCircleIcon} resizeMode="contain" />
+                  </View>
+                  <View style={{ height: 12 }} />
+                  <View style={s.eRow}>
+                    <Text style={s.eLabel}>Comentarios</Text>
+                    <Text style={s.eVal}>{v.comment_count}</Text>
+                  </View>
                   <Text style={s.noReply}>No hay comentarios sin responder</Text>
                 </View>
               )}
@@ -143,50 +180,36 @@ function MCard({ label, value, down, hideArrow }: { label: string; value: string
   );
 }
 
-function ERow({ label, value, up, chevron }: { label: string; value: string; up?: boolean; chevron?: boolean }) {
-  return (
-    <View style={s.eRow}>
-      <Text style={s.eLabel} numberOfLines={1}>{label}</Text>
-      <View style={s.eRight}>
-        <Text style={s.eVal}>{value}</Text>
-        {chevron && <Text style={{ fontSize: 16, color: C.textSec }}>{'>'}</Text>}
-        {up && (
-          <Image source={IC.arrowDown} style={[s.arrowIconSm, { transform: [{ rotate: '180deg' }] }]} resizeMode="contain" />
-        )}
-      </View>
-    </View>
-  );
-}
 
 /* ── Styles (exact Figma values / 3) ── */
 const s = StyleSheet.create({
   root: { flex: 1, backgroundColor: C.bg },
 
   // Channel — avatar at 15pt from left, text at 109pt from left
-  chRow: { flexDirection: 'row', alignItems: 'center', paddingLeft: 15, paddingRight: 20, paddingTop: 10, paddingBottom: 18 },
+  chRow: { flexDirection: 'row', alignItems: 'center', paddingLeft: 15, paddingRight: 20, paddingTop: 10, paddingBottom: 28 },
   chAva: { width: 77, height: 77, borderRadius: 39, backgroundColor: C.sectionBg },
   chMeta: { marginLeft: 17, flex: 1 },
   chName: { fontSize: F.s18, fontWeight: '700', color: C.text },
   chSubs: { fontSize: F.s23, fontWeight: '700', color: '#1d1d1d', marginTop: 2 },
   chLabel: { fontSize: F.s14, fontWeight: '400', color: '#757575', marginTop: 1 },
 
-  // Section
-  sec: { paddingHorizontal: 13, marginBottom: 10 },
-  secHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
+  // Section — 13pt horizontal padding, 28pt gap between channel and title
+  sec: { paddingHorizontal: 13, marginBottom: 16 },
+  secHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
   secTitle: { fontSize: F.s17, fontWeight: '700', color: '#202020' },
   secRight: { fontSize: F.s12, fontWeight: '400', color: '#707070' },
 
-  // 2x2 metric grid — 204x80pt cards, 4pt gap, 13pt margin
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 4 },
-  mBox: { width: '49%', backgroundColor: C.cardBg, borderRadius: 12, paddingVertical: 14, paddingHorizontal: 14, height: 80, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 2 },
+  // 2x2 metric grid
+  grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 10 },
+  mBox: { width: '48.8%', backgroundColor: C.cardBg, borderRadius: 12, paddingVertical: 14, paddingHorizontal: 14, height: 81, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 2 },
   mLabel: { fontSize: F.s12, fontWeight: '400', color: '#737373', marginBottom: 6 },
   mValRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   mValue: { fontSize: F.s18, fontWeight: '700', color: '#171717' },
   arrowIcon: { width: 15, height: 15 },
   arrowIconSm: { width: 14, height: 14 },
 
-  // Video card — padding 19pt, thumb 79x44, gap 12pt
-  vCard: { backgroundColor: C.cardBg, borderRadius: 12, marginTop: 10, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 2 },
+  // Video card — 12pt gap between cards
+  vCard: { backgroundColor: C.cardBg, borderRadius: 12, marginTop: 12, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 2 },
   vTop: { flexDirection: 'row', padding: 19, paddingBottom: 14, gap: 12 },
   vThumb: { width: 79, height: 44, borderRadius: 6, backgroundColor: C.sectionBg },
   vInfo: { flex: 1, justifyContent: 'center' },
@@ -199,11 +222,14 @@ const s = StyleSheet.create({
   qText: { fontSize: F.s14, fontWeight: '400', color: '#272727', marginRight: 25 },
   chevron: { width: 14, height: 9 },
 
-  // Expanded
-  vExp: { paddingHorizontal: 14, paddingBottom: 14, borderTopWidth: 1, borderTopColor: C.divider },
-  eRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 13, borderBottomWidth: 0.5, borderBottomColor: C.divider },
-  eLabel: { fontSize: F.s14, fontWeight: '400', color: C.text, flex: 1, marginRight: 8 },
-  eRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  eVal: { fontSize: F.s14, fontWeight: '600', color: C.text },
-  noReply: { fontSize: F.s12, fontWeight: '400', color: '#757575', marginTop: 4 },
+  // Expanded desplegable — exact Figma icons & spacing
+  vExp: { paddingHorizontal: 19, paddingBottom: 14, borderTopWidth: 0.5, borderTopColor: C.divider },
+  eRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 13, borderBottomWidth: 0.5, borderBottomColor: C.divider },
+  eLabelWrap: { flexDirection: 'row', alignItems: 'center', flex: 1, marginRight: 8 },
+  eLabel: { fontSize: 14, fontWeight: '400', color: '#323232', flex: 1, marginRight: 8 },
+  eVal: { fontSize: 14, fontWeight: '600', color: '#252525', marginRight: 8 },
+  eCircleIcon: { width: 19, height: 19 },
+  eInfoIcon: { width: 19, height: 19, marginLeft: 4 },
+  chevRightIcon: { width: 7, height: 12 },
+  noReply: { fontSize: 14, fontWeight: '400', color: '#767676', marginTop: 6 },
 });
