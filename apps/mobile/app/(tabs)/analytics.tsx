@@ -1,6 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, RefreshControl, Dimensions } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useNavigation } from 'expo-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Carousel } from '../../components/ui/Carousel';
 import { supabase } from '../../lib/supabase';
@@ -93,15 +93,22 @@ const IE_VIDEOS = [
   { thumb: require('../../assets/figma/ie_vid4.png'), title: '$FLORK Revoluciona el Juego: ¡Des...', amount: '0,45 €' },
   { thumb: require('../../assets/figma/ie_vid5.png'), title: 'FECHA DEL BRIDGE de FLORK a DUMP...', amount: '0,35€' },
 ];
-const IE_PERIODS = ['7D', '28 D', '90 D', '365 D', 'Mar', 'Feb', 'Ene'];
+const IE_PERIODS = ['7D', '28 D', '90 D', '365 D', 'Mar', 'Feb', 'Ene', '2026', '2025', 'Total'];
+const IE_Y_LABELS = ['4,20€', '2,80€', '1,40€', '0€'];
+const IE_X_LABELS = ['1mar', '14 mar', '28 mar'];
 
 export default function AnalyticsScreen() {
   const router = useRouter();
+  const navigation = useNavigation();
   const qc = useQueryClient();
   const screenW = Dimensions.get('window').width;
   const [activeTab, setActiveTab] = useState(0);
   const [activeChip, setActiveChip] = useState(0);
   const [showIngresosDetail, setShowIngresosDetail] = useState(false);
+
+  useEffect(() => {
+    navigation.setOptions({ headerShown: !showIngresosDetail });
+  }, [showIngresosDetail, navigation]);
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(async () => { setRefreshing(true); await qc.invalidateQueries(); setRefreshing(false); }, [qc]);
 
@@ -181,6 +188,86 @@ export default function AnalyticsScreen() {
               </View>
             );
           })}
+        </View>
+
+        {/* ── Rendimiento carrusel ── */}
+        <Carousel itemWidth={Math.round(screenW * 0.72)}>
+          {/* Card 1: Rendimiento de los vídeos */}
+          <View style={s.vgChartOuter}>
+            <View style={s.rendCard}>
+              <Text style={s.rendTitle}>Rendimiento de los vídeos</Text>
+              <Text style={s.rendSub}>Últimos 28 días</Text>
+              <Text style={s.rendValue}>13,21€</Text>
+              <Text style={s.rendLabel}>Ingresos estimados</Text>
+              <View style={s.rendVidRow}>
+                <Image source={require('../../assets/figma/rend_vid1.png')} style={s.rendThumb} resizeMode="cover" />
+                <Text style={s.rendVidTitle} numberOfLines={1}>Tutorial BRIDGE FLO...</Text>
+                <Text style={s.rendVidAmount}>8,43€</Text>
+              </View>
+              <View style={s.rendVidRow}>
+                <Image source={require('../../assets/figma/rend_vid2.png')} style={s.rendThumb} resizeMode="cover" />
+                <Text style={s.rendVidTitle} numberOfLines={1}>CALCULA TU TIER &...</Text>
+                <Text style={s.rendVidAmount}>3,40€</Text>
+              </View>
+              <View style={s.rendVidRow}>
+                <Image source={require('../../assets/figma/rend_vid3.png')} style={s.rendThumb} resizeMode="cover" />
+                <Text style={s.rendVidTitle} numberOfLines={1}>Bridge de FLORK a D...</Text>
+                <Text style={s.rendVidAmount}>1,86€</Text>
+              </View>
+            </View>
+          </View>
+          {/* Card 2: Rendimiento de los Shorts */}
+          <View style={s.vgChartOuter}>
+            <View style={s.rendCard}>
+              <Text style={s.rendTitle}>Rendimiento de los Shorts</Text>
+              <Text style={s.rendSub}>Últimos 28 días</Text>
+              <Text style={s.rendValue}>0€</Text>
+              <Text style={s.rendLabel}>Ingresos estimados</Text>
+              <View style={s.rendVidRow}>
+                <Image source={require('../../assets/figma/rend_short1.png')} style={s.rendThumbShort} resizeMode="cover" />
+                <Text style={s.rendVidTitle} numberOfLines={1}>27 de diciembre de 2024</Text>
+                <Text style={s.rendVidAmount}>0,00€</Text>
+              </View>
+            </View>
+          </View>
+          {/* Card 3: Actuaciones en directo */}
+          <View style={s.vgChartOuter}>
+            <View style={s.rendCard}>
+              <Text style={s.rendTitle}>Actuaciones en directo</Text>
+              <Text style={s.rendSub}>Últimos 28 días</Text>
+              <Text style={[s.rendValue, { fontSize: 20 }]}>—</Text>
+              <Text style={s.rendLabel}>Ingresos estimados</Text>
+              <View style={s.noDataBox}>
+                <View style={s.noDataIcon}>
+                  <Text style={{ fontSize: 16, color: '#888' }}>ⓘ</Text>
+                </View>
+                <Text style={s.noDataText}>No hay nada que mostrar para estas fechas</Text>
+              </View>
+            </View>
+          </View>
+        </Carousel>
+
+        {/* ── Cómo ganas dinero ── */}
+        <View style={s.earningsCard}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Text style={s.earningsTitle}>Cómo ganas dinero</Text>
+            <Image source={require('../../assets/figma/rend_clock.png')} style={{ width: 22, height: 22 }} resizeMode="contain" />
+          </View>
+          <Text style={s.earningsSub}>Estimación · Últimos 28 días</Text>
+
+          {/* Progress bar */}
+          <View style={{ height: 10, backgroundColor: TEAL, borderRadius: 5, marginBottom: 16 }} />
+
+          <View style={s.rendSourceRow}>
+            <View style={[s.rendDot, { backgroundColor: TEAL }]} />
+            <Text style={s.rendSourceLabel}>Anuncios de la pagina de visualización</Text>
+            <Text style={s.rendSourcePct}>100,0%</Text>
+          </View>
+          <View style={s.rendSourceRow}>
+            <View style={[s.rendDot, { backgroundColor: TEAL }]} />
+            <Text style={s.rendSourceLabel}>Anuncios del feed de Shorts</Text>
+            <Text style={s.rendSourcePct}>{'< 0,1 %'}</Text>
+          </View>
         </View>
       </>
     );
@@ -494,61 +581,98 @@ export default function AnalyticsScreen() {
 
   if (showIngresosDetail) {
     return (
-      <ScrollView style={s.root} showsVerticalScrollIndicator={false}>
-        {/* Header with back arrow */}
-        <View style={s.ieHeader}>
+      <View style={{ flex: 1, backgroundColor: C.bg }}>
+        {/* Custom header that covers the tab header */}
+        <View style={s.ieHeaderOverlay}>
           <TouchableOpacity onPress={() => setShowIngresosDetail(false)} hitSlop={12}>
-            <Text style={s.ieBack}>{'‹'}</Text>
+            <Image source={require('../../assets/figma/ie_back_arrow.png')} style={s.ieBackArrow} resizeMode="contain" />
           </TouchableOpacity>
           <Text style={s.ieHeaderTitle}>Ingresos estimados</Text>
         </View>
+      <ScrollView style={s.root} showsVerticalScrollIndicator={false}>
 
         {/* Period chips */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chipsRow}>
           {IE_PERIODS.map((p, i) => (
-            <TouchableOpacity key={p} style={[s.chip, iePeriod === i && s.chipActive]} onPress={() => setIePeriod(i)}>
-              <Text style={[s.chipText, iePeriod === i && s.chipTextActive]}>{p}</Text>
-            </TouchableOpacity>
+            <React.Fragment key={p}>
+              {(i === 4 || i === 7 || i === 9) && <View style={s.chipSeparator} />}
+              <TouchableOpacity style={[s.chip, iePeriod === i && s.chipActive]} onPress={() => setIePeriod(i)}>
+                <Text style={[s.chipText, iePeriod === i && s.chipTextActive]}>{p}</Text>
+              </TouchableOpacity>
+            </React.Fragment>
           ))}
         </ScrollView>
 
-        {/* Chart */}
-        <View style={s.ieChartArea}>
-          <View style={s.yAxisLabels}>
-            <Text style={s.axisText}>4,20€</Text>
-            <Text style={s.axisText}>2,80€</Text>
-            <Text style={s.axisText}>1,40€</Text>
-            <Text style={s.axisText}>0€</Text>
-          </View>
-          <View style={[s.chartSvgWrap, { height: 140 }]}>
-            <View style={s.gridContainer}>
-              {[0, 1, 2, 3].map(i => <View key={i} style={[s.gridLine, { top: i * (140 / 3) }]} />)}
+        {/* Chart - line chart for 7D/28D/90D/365D, bar chart for months/years/total */}
+        {iePeriod < 4 ? (
+          <>
+            <View style={s.ieChartArea}>
+              <View style={s.yAxisLabels}>
+                <Text style={s.axisText}>4,20€</Text>
+                <Text style={s.axisText}>2,80€</Text>
+                <Text style={s.axisText}>1,40€</Text>
+                <Text style={s.axisText}>0€</Text>
+              </View>
+              <View style={[s.chartSvgWrap, { height: 140, overflow: 'visible' }]}>
+                <View style={s.gridContainer}>
+                  {[0, 1, 2].map(i => <View key={i} style={[s.gridLine, { top: i * (140 / 3) }]} />)}
+                </View>
+                <View style={[s.svgLayer, { overflow: 'visible' }]}>
+                  <Image source={require('../../assets/figma/ie_chart.png')} style={{ width: '100%', height: 140 }} resizeMode="stretch" />
+                </View>
+              </View>
             </View>
-            <View style={s.svgLayer}>
-              <Image source={require('../../assets/figma/ie_chart.png')} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+            <View style={s.ieXAxis}>
+              <Text style={s.axisText}>1mar</Text>
+              <Text style={s.axisText}>14 mar</Text>
+              <Text style={s.axisText}>28 mar</Text>
             </View>
-          </View>
-        </View>
-        <View style={s.ieXAxis}>
-          <Text style={s.axisText}>1mar</Text>
-          <Text style={s.axisText}>14 mar</Text>
-          <Text style={s.axisText}>28 mar</Text>
-        </View>
+          </>
+        ) : (
+          <>
+            <View style={s.ieChartArea}>
+              <View style={s.yAxisLabels}>
+                <Text style={s.axisText}>60€</Text>
+                <Text style={s.axisText}>40€</Text>
+                <Text style={s.axisText}>20€</Text>
+                <Text style={s.axisText}>0€</Text>
+              </View>
+              <View style={[s.chartSvgWrap, { height: 140, overflow: 'visible' }]}>
+                <Image source={require('../../assets/figma/ie_bar_chart.png')} style={{ width: '100%', height: 140 }} resizeMode="stretch" />
+              </View>
+            </View>
+            <View style={s.ieXAxis}>
+              <Text style={s.axisText}>Oct</Text>
+              <Text style={s.axisText}>Nov</Text>
+              <Text style={s.axisText}>Dic</Text>
+              <Text style={s.axisText}>Ene</Text>
+              <Text style={s.axisText}>Feb</Text>
+              <Text style={s.axisText}>Mar</Text>
+            </View>
+          </>
+        )}
 
         {/* Summary */}
         <View style={s.ieSummary}>
           <Image source={require('../../assets/figma/ie_dot_green.png')} style={s.ieDot} resizeMode="contain" />
           <Text style={s.ieSumLabel}>Ingresos estimados</Text>
-          <Text style={s.ieSumValue}>15,72€</Text>
+          <Text style={s.ieSumValue}>{iePeriod < 4 ? '15,72€' : '16,02€'}</Text>
         </View>
-        <View style={s.ieDivider} />
+
+        {/* Processing message for monthly views */}
+        {iePeriod >= 4 && (
+          <View style={s.ieProcessingRow}>
+            <Image source={require('../../assets/figma/ie_clock.png')} style={{ width: 22, height: 22 }} resizeMode="contain" />
+            <Text style={s.ieProcessingText}>Aún se está procesando 1 día de datos</Text>
+          </View>
+        )}
 
         {/* Contenido con mayores ingresos */}
         <Text style={s.ieSecTitle}>Contenido con mayores ingresos</Text>
 
         <View style={s.ieWarningBox}>
           <Image source={require('../../assets/figma/ie_warning.png')} style={s.ieWarningIcon} resizeMode="contain" />
-          <Text style={s.ieWarningText}>Los importes se convierten de USD a EUR segun el tipo de cambio historico de la fecha que corresponda</Text>
+          <Text style={s.ieWarningText}>Los importes se convierten de USD a EUR según el tipo de cambio histórico de la fecha que corresponda</Text>
         </View>
 
         {IE_VIDEOS.map((vid, i) => (
@@ -564,6 +688,7 @@ export default function AnalyticsScreen() {
 
         <View style={{ height: 40 }} />
       </ScrollView>
+      </View>
     );
   }
 
@@ -575,7 +700,9 @@ export default function AnalyticsScreen() {
         <View style={s.tendSection}>
           <View style={s.tendHeaderRow}>
             <Text style={s.tendTitle}>Explora temas</Text>
-            <Image source={require('../../assets/figma/tend_question.png')} style={{ width: 24, height: 24, marginLeft: 8 }} resizeMode="contain" />
+            <View style={{ width: 24, height: 24, borderRadius: 12, borderWidth: 1.5, borderColor: '#888', alignItems: 'center', justifyContent: 'center', marginLeft: 8 }}>
+              <Text style={{ fontSize: 14, fontWeight: '600', color: '#888' }}>?</Text>
+            </View>
             <View style={{ flex: 1 }} />
             <Image source={require('../../assets/figma/tend_heart.png')} style={{ width: 22, height: 20 }} resizeMode="contain" />
             <Text style={{ fontSize: 16, color: '#282828', marginLeft: 6 }}>0</Text>
@@ -583,7 +710,7 @@ export default function AnalyticsScreen() {
 
           {/* Search bar */}
           <View style={s.tendSearchBar}>
-            <Text style={{ fontSize: 18, color: '#999', marginRight: 10 }}>🔍</Text>
+            <Image source={require('../../assets/figma/tend_search.png')} style={{ width: 20, height: 20, marginRight: 10, tintColor: '#777' }} resizeMode="contain" />
             <Text style={{ fontSize: 15, color: '#747474' }}>Buscar</Text>
           </View>
         </View>
@@ -596,14 +723,14 @@ export default function AnalyticsScreen() {
             <Image source={require('../../assets/figma/tend_chevron.png')} style={{ width: 9, height: 14 }} resizeMode="contain" />
           </View>
 
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingTop: 12 }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingTop: 12, paddingBottom: 10, paddingHorizontal: 2 }} style={{ overflow: 'visible' }}>
             {TEND_SEARCHES.map((search, i) => (
               <View key={i} style={s.tendSearchCard}>
                 <Text style={s.tendSearchText}>{search}</Text>
                 <View style={{ flex: 1 }} />
                 <View style={s.tendSearchActions}>
-                  <Image source={require('../../assets/figma/tend_heart.png')} style={{ width: 20, height: 18 }} resizeMode="contain" />
-                  <Image source={require('../../assets/figma/tend_dots.png')} style={{ width: 20, height: 20 }} resizeMode="contain" />
+                  <Image source={require('../../assets/figma/tend_heart.png')} style={{ width: 24, height: 22 }} resizeMode="contain" />
+                  <Text style={{ fontSize: 22, color: '#444', fontWeight: '700' }}>⋮</Text>
                 </View>
               </View>
             ))}
@@ -631,7 +758,7 @@ export default function AnalyticsScreen() {
                 </View>
                 <View style={s.tendVideoInfo}>
                   <Text style={s.tendVideoTitle} numberOfLines={2}>{vid.title}</Text>
-                  <Image source={require('../../assets/figma/tend_dots.png')} style={{ width: 18, height: 18, marginLeft: 4 }} resizeMode="contain" />
+                  <Text style={{ fontSize: 18, color: '#555', marginLeft: 4 }}>⋮</Text>
                 </View>
                 <Text style={s.tendVideoMeta} numberOfLines={1}>{vid.channel} · {vid.views}{vid.time ? ' · ' + vid.time : ''}</Text>
               </View>
@@ -708,6 +835,7 @@ const s = StyleSheet.create({
   chipActive: { backgroundColor: '#0e0e0e' },
   chipText: { fontSize: 13, fontWeight: '600', color: '#252525' },
   chipTextActive: { color: '#efefef' },
+  chipSeparator: { width: 1, height: 32, backgroundColor: '#d5d5d5', marginHorizontal: 4, alignSelf: 'center' },
 
   // Chart card
   chartCard: { backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 4, padding: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 2 },
@@ -759,6 +887,7 @@ const s = StyleSheet.create({
 
   // No data box — exact Figma: bg=#f2f2f2, icon 22x22, text #7b7b7b
   noDataBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f2f2f2', borderRadius: 12, padding: 16, gap: 12 },
+  noDataIcon: { width: 24, height: 24, borderRadius: 12, borderWidth: 1.5, borderColor: '#888', alignItems: 'center', justifyContent: 'center' },
   noDataInfoIcon: { width: 24, height: 24 },
   noDataText: { fontSize: 14, fontWeight: '400', color: '#7b7b7b', flex: 1 },
 
@@ -801,40 +930,59 @@ const s = StyleSheet.create({
   cvBottomLink: { fontSize: 10, fontWeight: '900', color: '#1f1f1f' },
 
   // Ingresos estimados detail view
+  ieHeaderOverlay: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 16, paddingBottom: 12, gap: 12, backgroundColor: C.bg },
   ieHeader: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14, gap: 10 },
-  ieBack: { fontSize: 32, fontWeight: '300', color: '#333', marginTop: -4 },
-  ieHeaderTitle: { fontSize: 17, fontWeight: '700', color: '#1a1a1a' },
-  ieChartArea: { flexDirection: 'row', marginHorizontal: 16, marginTop: 8, height: 140 },
+  ieBackArrow: { width: 12, height: 19 },
+  ieHeaderTitle: { fontSize: 22, fontWeight: '700', color: '#0f0f0f' },
+  ieChartArea: { flexDirection: 'row', marginHorizontal: 16, marginTop: 8, height: 140, overflow: 'visible' },
   ieXAxis: { flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 56, paddingRight: 16, marginTop: 4 },
-  ieSummary: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 16, gap: 8 },
-  ieDot: { width: 8, height: 8 },
-  ieSumLabel: { fontSize: 16, fontWeight: '700', color: '#262626', flex: 1 },
-  ieSumValue: { fontSize: 16, fontWeight: '700', color: '#252525' },
+  ieSummary: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 18, gap: 10 },
+  ieDot: { width: 10, height: 10 },
+  ieSumLabel: { fontSize: 16, fontWeight: '700', color: '#0f0f0f', flex: 1 },
+  ieSumValue: { fontSize: 16, fontWeight: '700', color: '#0f0f0f' },
   ieDivider: { height: 0.5, backgroundColor: C.divider, marginHorizontal: 16 },
-  ieSecTitle: { fontSize: 17, fontWeight: '700', color: '#252525', paddingHorizontal: 16, paddingTop: 20, paddingBottom: 14 },
-  ieWarningBox: { flexDirection: 'row', alignItems: 'flex-start', marginHorizontal: 16, marginBottom: 16, backgroundColor: '#f5f5f5', borderRadius: 10, padding: 14, gap: 10 },
-  ieWarningIcon: { width: 22, height: 21, marginTop: 2 },
-  ieWarningText: { fontSize: 14, fontWeight: '400', color: '#757575', flex: 1, lineHeight: 20 },
-  ieVideoRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 10, gap: 10 },
-  ieVideoThumb: { width: 56, height: 32, borderRadius: 4, backgroundColor: '#f0f0f0' },
-  ieVideoTitle: { flex: 1, fontSize: 14, fontWeight: '400', color: '#343434' },
-  ieVideoAmt: { fontSize: 14, fontWeight: '700', color: '#292929' },
+  ieSecTitle: { fontSize: 20, fontWeight: '700', color: '#0f0f0f', paddingHorizontal: 16, paddingTop: 28, paddingBottom: 16 },
+  ieWarningBox: { flexDirection: 'row', alignItems: 'flex-start', marginHorizontal: 16, marginBottom: 20, backgroundColor: '#f2f2f2', borderRadius: 12, padding: 16, gap: 12 },
+  ieWarningIcon: { width: 26, height: 24, marginTop: 2 },
+  ieWarningText: { fontSize: 14, fontWeight: '400', color: '#555', flex: 1, lineHeight: 20 },
+  ieVideoRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 12 },
+  ieVideoThumb: { width: 60, height: 34, borderRadius: 4, backgroundColor: '#f0f0f0' },
+  ieVideoTitle: { flex: 1, fontSize: 15, fontWeight: '400', color: '#1a1a1a' },
+  ieVideoAmt: { fontSize: 15, fontWeight: '700', color: '#1a1a1a' },
+  ieProcessingRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 10, gap: 10 },
+  ieProcessingText: { fontSize: 13, fontWeight: '400', color: '#828282' },
   ieVideoDivider: { height: 0.5, backgroundColor: C.divider, marginHorizontal: 16 },
 
+  // Rendimiento cards
+  rendCard: { backgroundColor: C.cardBg, borderRadius: 12, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 2, minHeight: 260 },
+  rendTitle: { fontSize: 15, fontWeight: '700', color: '#1f1f1f' },
+  rendSub: { fontSize: 12, fontWeight: '400', color: '#6e6e6e', marginTop: 1 },
+  rendValue: { fontSize: 20, fontWeight: '700', color: '#1e1e1e', marginTop: 8 },
+  rendLabel: { fontSize: 12, fontWeight: '400', color: '#777', marginTop: 1, marginBottom: 8 },
+  rendVidRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6, gap: 8 },
+  rendThumb: { width: 56, height: 32, borderRadius: 4, backgroundColor: '#f0f0f0' },
+  rendThumbShort: { width: 32, height: 44, borderRadius: 4, backgroundColor: '#f0f0f0' },
+  rendVidTitle: { flex: 1, fontSize: 14, fontWeight: '400', color: '#2c2c2c' },
+  rendVidAmount: { fontSize: 14, fontWeight: '400', color: '#2b2b2b' },
+  rendSourceRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, gap: 8 },
+  rendDot: { width: 8, height: 8, borderRadius: 4 },
+  rendSourceLabel: { flex: 1, fontSize: 14, fontWeight: '400', color: '#414141' },
+  rendSourcePct: { fontSize: 14, fontWeight: '700', color: '#282828' },
+
   // Tendencias
-  tendSection: { paddingHorizontal: 16, paddingTop: 20 },
+  tendSection: { paddingHorizontal: 16, paddingTop: 20, paddingBottom: 10 },
   tendHeaderRow: { flexDirection: 'row', alignItems: 'center' },
   tendTitle: { fontSize: 17, fontWeight: '700', color: '#1e1e1e' },
   tendSearchBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f2f2f2', borderRadius: 20, paddingHorizontal: 16, paddingVertical: 12, marginTop: 12 },
-  tendSearchCard: { width: 240, backgroundColor: C.cardBg, borderRadius: 12, padding: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 2, minHeight: 130 },
-  tendSearchText: { fontSize: 19, fontWeight: '700', color: '#222', lineHeight: 26 },
-  tendSearchActions: { flexDirection: 'row', gap: 16, marginTop: 12 },
+  tendSearchCard: { width: 250, backgroundColor: C.cardBg, borderRadius: 12, padding: 18, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.12, shadowRadius: 10, elevation: 4, minHeight: 140 },
+  tendSearchText: { fontSize: 20, fontWeight: '700', color: '#222', lineHeight: 28 },
+  tendSearchActions: { flexDirection: 'row', gap: 20, marginTop: 16, alignItems: 'center' },
   tendVideoCard: { width: 280 },
   tendVideoThumbWrap: { position: 'relative', borderRadius: 10, overflow: 'hidden' },
   tendVideoThumb: { width: '100%', height: 160, borderRadius: 10 },
   tendDurationBadge: { position: 'absolute', bottom: 8, right: 8, backgroundColor: 'rgba(0,0,0,0.8)', borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2 },
   tendDurationText: { fontSize: 12, fontWeight: '600', color: '#fff' },
   tendVideoInfo: { flexDirection: 'row', marginTop: 8, alignItems: 'flex-start' },
-  tendVideoTitle: { fontSize: 14, fontWeight: '700', color: '#1f1f1f', flex: 1, lineHeight: 20 },
+  tendVideoTitle: { fontSize: 15, fontWeight: '700', color: '#1f1f1f', flex: 1, lineHeight: 21 },
   tendVideoMeta: { fontSize: 12, fontWeight: '400', color: '#767676', marginTop: 4 },
 });
