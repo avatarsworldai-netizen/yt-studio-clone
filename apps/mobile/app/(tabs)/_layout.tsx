@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Animated, Pressable } from 'react-native';
 import { Tabs } from 'expo-router';
 import { C, F } from '../../constants/theme';
+import { supabase } from '../../lib/supabase';
 
 // Figma icon assets
 const ICONS = {
@@ -31,12 +32,18 @@ function Logo() {
 }
 
 function RightIcons() {
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  useEffect(() => {
+    supabase.from('channel').select('avatar_url').eq('id', '00000000-0000-0000-0000-000000000001').single()
+      .then(({ data }) => { if (data?.avatar_url) setAvatarUrl(data.avatar_url); });
+  }, []);
+
   return (
     <View style={st.right}>
       <TouchableOpacity><Image source={ICONS.plus} style={st.headerIcon} resizeMode="contain" /></TouchableOpacity>
       <TouchableOpacity><Image source={ICONS.bell} style={st.headerIcon} resizeMode="contain" /></TouchableOpacity>
       <TouchableOpacity>
-        <Image source={{ uri: 'https://picsum.photos/seed/avatar/200/200' }} style={st.avatar} />
+        <Image source={{ uri: avatarUrl || 'https://picsum.photos/seed/avatar/200/200' }} style={st.avatar} />
       </TouchableOpacity>
     </View>
   );
