@@ -1,10 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { createClient } from "@supabase/supabase-js";
-import { PhonePreview } from "@/components/editor/PhonePreview";
-import { EditorPanel } from "@/components/editor/EditorPanel";
-import { TabBar } from "@/components/editor/TabBar";
+import { ChannelEditor, StatsEditor, VideosEditor, RevenueEditor, CommentsEditor } from "@/components/editor/SectionEditors";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -33,10 +31,10 @@ export type AppData = {
 const CID = "00000000-0000-0000-0000-000000000001";
 
 export default function AdminEditor() {
-  const [activeTab, setActiveTab] = useState(0);
-  const [selectedField, setSelectedField] = useState<EditableField | null>(null);
+  const [activeSection, setActiveSection] = useState(0);
   const [data, setData] = useState<AppData | null>(null);
   const [saving, setSaving] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const fetchData = useCallback(async () => {
     const [channel, stats, videos, comments, revenue, timeseries] = await Promise.all([
@@ -59,17 +57,20 @@ export default function AdminEditor() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  const handleSave = async (field: EditableField, newValue: string | number) => {
+  const handleSave = async (table: string, column: string, value: string | number, rowId: string) => {
     setSaving(true);
     const res = await fetch("/api/update", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ table: field.table, column: field.column, value: newValue, rowId: field.rowId }),
+      body: JSON.stringify({ table, column, value, rowId }),
     });
 
     if (res.ok) {
       await fetchData();
-      setSelectedField(null);
+      // Refresh iframe to show changes
+      setTimeout(() => {
+        iframeRef.current?.contentWindow?.location.reload();
+      }, 500);
     }
     setSaving(false);
   };
@@ -84,9 +85,9 @@ export default function AdminEditor() {
 
   return (
     <div className="h-full flex">
-      {/* Left sidebar */}
-      <div className="w-64 bg-white border-r border-gray-200 p-6 flex flex-col">
-        <div className="flex items-center gap-2 mb-6">
+      {/* Left sidebar - full editor */}
+      <div className="w-96 bg-white border-r border-gray-200 flex flex-col h-full">
+        <div className="flex items-center gap-2 p-4 border-b border-gray-200">
           <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
             <span className="text-white text-xs font-bold">▶</span>
           </div>
@@ -94,54 +95,59 @@ export default function AdminEditor() {
             <h1 className="text-sm font-bold text-gray-900">YT Studio</h1>
             <p className="text-xs text-gray-500">Editor Visual</p>
           </div>
+          <button
+            onClick={() => { fetchData(); iframeRef.current?.contentWindow?.location.reload(); }}
+            className="ml-auto px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700"
+          >
+            ↻ Refrescar
+          </button>
         </div>
 
-        <div className="text-xs font-semibold text-gray-400 uppercase mb-3">Pantallas</div>
-        {["Panel", "Contenido", "Estadísticas", "Comunidad", "Ingresos"].map((tab, i) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(i)}
-            className={`text-left px-3 py-2 rounded-lg mb-1 text-sm transition-colors ${
-              activeTab === i
-                ? "bg-blue-50 text-blue-700 font-semibold"
-                : "text-gray-600 hover:bg-gray-50"
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
+        {/* Section tabs */}
+        <div className="flex border-b border-gray-200 overflow-x-auto">
+          {["Canal", "Stats", "Videos", "Revenue", "Comments"].map((tab, i) => (
+            <button
+              key={tab}
+              onClick={() => setActiveSection(i)}
+              className={`px-3 py-2.5 text-xs font-medium whitespace-nowrap transition-colors ${
+                activeSection === i
+                  ? "text-blue-700 border-b-2 border-blue-700"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
 
-        <div className="mt-auto text-xs text-gray-400">
-          Haz click en cualquier elemento para editarlo
+        {/* Editor fields */}
+        <div className="flex-1 overflow-y-auto p-4">
+          {activeSection === 0 && <ChannelEditor data={data} onSave={handleSave} />}
+          {activeSection === 1 && <StatsEditor data={data} onSave={handleSave} />}
+          {activeSection === 2 && <VideosEditor data={data} onSave={handleSave} />}
+          {activeSection === 3 && <RevenueEditor data={data} onSave={handleSave} />}
+          {activeSection === 4 && <CommentsEditor data={data} onSave={handleSave} />}
         </div>
       </div>
 
-      {/* Center: iPhone preview */}
+      {/* Center: iPhone preview - loads the actual mobile app */}
       <div className="flex-1 flex items-center justify-center bg-gray-100">
         <div className="iphone-frame">
           <div className="iphone-notch" />
-          <div className="iphone-content" style={{ paddingTop: 44 }}>
-            <PhonePreview
-              activeTab={activeTab}
-              data={data}
-              onFieldSelect={setSelectedField}
-              selectedField={selectedField}
-            />
-            <div style={{ height: 80 }} />
-          </div>
-          <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
+          <iframe
+            ref={iframeRef}
+            src="http://localhost:8081"
+            style={{
+              width: "100%",
+              height: "100%",
+              border: "none",
+              borderRadius: 32,
+            }}
+            title="App Preview"
+          />
         </div>
       </div>
 
-      {/* Right: Editor panel */}
-      {selectedField && (
-        <EditorPanel
-          field={selectedField}
-          onSave={handleSave}
-          onClose={() => setSelectedField(null)}
-          saving={saving}
-        />
-      )}
     </div>
   );
 }
