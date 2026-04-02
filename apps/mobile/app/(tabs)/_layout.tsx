@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Animated, Pressable } from 'react-native';
 import { Tabs } from 'expo-router';
 import { C, F } from '../../constants/theme';
 
@@ -46,16 +46,43 @@ function TabIcon({ source, color }: { source: any; color: string }) {
   return <Image source={source} style={[st.tabIcon, { tintColor: color }]} resizeMode="contain" />;
 }
 
+function RippleTabButton({ children, onPress, ...rest }: any) {
+  const opacityAnim = useRef(new Animated.Value(0)).current;
+
+  const handlePress = () => {
+    opacityAnim.setValue(0);
+    Animated.sequence([
+      Animated.timing(opacityAnim, { toValue: 0.6, duration: 60, useNativeDriver: false }),
+      Animated.timing(opacityAnim, { toValue: 0.6, duration: 120, useNativeDriver: false }),
+      Animated.timing(opacityAnim, { toValue: 0, duration: 120, useNativeDriver: false }),
+    ]).start();
+    if (onPress) onPress();
+  };
+
+  return (
+    <Pressable onPress={handlePress} style={[rest.style, { overflow: 'visible' }]}>
+      <Animated.View style={{
+        position: 'absolute', width: 95, height: 95, borderRadius: 48,
+        borderWidth: 1, borderColor: '#d0d0d0',
+        backgroundColor: '#f0f0f0', opacity: opacityAnim,
+        top: '50%', left: '50%', marginTop: -51, marginLeft: -48,
+      }} />
+      {children}
+    </Pressable>
+  );
+}
+
 export default function TabLayout() {
   return (
     <Tabs screenOptions={{
       headerStyle: { backgroundColor: C.white, elevation: 0, shadowOpacity: 0, borderBottomWidth: 0 },
       headerShadowVisible: false,
-      tabBarStyle: { backgroundColor: C.white, borderTopColor: C.divider, borderTopWidth: 0.5, height: 95, paddingBottom: 34, paddingTop: 8 },
+      tabBarStyle: { backgroundColor: C.white, borderTopColor: C.divider, borderTopWidth: 0.5, height: 95, paddingBottom: 34, paddingTop: 8, overflow: 'hidden' },
       tabBarActiveTintColor: C.tabText,
       tabBarInactiveTintColor: C.tabText,
       tabBarLabelStyle: { fontSize: F.s10, fontWeight: '400', marginTop: 4 },
       tabBarItemStyle: { justifyContent: 'center', alignItems: 'center' },
+      tabBarButton: (props) => <RippleTabButton {...props} />,
     }}>
       <Tabs.Screen name="index" options={{
         title: 'Panel',

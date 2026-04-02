@@ -578,6 +578,71 @@ export default function AnalyticsScreen() {
 
   /* ── Ingresos estimados detail view ── */
   const [iePeriod, setIePeriod] = useState(1);
+  const [selectedBar, setSelectedBar] = useState<number | null>(null);
+
+  const BAR_DATA = [
+    { month: 'Oct', value: 8.28, color: '#a8e6cf' },
+    { month: 'Nov', value: 4.21, color: '#a8e6cf' },
+    { month: 'Dic', value: 59.74, color: '#a8e6cf' },
+    { month: 'Ene', value: 18.20, color: '#a8e6cf' },
+    { month: 'Feb', value: 39.48, color: '#a8e6cf' },
+    { month: 'Mar', value: 15.72, color: '#1db4a5' },
+  ];
+  const barMax = Math.max(...BAR_DATA.map(b => b.value));
+
+  function BarChartView() {
+    return (
+      <>
+        <View style={[s.ieChartArea, { height: 170, marginTop: 16, overflow: 'visible' }]}>
+          <View style={s.yAxisLabels}>
+            <Text style={s.axisText}>60 €</Text>
+            <Text style={s.axisText}>40 €</Text>
+            <Text style={s.axisText}>20 €</Text>
+            <Text style={s.axisText}>0 €</Text>
+          </View>
+          <View style={{ flex: 1, height: 170, position: 'relative' }}>
+            {/* Grid lines */}
+            {[0, 1, 2, 3].map(i => (
+              <View key={i} style={{ position: 'absolute', left: 0, right: 0, top: i * (170 / 3), height: 1, backgroundColor: '#ececec' }} />
+            ))}
+            {/* Bars */}
+            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-around', paddingHorizontal: 4 }}>
+              {BAR_DATA.map((bar, i) => {
+                const h = (bar.value / barMax) * 150;
+                return (
+                  <TouchableOpacity
+                    key={i}
+                    activeOpacity={0.8}
+                    onPress={() => {
+                      if (selectedBar === i) { setSelectedBar(null); }
+                      else { setSelectedBar(null); setTimeout(() => setSelectedBar(i), 10); }
+                    }}
+                    style={{ alignItems: 'center', flex: 1 }}
+                  >
+                    <View style={{ width: '65%', height: h, backgroundColor: bar.color, borderRadius: 3 }} />
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+            {/* Single tooltip rendered on top */}
+            {selectedBar !== null && (() => {
+              const bar = BAR_DATA[selectedBar];
+              const barH = (bar.value / barMax) * 150;
+              const barCenterX = ((selectedBar + 0.5) / BAR_DATA.length) * 100;
+              return (
+                <View style={[s.barTooltip, { left: `${barCenterX - 12}%`, top: 170 - barH - 30 }]} pointerEvents="none">
+                  <Text style={s.barTooltipText}>{bar.month}: {bar.value.toFixed(2).replace('.', ',')} €</Text>
+                </View>
+              );
+            })()}
+          </View>
+        </View>
+        <View style={s.ieXAxis}>
+          {BAR_DATA.map((bar, i) => <Text key={i} style={s.axisText}>{bar.month}</Text>)}
+        </View>
+      </>
+    );
+  }
 
   if (showIngresosDetail) {
     return (
@@ -604,7 +669,55 @@ export default function AnalyticsScreen() {
         </ScrollView>
 
         {/* Chart - line chart for 7D/28D/90D/365D, bar chart for months/years/total */}
-        {iePeriod < 4 ? (
+        {iePeriod === 9 ? (
+          <>
+            <View style={[s.ieChartArea, { height: 170, marginTop: 16 }]}>
+              <View style={s.yAxisLabels}>
+                <Text style={s.axisText}>51€</Text>
+                <Text style={s.axisText}>34€</Text>
+                <Text style={s.axisText}>17€</Text>
+                <Text style={s.axisText}>0€</Text>
+              </View>
+              <View style={[s.chartSvgWrap, { height: 170, overflow: 'visible' }]}>
+                <View style={s.gridContainer}>
+                  {[0, 1, 2].map(i => <View key={i} style={[s.gridLine, { top: i * (170 / 3) }]} />)}
+                </View>
+                <View style={[s.svgLayer, { overflow: 'visible' }]}>
+                  <Image source={require('../../assets/figma/ie_chart_total.png')} style={{ width: '100%', height: 170 }} resizeMode="stretch" />
+                </View>
+              </View>
+            </View>
+            <View style={s.ieXAxis}>
+              <Text style={s.axisText}>19 sept 2016</Text>
+              <Text style={s.axisText}>25 jun 2021</Text>
+              <Text style={s.axisText}>31 mar</Text>
+            </View>
+          </>
+        ) : iePeriod >= 7 && iePeriod <= 8 ? (
+          <>
+            <View style={[s.ieChartArea, { height: 170, marginTop: 16 }]}>
+              <View style={s.yAxisLabels}>
+                <Text style={s.axisText}>6€</Text>
+                <Text style={s.axisText}>4€</Text>
+                <Text style={s.axisText}>2€</Text>
+                <Text style={s.axisText}>0€</Text>
+              </View>
+              <View style={[s.chartSvgWrap, { height: 170, overflow: 'visible' }]}>
+                <View style={s.gridContainer}>
+                  {[0, 1, 2].map(i => <View key={i} style={[s.gridLine, { top: i * (170 / 3) }]} />)}
+                </View>
+                <View style={[s.svgLayer, { overflow: 'visible' }]}>
+                  <Image source={require('../../assets/figma/ie_chart_year.png')} style={{ width: '100%', height: 170 }} resizeMode="stretch" />
+                </View>
+              </View>
+            </View>
+            <View style={s.ieXAxis}>
+              <Text style={s.axisText}>1ene</Text>
+              <Text style={s.axisText}>14 feb</Text>
+              <Text style={s.axisText}>31 mar</Text>
+            </View>
+          </>
+        ) : iePeriod < 4 ? (
           <>
             <View style={s.ieChartArea}>
               <View style={s.yAxisLabels}>
@@ -629,34 +742,14 @@ export default function AnalyticsScreen() {
             </View>
           </>
         ) : (
-          <>
-            <View style={s.ieChartArea}>
-              <View style={s.yAxisLabels}>
-                <Text style={s.axisText}>60€</Text>
-                <Text style={s.axisText}>40€</Text>
-                <Text style={s.axisText}>20€</Text>
-                <Text style={s.axisText}>0€</Text>
-              </View>
-              <View style={[s.chartSvgWrap, { height: 140, overflow: 'visible' }]}>
-                <Image source={require('../../assets/figma/ie_bar_chart.png')} style={{ width: '100%', height: 140 }} resizeMode="stretch" />
-              </View>
-            </View>
-            <View style={s.ieXAxis}>
-              <Text style={s.axisText}>Oct</Text>
-              <Text style={s.axisText}>Nov</Text>
-              <Text style={s.axisText}>Dic</Text>
-              <Text style={s.axisText}>Ene</Text>
-              <Text style={s.axisText}>Feb</Text>
-              <Text style={s.axisText}>Mar</Text>
-            </View>
-          </>
+          <BarChartView />
         )}
 
         {/* Summary */}
         <View style={s.ieSummary}>
           <Image source={require('../../assets/figma/ie_dot_green.png')} style={s.ieDot} resizeMode="contain" />
           <Text style={s.ieSumLabel}>Ingresos estimados</Text>
-          <Text style={s.ieSumValue}>{iePeriod < 4 ? '15,72€' : '16,02€'}</Text>
+          <Text style={s.ieSumValue}>{iePeriod < 4 ? '15,72 €' : iePeriod === 9 ? '2022,14 €' : '16,02 €'}</Text>
         </View>
 
         {/* Processing message for monthly views */}
@@ -949,8 +1042,10 @@ const s = StyleSheet.create({
   ieVideoThumb: { width: 60, height: 34, borderRadius: 4, backgroundColor: '#f0f0f0' },
   ieVideoTitle: { flex: 1, fontSize: 15, fontWeight: '400', color: '#1a1a1a' },
   ieVideoAmt: { fontSize: 15, fontWeight: '700', color: '#1a1a1a' },
-  ieProcessingRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 10, gap: 10 },
-  ieProcessingText: { fontSize: 13, fontWeight: '400', color: '#828282' },
+  barTooltip: { position: 'absolute', top: -30, backgroundColor: '#fefefe', borderWidth: 1, borderColor: '#e4e4e4', borderRadius: 2, paddingHorizontal: 12, paddingVertical: 6, zIndex: 99, minWidth: 100 },
+  barTooltipText: { fontSize: 11, fontWeight: '600', color: '#2c2c2c' },
+  ieProcessingRow: { flexDirection: 'row', alignItems: 'center', marginHorizontal: 16, marginTop: 10, marginBottom: 6, backgroundColor: '#f2f2f2', borderRadius: 12, padding: 16, gap: 12 },
+  ieProcessingText: { fontSize: 14, fontWeight: '400', color: '#555', flex: 1 },
   ieVideoDivider: { height: 0.5, backgroundColor: C.divider, marginHorizontal: 16 },
 
   // Rendimiento cards
