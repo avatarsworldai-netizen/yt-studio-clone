@@ -3,90 +3,35 @@
 import { useState } from "react";
 import type { AppData } from "@/app/page";
 
+import type { EditableField } from "@/app/page";
+
 type SaveFn = (table: string, column: string, value: string | number, rowId: string) => Promise<void>;
+type SelectFn = (field: EditableField) => void;
 
-function Field({ label, value, table, column, rowId, onSave, type = "text" }: {
-  label: string; value: any; table: string; column: string; rowId: string; onSave: SaveFn; type?: "text" | "image";
+function Field({ label, value, table, column, rowId, onSave, onSelect, type = "text" }: {
+  label: string; value: any; table: string; column: string; rowId: string; onSave: SaveFn; onSelect?: SelectFn; type?: "text" | "image";
 }) {
-  const [editing, setEditing] = useState(false);
-  const [val, setVal] = useState(String(value ?? ""));
-  const [uploading, setUploading] = useState(false);
-
-  const save = async () => {
-    await onSave(table, column, val, rowId);
-    setEditing(false);
-  };
-
-  if (type === "image") {
-    return (
-      <div className="mb-3">
-        <label className="text-xs font-medium text-gray-500 block mb-1">{label}</label>
-        <div className="flex items-center gap-2">
-          <div className="w-12 h-12 rounded bg-gray-100 overflow-hidden flex-shrink-0">
-            {val && <img src={val} alt="" className="w-full h-full object-cover" />}
-          </div>
-          <div className="flex-1 min-w-0">
-            <input
-              type="text"
-              value={val}
-              onChange={(e) => setVal(e.target.value)}
-              onBlur={save}
-              onKeyDown={(e) => e.key === "Enter" && save()}
-              placeholder="URL de imagen"
-              className="w-full px-2 py-1 border border-gray-200 rounded text-xs text-gray-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
-          <label className={`px-2 py-1 rounded text-xs cursor-pointer flex-shrink-0 ${uploading ? 'bg-gray-300 text-gray-500' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>
-            {uploading ? '...' : '↑'}
-            <input type="file" accept="image/*" className="hidden" disabled={uploading} onChange={async (e) => {
-              const file = e.target.files?.[0];
-              if (!file) return;
-              setUploading(true);
-              const formData = new FormData();
-              formData.append("file", file);
-              formData.append("table", table);
-              formData.append("column", column);
-              formData.append("rowId", rowId);
-              const res = await fetch("/api/upload", { method: "POST", body: formData });
-              if (res.ok) {
-                const data = await res.json();
-                setVal(data.url);
-              }
-              setUploading(false);
-            }} />
-          </label>
-        </div>
-      </div>
-    );
-  }
-
-  if (!editing) {
-    return (
-      <div className="mb-2 flex items-center justify-between group cursor-pointer hover:bg-gray-50 rounded px-2 py-1.5 -mx-2" onClick={() => setEditing(true)}>
-        <div>
-          <div className="text-xs text-gray-400">{label}</div>
-          <div className="text-sm text-gray-900 font-medium">{String(value ?? "")}</div>
-        </div>
-        <span className="text-gray-300 group-hover:text-blue-500 text-xs">✎</span>
-      </div>
-    );
-  }
+  const fieldData: EditableField = { id: `${table}_${column}_${rowId}`, label, value: value ?? "", type: type as any, table, column, rowId };
 
   return (
-    <div className="mb-3">
-      <label className="text-xs font-medium text-gray-500 block mb-1">{label}</label>
-      <div className="flex gap-1">
-        <input
-          autoFocus
-          type="text"
-          value={val}
-          onChange={(e) => setVal(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") save(); if (e.key === "Escape") setEditing(false); }}
-          className="flex-1 px-2 py-1.5 border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button onClick={save} className="px-3 py-1.5 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">✓</button>
-        <button onClick={() => setEditing(false)} className="px-2 py-1.5 bg-gray-100 text-gray-600 text-xs rounded hover:bg-gray-200">✕</button>
+    <div
+      className="mb-2 flex items-center justify-between group cursor-pointer hover:bg-blue-50 rounded px-2 py-1.5 -mx-2 transition-colors"
+      onClick={() => onSelect?.(fieldData)}
+    >
+      <div className="min-w-0 flex-1">
+        <div className="text-xs text-gray-400">{label}</div>
+        {type === "image" ? (
+          <div className="flex items-center gap-2 mt-1">
+            <div className="w-8 h-8 rounded bg-gray-200 overflow-hidden flex-shrink-0">
+              {value && <img src={value} alt="" className="w-full h-full object-cover" />}
+            </div>
+            <span className="text-xs text-gray-500 truncate">{value ? "Imagen cargada" : "Sin imagen"}</span>
+          </div>
+        ) : (
+          <div className="text-sm text-gray-900 font-medium truncate">{String(value ?? "—")}</div>
+        )}
       </div>
+      <span className="text-gray-300 group-hover:text-blue-500 text-xs ml-2 flex-shrink-0">✎</span>
     </div>
   );
 }
@@ -96,52 +41,52 @@ function SectionTitle({ children }: { children: string }) {
 }
 
 // ── Channel Editor ──
-export function ChannelEditor({ data, onSave }: { data: AppData; onSave: SaveFn }) {
+export function ChannelEditor({ data, onSave, onSelect }: { data: AppData; onSave: SaveFn; onSelect: SelectFn }) {
   const ch = data.channel;
   if (!ch) return null;
   return (
     <div>
       <SectionTitle>Perfil del canal</SectionTitle>
-      <Field label="Avatar" value={ch.avatar_url} table="channel" column="avatar_url" rowId={ch.id} onSave={onSave} type="image" />
-      <Field label="Banner" value={ch.banner_url} table="channel" column="banner_url" rowId={ch.id} onSave={onSave} type="image" />
-      <Field label="Nombre" value={ch.name} table="channel" column="name" rowId={ch.id} onSave={onSave} />
-      <Field label="Handle" value={ch.handle} table="channel" column="handle" rowId={ch.id} onSave={onSave} />
-      <Field label="Suscriptores" value={ch.subscriber_count} table="channel" column="subscriber_count" rowId={ch.id} onSave={onSave} />
-      <Field label="Visualizaciones totales" value={ch.total_views} table="channel" column="total_views" rowId={ch.id} onSave={onSave} />
-      <Field label="Tiempo de visualización (horas)" value={ch.total_watch_time_hours} table="channel" column="total_watch_time_hours" rowId={ch.id} onSave={onSave} />
-      <Field label="Número de videos" value={ch.video_count} table="channel" column="video_count" rowId={ch.id} onSave={onSave} />
-      <Field label="País" value={ch.country} table="channel" column="country" rowId={ch.id} onSave={onSave} />
-      <Field label="Verificado" value={ch.is_verified ? "sí" : "no"} table="channel" column="is_verified" rowId={ch.id} onSave={onSave} />
-      <Field label="Descripción" value={ch.description} table="channel" column="description" rowId={ch.id} onSave={onSave} />
+      <Field label="Avatar" value={ch.avatar_url} table="channel" column="avatar_url" rowId={ch.id} onSave={onSave} onSelect={onSelect} type="image" />
+      <Field label="Banner" value={ch.banner_url} table="channel" column="banner_url" rowId={ch.id} onSave={onSave} onSelect={onSelect} type="image" />
+      <Field label="Nombre" value={ch.name} table="channel" column="name" rowId={ch.id} onSave={onSave} onSelect={onSelect} />
+      <Field label="Handle" value={ch.handle} table="channel" column="handle" rowId={ch.id} onSave={onSave} onSelect={onSelect} />
+      <Field label="Suscriptores" value={ch.subscriber_count} table="channel" column="subscriber_count" rowId={ch.id} onSave={onSave} onSelect={onSelect} />
+      <Field label="Visualizaciones totales" value={ch.total_views} table="channel" column="total_views" rowId={ch.id} onSave={onSave} onSelect={onSelect} />
+      <Field label="Tiempo de visualización (horas)" value={ch.total_watch_time_hours} table="channel" column="total_watch_time_hours" rowId={ch.id} onSave={onSave} onSelect={onSelect} />
+      <Field label="Número de videos" value={ch.video_count} table="channel" column="video_count" rowId={ch.id} onSave={onSave} onSelect={onSelect} />
+      <Field label="País" value={ch.country} table="channel" column="country" rowId={ch.id} onSave={onSave} onSelect={onSelect} />
+      <Field label="Verificado" value={ch.is_verified ? "sí" : "no"} table="channel" column="is_verified" rowId={ch.id} onSave={onSave} onSelect={onSelect} />
+      <Field label="Descripción" value={ch.description} table="channel" column="description" rowId={ch.id} onSave={onSave} onSelect={onSelect} />
     </div>
   );
 }
 
 // ── Stats Editor ──
-export function StatsEditor({ data, onSave }: { data: AppData; onSave: SaveFn }) {
+export function StatsEditor({ data, onSave, onSelect }: { data: AppData; onSave: SaveFn; onSelect: SelectFn }) {
   const st = data.stats;
   if (!st) return null;
   return (
     <div>
       <SectionTitle>Estadísticas del canal (28 días)</SectionTitle>
-      <Field label="Visualizaciones" value={st.views} table="dashboard_stats" column="views" rowId={st.id} onSave={onSave} />
-      <Field label="% cambio visualizaciones" value={st.views_change_percent} table="dashboard_stats" column="views_change_percent" rowId={st.id} onSave={onSave} />
-      <Field label="Tiempo de visualización (horas)" value={st.watch_time_hours} table="dashboard_stats" column="watch_time_hours" rowId={st.id} onSave={onSave} />
-      <Field label="% cambio tiempo" value={st.watch_time_change_percent} table="dashboard_stats" column="watch_time_change_percent" rowId={st.id} onSave={onSave} />
-      <Field label="Suscriptores ganados" value={st.subscribers_gained} table="dashboard_stats" column="subscribers_gained" rowId={st.id} onSave={onSave} />
-      <Field label="Suscriptores perdidos" value={st.subscribers_lost} table="dashboard_stats" column="subscribers_lost" rowId={st.id} onSave={onSave} />
-      <Field label="Suscriptores neto" value={st.subscribers_net} table="dashboard_stats" column="subscribers_net" rowId={st.id} onSave={onSave} />
-      <Field label="% cambio suscriptores" value={st.subscribers_change_percent} table="dashboard_stats" column="subscribers_change_percent" rowId={st.id} onSave={onSave} />
-      <Field label="Ingresos estimados" value={st.estimated_revenue} table="dashboard_stats" column="estimated_revenue" rowId={st.id} onSave={onSave} />
-      <Field label="% cambio ingresos" value={st.revenue_change_percent} table="dashboard_stats" column="revenue_change_percent" rowId={st.id} onSave={onSave} />
-      <Field label="Impresiones" value={st.impressions} table="dashboard_stats" column="impressions" rowId={st.id} onSave={onSave} />
-      <Field label="CTR impresiones (%)" value={st.impression_ctr} table="dashboard_stats" column="impression_ctr" rowId={st.id} onSave={onSave} />
+      <Field label="Visualizaciones" value={st.views} table="dashboard_stats" column="views" rowId={st.id} onSave={onSave} onSelect={onSelect} />
+      <Field label="% cambio visualizaciones" value={st.views_change_percent} table="dashboard_stats" column="views_change_percent" rowId={st.id} onSave={onSave} onSelect={onSelect} />
+      <Field label="Tiempo de visualización (horas)" value={st.watch_time_hours} table="dashboard_stats" column="watch_time_hours" rowId={st.id} onSave={onSave} onSelect={onSelect} />
+      <Field label="% cambio tiempo" value={st.watch_time_change_percent} table="dashboard_stats" column="watch_time_change_percent" rowId={st.id} onSave={onSave} onSelect={onSelect} />
+      <Field label="Suscriptores ganados" value={st.subscribers_gained} table="dashboard_stats" column="subscribers_gained" rowId={st.id} onSave={onSave} onSelect={onSelect} />
+      <Field label="Suscriptores perdidos" value={st.subscribers_lost} table="dashboard_stats" column="subscribers_lost" rowId={st.id} onSave={onSave} onSelect={onSelect} />
+      <Field label="Suscriptores neto" value={st.subscribers_net} table="dashboard_stats" column="subscribers_net" rowId={st.id} onSave={onSave} onSelect={onSelect} />
+      <Field label="% cambio suscriptores" value={st.subscribers_change_percent} table="dashboard_stats" column="subscribers_change_percent" rowId={st.id} onSave={onSave} onSelect={onSelect} />
+      <Field label="Ingresos estimados" value={st.estimated_revenue} table="dashboard_stats" column="estimated_revenue" rowId={st.id} onSave={onSave} onSelect={onSelect} />
+      <Field label="% cambio ingresos" value={st.revenue_change_percent} table="dashboard_stats" column="revenue_change_percent" rowId={st.id} onSave={onSave} onSelect={onSelect} />
+      <Field label="Impresiones" value={st.impressions} table="dashboard_stats" column="impressions" rowId={st.id} onSave={onSave} onSelect={onSelect} />
+      <Field label="CTR impresiones (%)" value={st.impression_ctr} table="dashboard_stats" column="impression_ctr" rowId={st.id} onSave={onSave} onSelect={onSelect} />
     </div>
   );
 }
 
 // ── Videos Editor ──
-export function VideosEditor({ data, onSave }: { data: AppData; onSave: SaveFn }) {
+export function VideosEditor({ data, onSave, onSelect }: { data: AppData; onSave: SaveFn; onSelect: SelectFn }) {
   const [expanded, setExpanded] = useState<number | null>(null);
   return (
     <div>
@@ -160,24 +105,24 @@ export function VideosEditor({ data, onSave }: { data: AppData; onSave: SaveFn }
           </div>
           {expanded === i && (
             <div className="p-2 pt-0 border-t border-gray-100">
-              <Field label="Thumbnail" value={vid.thumbnail_url} table="videos" column="thumbnail_url" rowId={vid.id} onSave={onSave} type="image" />
-              <Field label="Título" value={vid.title} table="videos" column="title" rowId={vid.id} onSave={onSave} />
-              <Field label="Descripción" value={vid.description} table="videos" column="description" rowId={vid.id} onSave={onSave} />
-              <Field label="Duración" value={vid.duration} table="videos" column="duration" rowId={vid.id} onSave={onSave} />
-              <Field label="Estado" value={vid.status} table="videos" column="status" rowId={vid.id} onSave={onSave} />
-              <Field label="Visibilidad" value={vid.visibility} table="videos" column="visibility" rowId={vid.id} onSave={onSave} />
-              <Field label="Visualizaciones" value={vid.view_count} table="videos" column="view_count" rowId={vid.id} onSave={onSave} />
-              <Field label="Likes" value={vid.like_count} table="videos" column="like_count" rowId={vid.id} onSave={onSave} />
-              <Field label="Dislikes" value={vid.dislike_count} table="videos" column="dislike_count" rowId={vid.id} onSave={onSave} />
-              <Field label="Comentarios" value={vid.comment_count} table="videos" column="comment_count" rowId={vid.id} onSave={onSave} />
-              <Field label="Compartidos" value={vid.share_count} table="videos" column="share_count" rowId={vid.id} onSave={onSave} />
-              <Field label="Tiempo de vis. (horas)" value={vid.watch_time_hours} table="videos" column="watch_time_hours" rowId={vid.id} onSave={onSave} />
-              <Field label="Duración media vista" value={vid.average_view_duration} table="videos" column="average_view_duration" rowId={vid.id} onSave={onSave} />
-              <Field label="Impresiones" value={vid.impressions} table="videos" column="impressions" rowId={vid.id} onSave={onSave} />
-              <Field label="CTR impresiones (%)" value={vid.impression_ctr} table="videos" column="impression_ctr" rowId={vid.id} onSave={onSave} />
-              <Field label="Ingresos estimados" value={vid.estimated_revenue} table="videos" column="estimated_revenue" rowId={vid.id} onSave={onSave} />
-              <Field label="RPM" value={vid.rpm} table="videos" column="rpm" rowId={vid.id} onSave={onSave} />
-              <Field label="CPM" value={vid.cpm} table="videos" column="cpm" rowId={vid.id} onSave={onSave} />
+              <Field label="Thumbnail" value={vid.thumbnail_url} table="videos" column="thumbnail_url" rowId={vid.id} onSave={onSave} onSelect={onSelect} type="image" />
+              <Field label="Título" value={vid.title} table="videos" column="title" rowId={vid.id} onSave={onSave} onSelect={onSelect} />
+              <Field label="Descripción" value={vid.description} table="videos" column="description" rowId={vid.id} onSave={onSave} onSelect={onSelect} />
+              <Field label="Duración" value={vid.duration} table="videos" column="duration" rowId={vid.id} onSave={onSave} onSelect={onSelect} />
+              <Field label="Estado" value={vid.status} table="videos" column="status" rowId={vid.id} onSave={onSave} onSelect={onSelect} />
+              <Field label="Visibilidad" value={vid.visibility} table="videos" column="visibility" rowId={vid.id} onSave={onSave} onSelect={onSelect} />
+              <Field label="Visualizaciones" value={vid.view_count} table="videos" column="view_count" rowId={vid.id} onSave={onSave} onSelect={onSelect} />
+              <Field label="Likes" value={vid.like_count} table="videos" column="like_count" rowId={vid.id} onSave={onSave} onSelect={onSelect} />
+              <Field label="Dislikes" value={vid.dislike_count} table="videos" column="dislike_count" rowId={vid.id} onSave={onSave} onSelect={onSelect} />
+              <Field label="Comentarios" value={vid.comment_count} table="videos" column="comment_count" rowId={vid.id} onSave={onSave} onSelect={onSelect} />
+              <Field label="Compartidos" value={vid.share_count} table="videos" column="share_count" rowId={vid.id} onSave={onSave} onSelect={onSelect} />
+              <Field label="Tiempo de vis. (horas)" value={vid.watch_time_hours} table="videos" column="watch_time_hours" rowId={vid.id} onSave={onSave} onSelect={onSelect} />
+              <Field label="Duración media vista" value={vid.average_view_duration} table="videos" column="average_view_duration" rowId={vid.id} onSave={onSave} onSelect={onSelect} />
+              <Field label="Impresiones" value={vid.impressions} table="videos" column="impressions" rowId={vid.id} onSave={onSave} onSelect={onSelect} />
+              <Field label="CTR impresiones (%)" value={vid.impression_ctr} table="videos" column="impression_ctr" rowId={vid.id} onSave={onSave} onSelect={onSelect} />
+              <Field label="Ingresos estimados" value={vid.estimated_revenue} table="videos" column="estimated_revenue" rowId={vid.id} onSave={onSave} onSelect={onSelect} />
+              <Field label="RPM" value={vid.rpm} table="videos" column="rpm" rowId={vid.id} onSave={onSave} onSelect={onSelect} />
+              <Field label="CPM" value={vid.cpm} table="videos" column="cpm" rowId={vid.id} onSave={onSave} onSelect={onSelect} />
             </div>
           )}
         </div>
@@ -187,7 +132,7 @@ export function VideosEditor({ data, onSave }: { data: AppData; onSave: SaveFn }
 }
 
 // ── Revenue Editor ──
-export function RevenueEditor({ data, onSave }: { data: AppData; onSave: SaveFn }) {
+export function RevenueEditor({ data, onSave, onSelect }: { data: AppData; onSave: SaveFn; onSelect: SelectFn }) {
   return (
     <div>
       <SectionTitle>Ingresos mensuales</SectionTitle>
@@ -196,14 +141,14 @@ export function RevenueEditor({ data, onSave }: { data: AppData; onSave: SaveFn 
         return (
           <div key={rev.id} className="mb-3 p-2 border border-gray-200 rounded-lg">
             <div className="text-xs font-semibold text-gray-700 mb-2 capitalize">{monthName}</div>
-            <Field label="Ingresos estimados" value={rev.estimated_revenue} table="revenue" column="estimated_revenue" rowId={rev.id} onSave={onSave} />
-            <Field label="Ingresos por anuncios" value={rev.ad_revenue} table="revenue" column="ad_revenue" rowId={rev.id} onSave={onSave} />
-            <Field label="Membresías" value={rev.membership_revenue} table="revenue" column="membership_revenue" rowId={rev.id} onSave={onSave} />
-            <Field label="Super Chat" value={rev.superchat_revenue} table="revenue" column="superchat_revenue" rowId={rev.id} onSave={onSave} />
-            <Field label="Merchandise" value={rev.merchandise_revenue} table="revenue" column="merchandise_revenue" rowId={rev.id} onSave={onSave} />
-            <Field label="Premium" value={rev.premium_revenue} table="revenue" column="premium_revenue" rowId={rev.id} onSave={onSave} />
-            <Field label="RPM" value={rev.rpm} table="revenue" column="rpm" rowId={rev.id} onSave={onSave} />
-            <Field label="CPM" value={rev.cpm} table="revenue" column="cpm" rowId={rev.id} onSave={onSave} />
+            <Field label="Ingresos estimados" value={rev.estimated_revenue} table="revenue" column="estimated_revenue" rowId={rev.id} onSave={onSave} onSelect={onSelect} />
+            <Field label="Ingresos por anuncios" value={rev.ad_revenue} table="revenue" column="ad_revenue" rowId={rev.id} onSave={onSave} onSelect={onSelect} />
+            <Field label="Membresías" value={rev.membership_revenue} table="revenue" column="membership_revenue" rowId={rev.id} onSave={onSave} onSelect={onSelect} />
+            <Field label="Super Chat" value={rev.superchat_revenue} table="revenue" column="superchat_revenue" rowId={rev.id} onSave={onSave} onSelect={onSelect} />
+            <Field label="Merchandise" value={rev.merchandise_revenue} table="revenue" column="merchandise_revenue" rowId={rev.id} onSave={onSave} onSelect={onSelect} />
+            <Field label="Premium" value={rev.premium_revenue} table="revenue" column="premium_revenue" rowId={rev.id} onSave={onSave} onSelect={onSelect} />
+            <Field label="RPM" value={rev.rpm} table="revenue" column="rpm" rowId={rev.id} onSave={onSave} onSelect={onSelect} />
+            <Field label="CPM" value={rev.cpm} table="revenue" column="cpm" rowId={rev.id} onSave={onSave} onSelect={onSelect} />
           </div>
         );
       })}
@@ -212,19 +157,19 @@ export function RevenueEditor({ data, onSave }: { data: AppData; onSave: SaveFn 
 }
 
 // ── Comments Editor ──
-export function CommentsEditor({ data, onSave }: { data: AppData; onSave: SaveFn }) {
+export function CommentsEditor({ data, onSave, onSelect }: { data: AppData; onSave: SaveFn; onSelect: SelectFn }) {
   return (
     <div>
       <SectionTitle>{`Comentarios (${data.comments.length})`}</SectionTitle>
       {data.comments.map((com: any) => (
         <div key={com.id} className="mb-3 p-2 border border-gray-200 rounded-lg">
-          <Field label="Autor" value={com.author_name} table="comments" column="author_name" rowId={com.id} onSave={onSave} />
-          <Field label="Avatar" value={com.author_avatar_url} table="comments" column="author_avatar_url" rowId={com.id} onSave={onSave} type="image" />
-          <Field label="Contenido" value={com.content} table="comments" column="content" rowId={com.id} onSave={onSave} />
-          <Field label="Likes" value={com.like_count} table="comments" column="like_count" rowId={com.id} onSave={onSave} />
-          <Field label="Estado" value={com.status} table="comments" column="status" rowId={com.id} onSave={onSave} />
-          <Field label="Fijado" value={com.is_pinned ? "sí" : "no"} table="comments" column="is_pinned" rowId={com.id} onSave={onSave} />
-          <Field label="Corazón" value={com.is_hearted ? "sí" : "no"} table="comments" column="is_hearted" rowId={com.id} onSave={onSave} />
+          <Field label="Autor" value={com.author_name} table="comments" column="author_name" rowId={com.id} onSave={onSave} onSelect={onSelect} />
+          <Field label="Avatar" value={com.author_avatar_url} table="comments" column="author_avatar_url" rowId={com.id} onSave={onSave} onSelect={onSelect} type="image" />
+          <Field label="Contenido" value={com.content} table="comments" column="content" rowId={com.id} onSave={onSave} onSelect={onSelect} />
+          <Field label="Likes" value={com.like_count} table="comments" column="like_count" rowId={com.id} onSave={onSave} onSelect={onSelect} />
+          <Field label="Estado" value={com.status} table="comments" column="status" rowId={com.id} onSave={onSave} onSelect={onSelect} />
+          <Field label="Fijado" value={com.is_pinned ? "sí" : "no"} table="comments" column="is_pinned" rowId={com.id} onSave={onSave} onSelect={onSelect} />
+          <Field label="Corazón" value={com.is_hearted ? "sí" : "no"} table="comments" column="is_hearted" rowId={com.id} onSave={onSave} onSelect={onSelect} />
         </div>
       ))}
     </div>
