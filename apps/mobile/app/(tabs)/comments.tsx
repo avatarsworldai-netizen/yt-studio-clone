@@ -195,7 +195,9 @@ export default function CommunityScreen() {
         {/* Felix */}
         <View style={s.destCardShadow}>
           <View style={s.destAvatarWrap}>
-            <Image source={require('../../assets/figma/dest_avatar_felix.png')} style={s.destAvatarImg} resizeMode="cover" />
+            <AE isAdmin={isAdmin} table="comments" column="author_avatar_url" rowId="dest_2" label="Avatar Félix" value="" type="image">
+              <Image source={require('../../assets/figma/dest_avatar_felix.png')} style={s.destAvatarImg} resizeMode="cover" />
+            </AE>
           </View>
           <View style={s.destNameRow}>
             <AE isAdmin={isAdmin} table="comments" column="author_name" rowId="dest_2" label="Nombre destacado 2" value="Félix Alejand...">
@@ -213,7 +215,9 @@ export default function CommunityScreen() {
         {/* Flork */}
         <View style={s.destCardShadow}>
           <View style={s.destAvatarWrap}>
-            <Image source={require('../../assets/figma/dest_avatar_flork.png')} style={s.destAvatarImg} resizeMode="cover" />
+            <AE isAdmin={isAdmin} table="comments" column="author_avatar_url" rowId="dest_3" label="Avatar Flork" value="" type="image">
+              <Image source={require('../../assets/figma/dest_avatar_flork.png')} style={s.destAvatarImg} resizeMode="cover" />
+            </AE>
           </View>
           <Text style={s.destName}>Flork_Swea</Text>
           <Text style={s.destHandle}>@LiFall</Text>

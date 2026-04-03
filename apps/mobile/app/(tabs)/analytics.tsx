@@ -207,7 +207,9 @@ export default function AnalyticsScreen() {
               </AE>
               <Text style={s.rendLabel}>Ingresos estimados</Text>
               <View style={s.rendVidRow}>
-                <Image source={require('../../assets/figma/rend_vid1.png')} style={s.rendThumb} resizeMode="cover" />
+                <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId="rend_v1" label="Thumbnail rend. vídeo 1" value="" type="image">
+                  <Image source={require('../../assets/figma/rend_vid1.png')} style={s.rendThumb} resizeMode="cover" />
+                </AE>
                 <AE isAdmin={isAdmin} table="videos" column="title" rowId="rend_v1" label="Título rend. vídeo 1" value="Tutorial BRIDGE FLO...">
                   <Text style={s.rendVidTitle} numberOfLines={1}>Tutorial BRIDGE FLO...</Text>
                 </AE>
@@ -216,7 +218,9 @@ export default function AnalyticsScreen() {
                 </AE>
               </View>
               <View style={s.rendVidRow}>
-                <Image source={require('../../assets/figma/rend_vid2.png')} style={s.rendThumb} resizeMode="cover" />
+                <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId="rend_v2" label="Thumbnail rend. vídeo 2" value="" type="image">
+                  <Image source={require('../../assets/figma/rend_vid2.png')} style={s.rendThumb} resizeMode="cover" />
+                </AE>
                 <AE isAdmin={isAdmin} table="videos" column="title" rowId="rend_v2" label="Título rend. vídeo 2" value="CALCULA TU TIER &...">
                   <Text style={s.rendVidTitle} numberOfLines={1}>CALCULA TU TIER &...</Text>
                 </AE>
@@ -225,7 +229,9 @@ export default function AnalyticsScreen() {
                 </AE>
               </View>
               <View style={s.rendVidRow}>
-                <Image source={require('../../assets/figma/rend_vid3.png')} style={s.rendThumb} resizeMode="cover" />
+                <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId="rend_v3" label="Thumbnail rend. vídeo 3" value="" type="image">
+                  <Image source={require('../../assets/figma/rend_vid3.png')} style={s.rendThumb} resizeMode="cover" />
+                </AE>
                 <AE isAdmin={isAdmin} table="videos" column="title" rowId="rend_v3" label="Título rend. vídeo 3" value="Bridge de FLORK a D...">
                   <Text style={s.rendVidTitle} numberOfLines={1}>Bridge de FLORK a D...</Text>
                 </AE>
@@ -245,7 +251,9 @@ export default function AnalyticsScreen() {
               </AE>
               <Text style={s.rendLabel}>Ingresos estimados</Text>
               <View style={s.rendVidRow}>
-                <Image source={require('../../assets/figma/rend_short1.png')} style={s.rendThumbShort} resizeMode="cover" />
+                <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId="rend_s1" label="Thumbnail rend. short" value="" type="image">
+                  <Image source={require('../../assets/figma/rend_short1.png')} style={s.rendThumbShort} resizeMode="cover" />
+                </AE>
                 <AE isAdmin={isAdmin} table="videos" column="title" rowId="rend_s1" label="Título rend. short 1" value="27 de diciembre de 2024">
                   <Text style={s.rendVidTitle} numberOfLines={1}>27 de diciembre de 2024</Text>
                 </AE>
@@ -730,7 +738,9 @@ export default function AnalyticsScreen() {
                   {[0, 1, 2].map(i => <View key={i} style={[s.gridLine, { top: i * (170 / 3) }]} />)}
                 </View>
                 <View style={[s.svgLayer, { overflow: 'visible' }]}>
-                  <Image source={require('../../assets/figma/ie_chart_total.png')} style={{ width: '100%', height: 170 }} resizeMode="stretch" />
+                  <AE isAdmin={isAdmin} table="analytics_timeseries" column="value" rowId="ie_chart_total" label="Gráfica ingresos total" value="" type="image">
+                    <Image source={require('../../assets/figma/ie_chart_total.png')} style={{ width: '100%', height: 170 }} resizeMode="stretch" />
+                  </AE>
                 </View>
               </View>
             </View>
@@ -754,7 +764,9 @@ export default function AnalyticsScreen() {
                   {[0, 1, 2].map(i => <View key={i} style={[s.gridLine, { top: i * (170 / 3) }]} />)}
                 </View>
                 <View style={[s.svgLayer, { overflow: 'visible' }]}>
-                  <Image source={require('../../assets/figma/ie_chart_year.png')} style={{ width: '100%', height: 170 }} resizeMode="stretch" />
+                  <AE isAdmin={isAdmin} table="analytics_timeseries" column="value" rowId="ie_chart_year" label="Gráfica ingresos anual" value="" type="image">
+                    <Image source={require('../../assets/figma/ie_chart_year.png')} style={{ width: '100%', height: 170 }} resizeMode="stretch" />
+                  </AE>
                 </View>
               </View>
             </View>
@@ -778,7 +790,9 @@ export default function AnalyticsScreen() {
                   {[0, 1, 2].map(i => <View key={i} style={[s.gridLine, { top: i * (140 / 3) }]} />)}
                 </View>
                 <View style={[s.svgLayer, { overflow: 'visible' }]}>
-                  <Image source={require('../../assets/figma/ie_chart.png')} style={{ width: '100%', height: 140 }} resizeMode="stretch" />
+                  <AE isAdmin={isAdmin} table="analytics_timeseries" column="value" rowId="ie_chart" label="Gráfica ingresos 28D" value="" type="image">
+                    <Image source={require('../../assets/figma/ie_chart.png')} style={{ width: '100%', height: 140 }} resizeMode="stretch" />
+                  </AE>
                 </View>
               </View>
             </View>
@@ -820,7 +834,9 @@ export default function AnalyticsScreen() {
         {IE_VIDEOS.map((vid, i) => (
           <View key={i}>
             <View style={s.ieVideoRow}>
-              <Image source={vid.thumb} style={s.ieVideoThumb} resizeMode="cover" />
+              <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId={`ievid_${i}`} label={`Thumbnail ingresos ${i+1}`} value="" type="image">
+                <Image source={vid.thumb} style={s.ieVideoThumb} resizeMode="cover" />
+              </AE>
               <AE isAdmin={isAdmin} table="videos" column="title" rowId={`ievid_${i}`} label={`Título video ingresos ${i+1}`} value={vid.title}>
                 <Text style={s.ieVideoTitle} numberOfLines={1}>{vid.title}</Text>
               </AE>
@@ -897,7 +913,9 @@ export default function AnalyticsScreen() {
             {TEND_VIDEOS.map((vid, i) => (
               <View key={i} style={s.tendVideoCard}>
                 <View style={s.tendVideoThumbWrap}>
-                  <Image source={vid.thumb} style={s.tendVideoThumb} resizeMode="cover" />
+                  <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId={`tendvid_${i}`} label={`Thumbnail tendencia ${i+1}`} value="" type="image">
+                    <Image source={vid.thumb} style={s.tendVideoThumb} resizeMode="cover" />
+                  </AE>
                   {vid.duration ? (
                     <View style={s.tendDurationBadge}>
                       <Text style={s.tendDurationText}>{vid.duration}</Text>

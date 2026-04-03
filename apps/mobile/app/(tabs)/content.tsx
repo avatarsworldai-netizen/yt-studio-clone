@@ -64,7 +64,9 @@ export default function ContentScreen() {
         renderItem={({ item }) => (
           <View style={s.videoCard}>
             <View style={s.thumbWrap}>
-              <Image source={item.thumb} style={s.thumb} resizeMode="cover" />
+              <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId={item.id} label="Thumbnail" value="" type="image">
+                <Image source={item.thumb} style={s.thumb} resizeMode="cover" />
+              </AE>
               <AE isAdmin={isAdmin} table="videos" column="duration" rowId={item.id} label="Duración" value={item.dur}>
                 <View style={s.durBadge}><Text style={s.durText}>{item.dur}</Text></View>
               </AE>
@@ -100,7 +102,9 @@ export default function ContentScreen() {
         renderItem={({ item }) => (
           <View style={s.shortCard}>
             <View style={s.shortThumbWrap}>
-              <Image source={item.thumb} style={s.shortThumb} resizeMode="cover" />
+              <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId={item.id} label="Thumbnail short" value="" type="image">
+                <Image source={item.thumb} style={s.shortThumb} resizeMode="cover" />
+              </AE>
               <TouchableOpacity style={s.shortDotsBtn}>
                 <Image source={IC.dots} style={[s.dotsIcon, { tintColor: '#fff' }]} resizeMode="contain" />
               </TouchableOpacity>
@@ -133,7 +137,9 @@ export default function ContentScreen() {
         renderItem={({ item }) => (
           <View style={s.videoCard}>
             <View style={s.thumbWrap}>
-              <Image source={item.thumb} style={s.thumb} resizeMode="cover" />
+              <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId={item.id} label="Thumbnail directo" value="" type="image">
+                <Image source={item.thumb} style={s.thumb} resizeMode="cover" />
+              </AE>
               <AE isAdmin={isAdmin} table="videos" column="duration" rowId={item.id} label="Duración" value={item.dur}>
                 <View style={s.durBadge}><Text style={s.durText}>{item.dur}</Text></View>
               </AE>
