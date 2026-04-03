@@ -202,22 +202,36 @@ export default function AnalyticsScreen() {
             <View style={s.rendCard}>
               <Text style={s.rendTitle}>Rendimiento de los vídeos</Text>
               <Text style={s.rendSub}>Últimos 28 días</Text>
-              <Text style={s.rendValue}>13,21€</Text>
+              <AE isAdmin={isAdmin} table="revenue" column="estimated_revenue" rowId="rend_vid" label="Rendimiento vídeos total" value="13,21€">
+                <Text style={s.rendValue}>13,21€</Text>
+              </AE>
               <Text style={s.rendLabel}>Ingresos estimados</Text>
               <View style={s.rendVidRow}>
                 <Image source={require('../../assets/figma/rend_vid1.png')} style={s.rendThumb} resizeMode="cover" />
-                <Text style={s.rendVidTitle} numberOfLines={1}>Tutorial BRIDGE FLO...</Text>
-                <Text style={s.rendVidAmount}>8,43€</Text>
+                <AE isAdmin={isAdmin} table="videos" column="title" rowId="rend_v1" label="Título rend. vídeo 1" value="Tutorial BRIDGE FLO...">
+                  <Text style={s.rendVidTitle} numberOfLines={1}>Tutorial BRIDGE FLO...</Text>
+                </AE>
+                <AE isAdmin={isAdmin} table="videos" column="estimated_revenue" rowId="rend_v1" label="Ingresos rend. vídeo 1" value="8,43€">
+                  <Text style={s.rendVidAmount}>8,43€</Text>
+                </AE>
               </View>
               <View style={s.rendVidRow}>
                 <Image source={require('../../assets/figma/rend_vid2.png')} style={s.rendThumb} resizeMode="cover" />
-                <Text style={s.rendVidTitle} numberOfLines={1}>CALCULA TU TIER &...</Text>
-                <Text style={s.rendVidAmount}>3,40€</Text>
+                <AE isAdmin={isAdmin} table="videos" column="title" rowId="rend_v2" label="Título rend. vídeo 2" value="CALCULA TU TIER &...">
+                  <Text style={s.rendVidTitle} numberOfLines={1}>CALCULA TU TIER &...</Text>
+                </AE>
+                <AE isAdmin={isAdmin} table="videos" column="estimated_revenue" rowId="rend_v2" label="Ingresos rend. vídeo 2" value="3,40€">
+                  <Text style={s.rendVidAmount}>3,40€</Text>
+                </AE>
               </View>
               <View style={s.rendVidRow}>
                 <Image source={require('../../assets/figma/rend_vid3.png')} style={s.rendThumb} resizeMode="cover" />
-                <Text style={s.rendVidTitle} numberOfLines={1}>Bridge de FLORK a D...</Text>
-                <Text style={s.rendVidAmount}>1,86€</Text>
+                <AE isAdmin={isAdmin} table="videos" column="title" rowId="rend_v3" label="Título rend. vídeo 3" value="Bridge de FLORK a D...">
+                  <Text style={s.rendVidTitle} numberOfLines={1}>Bridge de FLORK a D...</Text>
+                </AE>
+                <AE isAdmin={isAdmin} table="videos" column="estimated_revenue" rowId="rend_v3" label="Ingresos rend. vídeo 3" value="1,86€">
+                  <Text style={s.rendVidAmount}>1,86€</Text>
+                </AE>
               </View>
             </View>
           </View>
@@ -226,12 +240,18 @@ export default function AnalyticsScreen() {
             <View style={s.rendCard}>
               <Text style={s.rendTitle}>Rendimiento de los Shorts</Text>
               <Text style={s.rendSub}>Últimos 28 días</Text>
-              <Text style={s.rendValue}>0€</Text>
+              <AE isAdmin={isAdmin} table="revenue" column="estimated_revenue" rowId="rend_short" label="Rendimiento Shorts total" value="0€">
+                <Text style={s.rendValue}>0€</Text>
+              </AE>
               <Text style={s.rendLabel}>Ingresos estimados</Text>
               <View style={s.rendVidRow}>
                 <Image source={require('../../assets/figma/rend_short1.png')} style={s.rendThumbShort} resizeMode="cover" />
-                <Text style={s.rendVidTitle} numberOfLines={1}>27 de diciembre de 2024</Text>
-                <Text style={s.rendVidAmount}>0,00€</Text>
+                <AE isAdmin={isAdmin} table="videos" column="title" rowId="rend_s1" label="Título rend. short 1" value="27 de diciembre de 2024">
+                  <Text style={s.rendVidTitle} numberOfLines={1}>27 de diciembre de 2024</Text>
+                </AE>
+                <AE isAdmin={isAdmin} table="videos" column="estimated_revenue" rowId="rend_s1" label="Ingresos rend. short 1" value="0,00€">
+                  <Text style={s.rendVidAmount}>0,00€</Text>
+                </AE>
               </View>
             </View>
           </View>
@@ -265,13 +285,21 @@ export default function AnalyticsScreen() {
 
           <View style={s.rendSourceRow}>
             <View style={[s.rendDot, { backgroundColor: TEAL }]} />
-            <Text style={s.rendSourceLabel}>Anuncios de la pagina de visualización</Text>
-            <Text style={s.rendSourcePct}>100,0%</Text>
+            <AE isAdmin={isAdmin} table="revenue" column="ad_revenue" rowId="source_1" label="Fuente ingreso 1" value="Anuncios de la pagina de visualización">
+              <Text style={s.rendSourceLabel}>Anuncios de la pagina de visualización</Text>
+            </AE>
+            <AE isAdmin={isAdmin} table="revenue" column="ad_revenue" rowId="source_1_pct" label="% Fuente 1" value="100,0%">
+              <Text style={s.rendSourcePct}>100,0%</Text>
+            </AE>
           </View>
           <View style={s.rendSourceRow}>
             <View style={[s.rendDot, { backgroundColor: TEAL }]} />
-            <Text style={s.rendSourceLabel}>Anuncios del feed de Shorts</Text>
-            <Text style={s.rendSourcePct}>{'< 0,1 %'}</Text>
+            <AE isAdmin={isAdmin} table="revenue" column="ad_revenue" rowId="source_2" label="Fuente ingreso 2" value="Anuncios del feed de Shorts">
+              <Text style={s.rendSourceLabel}>Anuncios del feed de Shorts</Text>
+            </AE>
+            <AE isAdmin={isAdmin} table="revenue" column="ad_revenue" rowId="source_2_pct" label="% Fuente 2" value="< 0,1 %">
+              <Text style={s.rendSourcePct}>{'< 0,1 %'}</Text>
+            </AE>
           </View>
         </View>
       </>
@@ -294,8 +322,12 @@ export default function AnalyticsScreen() {
           <Text style={s.earningsSub}>Ingresos publicitarios de YouTube · Últimos 28 días</Text>
           {AD_TYPES.map((ad, i) => (
             <View key={i} style={s.adRow}>
-              <Text style={s.adLabel}>{ad.label}</Text>
-              <Text style={s.adPct}>{ad.pct}</Text>
+              <AE isAdmin={isAdmin} table="revenue" column="ad_revenue" rowId={`adtype_${i}`} label={`Tipo anuncio ${i+1}`} value={ad.label}>
+                <Text style={s.adLabel}>{ad.label}</Text>
+              </AE>
+              <AE isAdmin={isAdmin} table="revenue" column="ad_revenue" rowId={`adtype_pct_${i}`} label={`% Tipo anuncio ${i+1}`} value={ad.pct}>
+                <Text style={s.adPct}>{ad.pct}</Text>
+              </AE>
             </View>
           ))}
         </View>
@@ -416,10 +448,14 @@ export default function AnalyticsScreen() {
               <View style={s.vgChartCardFixed}>
                 <Text style={s.vgChartLabel}>{item.label}</Text>
                 <View style={s.vgValRow}>
-                  <Text style={s.vgChartVal}>{item.value}</Text>
+                  <AE isAdmin={isAdmin} table="dashboard_stats" column="views" rowId={`vgchart_${idx}`} label={`${item.label}`} value={item.value}>
+                    <Text style={s.vgChartVal}>{item.value}</Text>
+                  </AE>
                   {item.arrow && <Image source={item.arrow} style={s.vgArrow} resizeMode="contain" />}
                 </View>
-                {item.sub ? <Text style={s.vgChartSub}>{item.sub}</Text> : null}
+                {item.sub ? <AE isAdmin={isAdmin} table="dashboard_stats" column="views_change_percent" rowId={`vgchartsub_${idx}`} label={`${item.label} - subtexto`} value={item.sub}>
+                  <Text style={s.vgChartSub}>{item.sub}</Text>
+                </AE> : null}
                 <View style={s.vgChartImgWrap}>
                   <View style={s.vgYAxis}>
                     {item.yLabels.map((l, i) => <Text key={i} style={s.axisText}>{l}</Text>)}
@@ -473,7 +509,9 @@ export default function AnalyticsScreen() {
                 <View style={s.vgChartCardFixed}>
                   <Text style={s.vgChartLabel}>{item.label}</Text>
                   <View style={s.vgValRow}>
-                    <Text style={s.vgChartVal}>{item.value}</Text>
+                    <AE isAdmin={isAdmin} table="dashboard_stats" column="views" rowId={`cvchart_${idx}`} label={`${item.label}`} value={item.value}>
+                      <Text style={s.vgChartVal}>{item.value}</Text>
+                    </AE>
                     {item.arrow && <Image source={item.arrow} style={s.vgArrow} resizeMode="contain" />}
                   </View>
                   {item.sub ? <Text style={[s.vgChartSub, item.subGreen && { color: '#508650' }]}>{item.sub}</Text> : null}
