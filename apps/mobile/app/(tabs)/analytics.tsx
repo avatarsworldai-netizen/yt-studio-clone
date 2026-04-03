@@ -686,7 +686,7 @@ export default function AnalyticsScreen() {
               const barCenterX = ((selectedBar + 0.5) / BAR_DATA.length) * 100;
               return (
                 <View style={[s.barTooltip, { left: `${barCenterX - 12}%`, top: 170 - barH - 30 }]} pointerEvents="none">
-                  <Text style={s.barTooltipText}>{bar.month}: {bar.value.toFixed(2).replace('.', ',')} €</Text>
+                  <Text style={s.barTooltipText}>{bar.month}: {Number(bar.value || 0).toFixed(2).replace('.', ',')} €</Text>
                 </View>
               );
             })()}

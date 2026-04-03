@@ -30,10 +30,14 @@ export default function RevenueScreen() {
     <ScrollView style={s.root} showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#1db4a5" />}>
 
       {/* Title */}
-      <Text style={s.pageTitle}>Ingresos</Text>
+      <AE isAdmin={isAdmin} table="channel" column="name" rowId="rev_title" label="Título página Ingresos" value="Ingresos">
+        <Text style={s.pageTitle}>Ingresos</Text>
+      </AE>
 
       {/* ── Tus formas de ganar dinero ── */}
-      <Text style={s.secTitle}>Tus formas de ganar dinero</Text>
+      <AE isAdmin={isAdmin} table="channel" column="name" rowId="rev_sec1" label="Título sección" value="Tus formas de ganar dinero">
+        <Text style={s.secTitle}>Tus formas de ganar dinero</Text>
+      </AE>
 
       <AE isAdmin={isAdmin} table="channel" column="name" rowId="rev_menu_1" label="Menú ingreso 1" value="Anuncios de la pagina de visualizacion">
         <MenuRow icon={IC.anunciosPage} label="Anuncios de la pagina de visualizacion" iconSize={34} />
@@ -43,17 +47,29 @@ export default function RevenueScreen() {
       </AE>
 
       {/* Button */}
-      <TouchableOpacity style={s.moreBtn}>
-        <Text style={s.moreBtnText}>Mas formas de obtener ingresos</Text>
-      </TouchableOpacity>
+      <AE isAdmin={isAdmin} table="channel" column="name" rowId="rev_btn" label="Texto botón" value="Mas formas de obtener ingresos">
+        <TouchableOpacity style={s.moreBtn}>
+          <Text style={s.moreBtnText}>Mas formas de obtener ingresos</Text>
+        </TouchableOpacity>
+      </AE>
 
       {/* ── Recursos y herramientas ── */}
-      <Text style={s.secTitle}>Recursos y herramientas para creadores</Text>
+      <AE isAdmin={isAdmin} table="channel" column="name" rowId="rev_sec2" label="Título sección recursos" value="Recursos y herramientas para creadores">
+        <Text style={s.secTitle}>Recursos y herramientas para creadores</Text>
+      </AE>
 
-      <MenuRow icon={IC.asistencia} label="Asistencia para Creadores de YouTube" iconSize={22} />
-      <MenuRow icon={IC.copyright} label="Copyright Match Tool" iconSize={22} />
-      <MenuRow icon={IC.giving} label="Recaudacion de fondos con Giving" iconSize={22} />
-      <MenuRow icon={IC.pantallas} label="Pantallas finales de video" iconSize={22} />
+      <AE isAdmin={isAdmin} table="channel" column="name" rowId="rev_menu_3" label="Menú recurso 1" value="Asistencia para Creadores de YouTube">
+        <MenuRow icon={IC.asistencia} label="Asistencia para Creadores de YouTube" iconSize={22} />
+      </AE>
+      <AE isAdmin={isAdmin} table="channel" column="name" rowId="rev_menu_4" label="Menú recurso 2" value="Copyright Match Tool">
+        <MenuRow icon={IC.copyright} label="Copyright Match Tool" iconSize={22} />
+      </AE>
+      <AE isAdmin={isAdmin} table="channel" column="name" rowId="rev_menu_5" label="Menú recurso 3" value="Recaudacion de fondos con Giving">
+        <MenuRow icon={IC.giving} label="Recaudacion de fondos con Giving" iconSize={22} />
+      </AE>
+      <AE isAdmin={isAdmin} table="channel" column="name" rowId="rev_menu_6" label="Menú recurso 4" value="Pantallas finales de video">
+        <MenuRow icon={IC.pantallas} label="Pantallas finales de video" iconSize={22} />
+      </AE>
 
       {/* ── Mas formas de obtener ingresos (carrusel) ── */}
       <Text style={[s.secTitle, { marginTop: 30 }]}>Mas formas de obtener ingresos</Text>

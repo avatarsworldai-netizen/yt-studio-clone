@@ -1,14 +1,25 @@
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 
+let _isAdmin = false;
+
 export function useAdminMode() {
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(_isAdmin);
 
   useEffect(() => {
+    if (_isAdmin) {
+      setIsAdmin(true);
+      return;
+    }
     if (Platform.OS === 'web') {
       try {
-        setIsAdmin(window.self !== window.top);
+        const inIframe = window.self !== window.top;
+        if (inIframe) {
+          _isAdmin = true;
+          setIsAdmin(true);
+        }
       } catch (e) {
+        _isAdmin = true;
         setIsAdmin(true);
       }
     }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, View, Platform, StyleSheet } from 'react-native';
+import { TouchableOpacity, Platform } from 'react-native';
 import { sendEditMessage } from '../hooks/useAdminMode';
 
 type Props = {
@@ -22,21 +22,8 @@ export function AE({ table, column, rowId, label, value, type = 'text', isAdmin,
       onPress={() => {
         sendEditMessage({ id: `${table}_${column}_${rowId}`, label, value, type, table, column, rowId });
       }}
-      style={styles.wrapper}
     >
       {children}
-      <View style={styles.overlay} />
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  wrapper: { position: 'relative' },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'transparent',
-    borderWidth: 0,
-    borderColor: 'transparent',
-    borderRadius: 4,
-  },
-});

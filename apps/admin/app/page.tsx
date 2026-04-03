@@ -67,8 +67,10 @@ export default function AdminEditor() {
   // Listen for postMessage from iframe (mobile app in admin mode)
   useEffect(() => {
     const handler = (e: MessageEvent) => {
+      console.log('[Admin] Message received:', e.data);
       if (e.data?.type === 'EDIT_FIELD' && e.data.field) {
         const f = e.data.field;
+        console.log('[Admin] Opening editor for:', f.label);
         setSelectedField({ id: f.id, label: f.label, value: f.value, type: f.type, table: f.table, column: f.column, rowId: f.rowId });
         setEditValue(String(f.value ?? ''));
       }
