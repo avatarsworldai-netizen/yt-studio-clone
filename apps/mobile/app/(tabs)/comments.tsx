@@ -60,14 +60,18 @@ export default function CommunityScreen() {
         {/* Comment 1 */}
         <View style={s.commentItem}>
           <View style={s.vidTitleRow}>
-            <Text style={s.vidTitle}>ASI GANE 200.000$ en 30 DIAS{'\n'}TRADEANDO MEMECOINS</Text>
+            <AE isAdmin={isAdmin} table="videos" column="title" rowId="vid_comment_1" label="Título video comentario 1" value="ASI GANE 200.000$ en 30 DIAS TRADEANDO MEMECOINS">
+              <Text style={s.vidTitle}>ASI GANE 200.000$ en 30 DIAS{'\n'}TRADEANDO MEMECOINS</Text>
+            </AE>
             <Image source={IC.vidThumb1} style={s.vidThumb} resizeMode="cover" />
           </View>
           <View style={s.commentBody}>
             <Image source={IC.avatar1} style={s.avatar} resizeMode="cover" />
             <View style={s.commentContent}>
               <View style={s.nameRow}>
-                <Text style={s.authorName}>@arielhumberto3813</Text>
+                <AE isAdmin={isAdmin} table="comments" column="author_name" rowId="comment_1" label="Autor comentario 1" value="@arielhumberto3813">
+                  <Text style={s.authorName}>@arielhumberto3813</Text>
+                </AE>
                 <Text style={s.timeText}> · hace 1 mes</Text>
                 <View style={{ flex: 1 }} />
                 <Image source={IC.dots} style={s.dotsIcon} resizeMode="contain" />
@@ -90,14 +94,18 @@ export default function CommunityScreen() {
         {/* Comment 2 */}
         <View style={s.commentItem}>
           <View style={s.vidTitleRow}>
-            <Text style={s.vidTitle}>Así fue el lanzamiento de $AWI I Cómo crear un proyecto blockchain desde cero...</Text>
+            <AE isAdmin={isAdmin} table="videos" column="title" rowId="vid_comment_2" label="Título video comentario 2" value="Así fue el lanzamiento de $AWI I Cómo crear un proyecto blockchain desde cero...">
+              <Text style={s.vidTitle}>Así fue el lanzamiento de $AWI I Cómo crear un proyecto blockchain desde cero...</Text>
+            </AE>
             <Image source={IC.vidThumb2} style={s.vidThumb} resizeMode="cover" />
           </View>
           <View style={s.commentBody}>
             <Image source={IC.avatar2} style={s.avatar} resizeMode="cover" />
             <View style={s.commentContent}>
               <View style={s.nameRow}>
-                <Text style={s.authorName}>@felixalejb</Text>
+                <AE isAdmin={isAdmin} table="comments" column="author_name" rowId="comment_2" label="Autor comentario 2" value="@felixalejb">
+                  <Text style={s.authorName}>@felixalejb</Text>
+                </AE>
                 <Image source={IC.ytBadge} style={s.ytBadge} resizeMode="contain" />
                 <Text style={s.timeText}> · hace 1 mes</Text>
                 <View style={{ flex: 1 }} />
@@ -125,7 +133,9 @@ export default function CommunityScreen() {
             <View style={s.sLetterAvatar}><Text style={s.sLetterText}>S</Text></View>
             <View style={s.commentContent}>
               <View style={s.nameRow}>
-                <Text style={s.authorName}>@SebastianLopez-qt8kq</Text>
+                <AE isAdmin={isAdmin} table="comments" column="author_name" rowId="comment_3" label="Autor comentario 3" value="@SebastianLopez-qt8kq">
+                  <Text style={s.authorName}>@SebastianLopez-qt8kq</Text>
+                </AE>
                 <Text style={s.timeText}> · hace 1 mes</Text>
                 <View style={{ flex: 1 }} />
                 <Image source={IC.dots} style={s.dotsIcon} resizeMode="contain" />
@@ -170,7 +180,9 @@ export default function CommunityScreen() {
             <View style={s.destLetterAvatar}><Text style={s.destLetterText}>T</Text></View>
           </View>
           <View style={s.destNameRow}>
-            <Text style={s.destName} numberOfLines={1}>Thiago Velgua</Text>
+            <AE isAdmin={isAdmin} table="comments" column="author_name" rowId="dest_1" label="Nombre destacado 1" value="Thiago Velgua">
+              <Text style={s.destName} numberOfLines={1}>Thiago Velgua</Text>
+            </AE>
             <Image source={require('../../assets/figma/dest_yt_badge2.png')} style={s.destBadge} resizeMode="contain" />
           </View>
           <Text style={s.destHandle}>@thiagovelgua121</Text>
@@ -186,7 +198,9 @@ export default function CommunityScreen() {
             <Image source={require('../../assets/figma/dest_avatar_felix.png')} style={s.destAvatarImg} resizeMode="cover" />
           </View>
           <View style={s.destNameRow}>
-            <Text style={s.destName} numberOfLines={1}>Félix Alejand...</Text>
+            <AE isAdmin={isAdmin} table="comments" column="author_name" rowId="dest_2" label="Nombre destacado 2" value="Félix Alejand...">
+              <Text style={s.destName} numberOfLines={1}>Félix Alejand...</Text>
+            </AE>
             <Image source={require('../../assets/figma/dest_yt_badge1.png')} style={s.destBadge} resizeMode="contain" />
           </View>
           <Text style={s.destHandle}>@felixalejb</Text>

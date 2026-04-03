@@ -35,8 +35,12 @@ export default function RevenueScreen() {
       {/* ── Tus formas de ganar dinero ── */}
       <Text style={s.secTitle}>Tus formas de ganar dinero</Text>
 
-      <MenuRow icon={IC.anunciosPage} label="Anuncios de la pagina de visualizacion" iconSize={34} />
-      <MenuRow icon={IC.anunciosShorts} label="Anuncios del feed de Shorts" iconSize={33} />
+      <AE isAdmin={isAdmin} table="channel" column="name" rowId="rev_menu_1" label="Menú ingreso 1" value="Anuncios de la pagina de visualizacion">
+        <MenuRow icon={IC.anunciosPage} label="Anuncios de la pagina de visualizacion" iconSize={34} />
+      </AE>
+      <AE isAdmin={isAdmin} table="channel" column="name" rowId="rev_menu_2" label="Menú ingreso 2" value="Anuncios del feed de Shorts">
+        <MenuRow icon={IC.anunciosShorts} label="Anuncios del feed de Shorts" iconSize={33} />
+      </AE>
 
       {/* Button */}
       <TouchableOpacity style={s.moreBtn}>

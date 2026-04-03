@@ -65,19 +65,27 @@ export default function ContentScreen() {
           <View style={s.videoCard}>
             <View style={s.thumbWrap}>
               <Image source={item.thumb} style={s.thumb} resizeMode="cover" />
-              <View style={s.durBadge}><Text style={s.durText}>{item.dur}</Text></View>
+              <AE isAdmin={isAdmin} table="videos" column="duration" rowId={item.id} label="Duración" value={item.dur}>
+                <View style={s.durBadge}><Text style={s.durText}>{item.dur}</Text></View>
+              </AE>
             </View>
             <View style={s.titleRow}>
-              <Text style={s.videoTitle} numberOfLines={1}>{item.title}</Text>
+              <AE isAdmin={isAdmin} table="videos" column="title" rowId={item.id} label="Título video" value={item.title}>
+                <Text style={s.videoTitle} numberOfLines={1}>{item.title}</Text>
+              </AE>
               <TouchableOpacity><Image source={IC.dots} style={s.dotsIcon} resizeMode="contain" /></TouchableOpacity>
             </View>
             <View style={s.statsRow}>
               {item.money && <Image source={IC.moneyGreen} style={s.statusIcon} resizeMode="contain" />}
               {item.copyright && <Image source={IC.copyrightRed} style={s.statusIcon} resizeMode="contain" />}
               <Image source={IC.chart} style={s.statIcon} resizeMode="contain" />
-              <Text style={s.statText}>{item.views}</Text>
+              <AE isAdmin={isAdmin} table="videos" column="view_count" rowId={item.id} label="Visualizaciones" value={item.views}>
+                <Text style={s.statText}>{item.views}</Text>
+              </AE>
               <Image source={IC.like} style={s.statIcon} resizeMode="contain" />
-              <Text style={s.statText}>{item.likes}</Text>
+              <AE isAdmin={isAdmin} table="videos" column="like_count" rowId={item.id} label="Likes" value={item.likes}>
+                <Text style={s.statText}>{item.likes}</Text>
+              </AE>
             </View>
           </View>
         )}
@@ -97,13 +105,19 @@ export default function ContentScreen() {
                 <Image source={IC.dots} style={[s.dotsIcon, { tintColor: '#fff' }]} resizeMode="contain" />
               </TouchableOpacity>
             </View>
-            <Text style={s.shortTitle} numberOfLines={1}>{item.title}</Text>
+            <AE isAdmin={isAdmin} table="videos" column="title" rowId={item.id} label="Título short" value={item.title}>
+              <Text style={s.shortTitle} numberOfLines={1}>{item.title}</Text>
+            </AE>
             <View style={s.statsRow}>
               <Image source={IC.chart} style={s.statIcon} resizeMode="contain" />
-              <Text style={s.statText}>{item.views}</Text>
+              <AE isAdmin={isAdmin} table="videos" column="view_count" rowId={item.id} label="Visualizaciones" value={item.views}>
+                <Text style={s.statText}>{item.views}</Text>
+              </AE>
               {item.likes ? <>
                 <Image source={IC.like} style={s.statIcon} resizeMode="contain" />
-                <Text style={s.statText}>{item.likes}</Text>
+                <AE isAdmin={isAdmin} table="videos" column="like_count" rowId={item.id} label="Likes" value={item.likes}>
+                  <Text style={s.statText}>{item.likes}</Text>
+                </AE>
               </> : null}
             </View>
           </View>
@@ -120,18 +134,26 @@ export default function ContentScreen() {
           <View style={s.videoCard}>
             <View style={s.thumbWrap}>
               <Image source={item.thumb} style={s.thumb} resizeMode="cover" />
-              <View style={s.durBadge}><Text style={s.durText}>{item.dur}</Text></View>
+              <AE isAdmin={isAdmin} table="videos" column="duration" rowId={item.id} label="Duración" value={item.dur}>
+                <View style={s.durBadge}><Text style={s.durText}>{item.dur}</Text></View>
+              </AE>
             </View>
             <View style={s.titleRow}>
-              <Text style={s.videoTitle} numberOfLines={1}>{item.title}</Text>
+              <AE isAdmin={isAdmin} table="videos" column="title" rowId={item.id} label="Título directo" value={item.title}>
+                <Text style={s.videoTitle} numberOfLines={1}>{item.title}</Text>
+              </AE>
               <TouchableOpacity><Image source={IC.dots} style={s.dotsIcon} resizeMode="contain" /></TouchableOpacity>
             </View>
             <View style={s.statsRow}>
               <Image source={IC.chart} style={s.statIcon} resizeMode="contain" />
-              <Text style={s.statText}>{item.views}</Text>
+              <AE isAdmin={isAdmin} table="videos" column="view_count" rowId={item.id} label="Visualizaciones" value={item.views}>
+                <Text style={s.statText}>{item.views}</Text>
+              </AE>
               {item.likes ? <>
                 <Image source={IC.like} style={s.statIcon} resizeMode="contain" />
-                <Text style={s.statText}>{item.likes}</Text>
+                <AE isAdmin={isAdmin} table="videos" column="like_count" rowId={item.id} label="Likes" value={item.likes}>
+                  <Text style={s.statText}>{item.likes}</Text>
+                </AE>
               </> : null}
             </View>
           </View>

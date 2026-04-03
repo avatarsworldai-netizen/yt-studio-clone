@@ -518,8 +518,12 @@ export default function AnalyticsScreen() {
             <View key={i}>
               <View style={s.vgPopRow}>
                 <Image source={vid.thumb} style={s.vgPopThumb} resizeMode="cover" />
-                <Text style={s.vgPopVidTitle} numberOfLines={1}>{vid.title}</Text>
-                <Text style={s.vgPopViews}>{vid.views}</Text>
+                <AE isAdmin={isAdmin} table="videos" column="title" rowId={`vgpop_${i}`} label={`Título popular ${i+1}`} value={vid.title}>
+                  <Text style={s.vgPopVidTitle} numberOfLines={1}>{vid.title}</Text>
+                </AE>
+                <AE isAdmin={isAdmin} table="videos" column="view_count" rowId={`vgpop_${i}`} label={`Views popular ${i+1}`} value={vid.views}>
+                  <Text style={s.vgPopViews}>{vid.views}</Text>
+                </AE>
               </View>
               </View>
           ))}
@@ -754,7 +758,9 @@ export default function AnalyticsScreen() {
         <View style={s.ieSummary}>
           <Image source={require('../../assets/figma/ie_dot_green.png')} style={s.ieDot} resizeMode="contain" />
           <Text style={s.ieSumLabel}>Ingresos estimados</Text>
-          <Text style={s.ieSumValue}>{iePeriod < 4 ? '15,72 €' : iePeriod === 9 ? '2022,14 €' : '16,02 €'}</Text>
+          <AE isAdmin={isAdmin} table="dashboard_stats" column="estimated_revenue" rowId={st?.id || ''} label="Ingresos estimados total" value={iePeriod < 4 ? '15,72' : iePeriod === 9 ? '2022,14' : '16,02'}>
+            <Text style={s.ieSumValue}>{iePeriod < 4 ? '15,72 €' : iePeriod === 9 ? '2022,14 €' : '16,02 €'}</Text>
+          </AE>
         </View>
 
         {/* Processing message for monthly views */}
@@ -777,8 +783,12 @@ export default function AnalyticsScreen() {
           <View key={i}>
             <View style={s.ieVideoRow}>
               <Image source={vid.thumb} style={s.ieVideoThumb} resizeMode="cover" />
-              <Text style={s.ieVideoTitle} numberOfLines={1}>{vid.title}</Text>
-              <Text style={s.ieVideoAmt}>{vid.amount}</Text>
+              <AE isAdmin={isAdmin} table="videos" column="title" rowId={`ievid_${i}`} label={`Título video ingresos ${i+1}`} value={vid.title}>
+                <Text style={s.ieVideoTitle} numberOfLines={1}>{vid.title}</Text>
+              </AE>
+              <AE isAdmin={isAdmin} table="videos" column="estimated_revenue" rowId={`ievid_${i}`} label={`Ingresos video ${i+1}`} value={vid.amount}>
+                <Text style={s.ieVideoAmt}>{vid.amount}</Text>
+              </AE>
             </View>
             {i < IE_VIDEOS.length - 1 && <View style={s.ieVideoDivider} />}
           </View>
@@ -824,7 +834,9 @@ export default function AnalyticsScreen() {
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingTop: 12, paddingBottom: 10, paddingHorizontal: 2 }} style={{ overflow: 'visible' }}>
             {TEND_SEARCHES.map((search, i) => (
               <View key={i} style={s.tendSearchCard}>
-                <Text style={s.tendSearchText}>{search}</Text>
+                <AE isAdmin={isAdmin} table="videos" column="title" rowId={`tendsearch_${i}`} label={`Búsqueda ${i+1}`} value={search}>
+                  <Text style={s.tendSearchText}>{search}</Text>
+                </AE>
                 <View style={{ flex: 1 }} />
                 <View style={s.tendSearchActions}>
                   <Image source={require('../../assets/figma/tend_heart.png')} style={{ width: 24, height: 22 }} resizeMode="contain" />
@@ -855,10 +867,14 @@ export default function AnalyticsScreen() {
                   ) : null}
                 </View>
                 <View style={s.tendVideoInfo}>
-                  <Text style={s.tendVideoTitle} numberOfLines={2}>{vid.title}</Text>
+                  <AE isAdmin={isAdmin} table="videos" column="title" rowId={`tendvid_${i}`} label={`Título vídeo tendencia ${i+1}`} value={vid.title}>
+                    <Text style={s.tendVideoTitle} numberOfLines={2}>{vid.title}</Text>
+                  </AE>
                   <Text style={{ fontSize: 18, color: '#555', marginLeft: 4 }}>⋮</Text>
                 </View>
-                <Text style={s.tendVideoMeta} numberOfLines={1}>{vid.channel} · {vid.views}{vid.time ? ' · ' + vid.time : ''}</Text>
+                <AE isAdmin={isAdmin} table="videos" column="description" rowId={`tendvid_${i}`} label={`Info vídeo tendencia ${i+1}`} value={`${vid.channel} · ${vid.views}`}>
+                  <Text style={s.tendVideoMeta} numberOfLines={1}>{vid.channel} · {vid.views}{vid.time ? ' · ' + vid.time : ''}</Text>
+                </AE>
               </View>
             ))}
           </ScrollView>
