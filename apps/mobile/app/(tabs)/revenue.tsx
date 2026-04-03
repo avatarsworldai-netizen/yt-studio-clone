@@ -1,6 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, RefreshControl, FlatList, Dimensions } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
+import { useAdminMode } from '../../hooks/useAdminMode';
+import { AE } from '../../components/AdminEditable';
 import { C } from '../../constants/theme';
 
 const screenW = Dimensions.get('window').width;
@@ -20,6 +22,7 @@ const IC = {
 
 export default function RevenueScreen() {
   const qc = useQueryClient();
+  const isAdmin = useAdminMode();
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(async () => { setRefreshing(true); await qc.invalidateQueries(); setRefreshing(false); }, [qc]);
 

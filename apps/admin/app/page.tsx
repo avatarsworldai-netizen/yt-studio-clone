@@ -64,6 +64,19 @@ export default function AdminEditor() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
+  // Listen for postMessage from iframe (mobile app in admin mode)
+  useEffect(() => {
+    const handler = (e: MessageEvent) => {
+      if (e.data?.type === 'EDIT_FIELD' && e.data.field) {
+        const f = e.data.field;
+        setSelectedField({ id: f.id, label: f.label, value: f.value, type: f.type, table: f.table, column: f.column, rowId: f.rowId });
+        setEditValue(String(f.value ?? ''));
+      }
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, []);
+
   const handleSave = async (table: string, column: string, value: string | number, rowId: string) => {
     setSaving(true);
     const res = await fetch("/api/update", {
@@ -76,7 +89,7 @@ export default function AdminEditor() {
       await fetchData();
       // Refresh iframe to show changes
       setTimeout(() => {
-        iframeRef.current?.contentWindow?.location.reload();
+        iframeRef.current?.setAttribute('src', iframeRef.current.src);
       }, 500);
     }
     setSaving(false);
@@ -92,49 +105,18 @@ export default function AdminEditor() {
 
   return (
     <div className="h-full flex">
-      {/* Left sidebar - full editor */}
-      <div className="w-96 bg-white border-r border-gray-200 flex flex-col h-full">
-        <div className="flex items-center gap-2 p-4 border-b border-gray-200">
-          <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
-            <span className="text-white text-xs font-bold">▶</span>
-          </div>
-          <div>
-            <h1 className="text-sm font-bold text-gray-900">YT Studio</h1>
-            <p className="text-xs text-gray-500">Editor Visual</p>
-          </div>
-          <button
-            onClick={() => { fetchData(); iframeRef.current?.contentWindow?.location.reload(); }}
-            className="ml-auto px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700"
-          >
-            ↻ Refrescar
-          </button>
+      {/* Left: Title bar */}
+      <div className="w-16 bg-white border-r border-gray-200 flex flex-col items-center py-4">
+        <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center mb-4">
+          <span className="text-white text-sm font-bold">▶</span>
         </div>
-
-        {/* Section tabs */}
-        <div className="flex border-b border-gray-200 overflow-x-auto">
-          {["Canal", "Stats", "Videos", "Revenue", "Comments"].map((tab, i) => (
-            <button
-              key={tab}
-              onClick={() => setActiveSection(i)}
-              className={`px-3 py-2.5 text-xs font-medium whitespace-nowrap transition-colors ${
-                activeSection === i
-                  ? "text-blue-700 border-b-2 border-blue-700"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        {/* Editor fields */}
-        <div className="flex-1 overflow-y-auto p-4">
-          {activeSection === 0 && <ChannelEditor data={data} onSave={handleSave} onSelect={selectField} />}
-          {activeSection === 1 && <StatsEditor data={data} onSave={handleSave} onSelect={selectField} />}
-          {activeSection === 2 && <VideosEditor data={data} onSave={handleSave} onSelect={selectField} />}
-          {activeSection === 3 && <RevenueEditor data={data} onSave={handleSave} onSelect={selectField} />}
-          {activeSection === 4 && <CommentsEditor data={data} onSave={handleSave} onSelect={selectField} />}
-        </div>
+        <button
+          onClick={() => { fetchData(); iframeRef.current?.setAttribute('src', iframeRef.current.src); }}
+          className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center text-gray-600 text-lg"
+          title="Refrescar"
+        >
+          ↻
+        </button>
       </div>
 
       {/* Center: iPhone preview - loads the actual mobile app */}

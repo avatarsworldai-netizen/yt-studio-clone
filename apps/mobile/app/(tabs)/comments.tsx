@@ -1,6 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { View, ScrollView, StyleSheet, TouchableOpacity, Text, Image, RefreshControl } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
+import { useAdminMode } from '../../hooks/useAdminMode';
+import { AE } from '../../components/AdminEditable';
 import { C } from '../../constants/theme';
 
 const IC = {
@@ -18,6 +20,7 @@ const IC = {
 
 export default function CommunityScreen() {
   const qc = useQueryClient();
+  const isAdmin = useAdminMode();
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(async () => { setRefreshing(true); await qc.invalidateQueries(); setRefreshing(false); }, [qc]);
 
@@ -31,14 +34,18 @@ export default function CommunityScreen() {
             <Text style={s.metricLabel}>Comentarios</Text>
             <Text style={s.metricPeriod}>28 d</Text>
           </View>
-          <Text style={s.metricValue}>176</Text>
+          <AE isAdmin={isAdmin} table="dashboard_stats" column="views" rowId="metric_comments" label="Comentarios 28d" value="176">
+            <Text style={s.metricValue}>176</Text>
+          </AE>
         </View>
         <View style={s.metricCard}>
           <View style={s.metricLabelRow}>
             <Text style={s.metricLabel}>Audiencia mensual</Text>
             <Text style={s.metricPeriod}>28 d</Text>
           </View>
-          <Text style={s.metricValue}>1,6K</Text>
+          <AE isAdmin={isAdmin} table="dashboard_stats" column="views" rowId="metric_audience" label="Audiencia mensual 28d" value="1,6K">
+            <Text style={s.metricValue}>1,6K</Text>
+          </AE>
         </View>
       </View>
 
@@ -65,7 +72,9 @@ export default function CommunityScreen() {
                 <View style={{ flex: 1 }} />
                 <Image source={IC.dots} style={s.dotsIcon} resizeMode="contain" />
               </View>
-              <Text style={s.commentText}>Comp me comunico con tigo tenemos in proyecto para Lanzar algo different que le dará otra vista a las meme</Text>
+              <AE isAdmin={isAdmin} table="comments" column="content" rowId="comment_1" label="Comentario 1" value="Comp me comunico con tigo tenemos in proyecto para Lanzar algo different que le dará otra vista a las meme">
+                <Text style={s.commentText}>Comp me comunico con tigo tenemos in proyecto para Lanzar algo different que le dará otra vista a las meme</Text>
+              </AE>
             </View>
           </View>
           <View style={s.actionsRow}>
@@ -94,7 +103,9 @@ export default function CommunityScreen() {
                 <View style={{ flex: 1 }} />
                 <Image source={IC.dots} style={s.dotsIcon} resizeMode="contain" />
               </View>
-              <Text style={s.commentText}>Se ve muy sano, ojalá siga así y se rompan muchos máximos.</Text>
+              <AE isAdmin={isAdmin} table="comments" column="content" rowId="comment_2" label="Comentario 2" value="Se ve muy sano, ojalá siga así y se rompan muchos máximos.">
+                <Text style={s.commentText}>Se ve muy sano, ojalá siga así y se rompan muchos máximos.</Text>
+              </AE>
             </View>
           </View>
           <View style={s.actionsRow}>
@@ -119,7 +130,9 @@ export default function CommunityScreen() {
                 <View style={{ flex: 1 }} />
                 <Image source={IC.dots} style={s.dotsIcon} resizeMode="contain" />
               </View>
-              <Text style={s.commentText}>Brutal el video de Awi !! Felicitaciones</Text>
+              <AE isAdmin={isAdmin} table="comments" column="content" rowId="comment_3" label="Comentario 3" value="Brutal el video de Awi !! Felicitaciones">
+                <Text style={s.commentText}>Brutal el video de Awi !! Felicitaciones</Text>
+              </AE>
             </View>
           </View>
           <View style={s.actionsRow}>

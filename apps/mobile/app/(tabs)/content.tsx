@@ -2,6 +2,8 @@ import React, { useState, useCallback } from 'react';
 import { View, ScrollView, StyleSheet, TouchableOpacity, Text, Image, FlatList, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
+import { useAdminMode } from '../../hooks/useAdminMode';
+import { AE } from '../../components/AdminEditable';
 import { C } from '../../constants/theme';
 
 const IC = {
@@ -35,6 +37,7 @@ const LIVES = [
 export default function ContentScreen() {
   const router = useRouter();
   const qc = useQueryClient();
+  const isAdmin = useAdminMode();
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(async () => { setRefreshing(true); await qc.invalidateQueries(); setRefreshing(false); }, [qc]);
 

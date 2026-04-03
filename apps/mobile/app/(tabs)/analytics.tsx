@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, RefreshControl, Dimensions } from 'react-native';
 import { useRouter, useNavigation } from 'expo-router';
+import { useAdminMode } from '../../hooks/useAdminMode';
+import { AE } from '../../components/AdminEditable';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Carousel } from '../../components/ui/Carousel';
 import { supabase } from '../../lib/supabase';
@@ -10,10 +12,8 @@ import Svg, { Polyline } from 'react-native-svg';
 
 const CID = '00000000-0000-0000-0000-000000000001';
 
-function fmt(v: number) {
-  if (v >= 1e6) return `${(v / 1e6).toFixed(1).replace('.', ',')} M`;
-  if (v >= 1e3) return `${(v / 1e3).toFixed(1).replace('.', ',')} K`;
-  return v.toLocaleString('es-ES');
+function fmt(v: any) {
+  return String(v ?? '');
 }
 
 const TABS = ['Vista General', 'Contenido', 'Audiencia', 'Ingresos', 'Tendencias'];
@@ -101,6 +101,7 @@ export default function AnalyticsScreen() {
   const router = useRouter();
   const navigation = useNavigation();
   const qc = useQueryClient();
+  const isAdmin = useAdminMode();
   const screenW = Dimensions.get('window').width;
   const [activeTab, setActiveTab] = useState(0);
   const [activeChip, setActiveChip] = useState(0);
@@ -134,14 +135,16 @@ export default function AnalyticsScreen() {
   const yLabels = ['4,20 €', '2,80 €', '1,40 €', '0 €'];
   const firstDate = ts?.length ? new Date(ts[0].date).toLocaleDateString('es', { day: 'numeric', month: 'short' }) : '';
   const lastDate = ts?.length ? new Date(ts[ts.length - 1].date).toLocaleDateString('es', { day: 'numeric', month: 'short' }) : '';
-  const maxRev = Math.max(...(rev || []).map((r: any) => r.estimated_revenue), 1);
+  const maxRev = Math.max(...(rev || []).map((r: any) => Number(r.estimated_revenue) || 0), 1);
 
   /* ── Shared chart component ── */
   function ChartCard() {
     return (
       <View style={s.chartCard}>
         <Text style={s.chartLabel}>Ingresos estimados</Text>
-        <Text style={s.chartValue}>{(st?.estimated_revenue || 0).toFixed(2).replace('.', ',')} €</Text>
+        <AE isAdmin={isAdmin} table="dashboard_stats" column="estimated_revenue" rowId={st?.id || ''} label="Ingresos estimados" value={st?.estimated_revenue || '0'}>
+          <Text style={s.chartValue}>{st?.estimated_revenue || '0'} €</Text>
+        </AE>
         <View style={s.chartArea}>
           <View style={s.yAxisLabels}>
             {yLabels.map((label, i) => <Text key={i} style={s.axisText}>{label}</Text>)}
@@ -176,13 +179,15 @@ export default function AnalyticsScreen() {
           <Text style={s.earningsTitle}>Cuánto estás ganando</Text>
           <Text style={s.earningsSub}>Estimación · Últimos 6 meses</Text>
           {(rev || []).map((r: any, i: number) => {
-            const pct = (r.estimated_revenue / maxRev) * 100;
+            const pct = ((Number(r.estimated_revenue) || 0) / maxRev) * 100;
             const monthName = new Date(r.month).toLocaleDateString('es-ES', { month: 'long', year: i >= 3 ? 'numeric' : undefined });
             return (
               <View key={r.id} style={s.monthRow}>
                 <View style={s.monthTop}>
                   <Text style={s.monthName}>{monthName.charAt(0).toUpperCase() + monthName.slice(1)}{i === 0 ? ' (en curso)' : ''}</Text>
-                  <Text style={s.monthValue}>{r.estimated_revenue.toFixed(2).replace('.', ',')} €</Text>
+                  <AE isAdmin={isAdmin} table="revenue" column="estimated_revenue" rowId={r.id} label={`Ingresos ${new Date(r.month).toLocaleDateString('es', {month:'long'})}`} value={r.estimated_revenue}>
+                    <Text style={s.monthValue}>{r.estimated_revenue} €</Text>
+                  </AE>
                 </View>
                 <View style={s.barBg}><View style={[s.barFill, { width: `${Math.min(pct, 100)}%` }]} /></View>
               </View>

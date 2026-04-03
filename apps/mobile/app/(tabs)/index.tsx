@@ -4,6 +4,8 @@ import { useRouter } from 'expo-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useRealtimeSubscription } from '../../hooks/useRealtimeSubscription';
+import { useAdminMode } from '../../hooks/useAdminMode';
+import { AE } from '../../components/AdminEditable';
 import { C, F } from '../../constants/theme';
 
 const CID = '00000000-0000-0000-0000-000000000001';
@@ -26,8 +28,8 @@ const IC = {
   moneyCircle: require('../../assets/figma/money_circle.png'),
 };
 
-function n(v: number) {
-  return v.toLocaleString('es-ES');
+function n(v: any) {
+  return String(v ?? '');
 }
 
 function since(d: string | null) {
@@ -41,6 +43,7 @@ function since(d: string | null) {
 export default function Dashboard() {
   const r = useRouter();
   const qc = useQueryClient();
+  const isAdmin = useAdminMode();
   const [exp, setExp] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -61,11 +64,17 @@ export default function Dashboard() {
   return (
     <ScrollView style={s.root} showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#1db4a5" />}>
       {/* ── Channel row ── */}
-      <TouchableOpacity style={s.chRow} activeOpacity={0.7} onPress={() => r.push('/profile')}>
-        <Image source={{ uri: ch?.avatar_url || 'https://picsum.photos/200/200' }} style={s.chAva} />
+      <TouchableOpacity style={s.chRow} activeOpacity={0.7} onPress={() => !isAdmin && r.push('/profile')}>
+        <AE isAdmin={isAdmin} table="channel" column="avatar_url" rowId={CID} label="Avatar del canal" value={ch?.avatar_url || ''} type="image">
+          <Image source={{ uri: ch?.avatar_url || 'https://picsum.photos/200/200' }} style={s.chAva} />
+        </AE>
         <View style={s.chMeta}>
-          <Text style={s.chName} numberOfLines={1}>{ch?.name || ''}</Text>
-          <Text style={s.chSubs}>{n(ch?.subscriber_count || 0)}</Text>
+          <AE isAdmin={isAdmin} table="channel" column="name" rowId={CID} label="Nombre del canal" value={ch?.name || ''}>
+            <Text style={s.chName} numberOfLines={1}>{ch?.name || ''}</Text>
+          </AE>
+          <AE isAdmin={isAdmin} table="channel" column="subscriber_count" rowId={CID} label="Suscriptores" value={ch?.subscriber_count || 0} type="number">
+            <Text style={s.chSubs}>{n(ch?.subscriber_count || 0)}</Text>
+          </AE>
           <Text style={s.chLabel}>Suscriptores totales</Text>
         </View>
       </TouchableOpacity>
@@ -77,10 +86,18 @@ export default function Dashboard() {
           <Text style={s.secRight}>Últimos 28 días</Text>
         </View>
         <View style={s.grid}>
-          <MCard label="Visualizaciones" value={n(st?.views || 0)} down={(st?.views_change_percent || 0) < 0} />
-          <MCard label="Tiempo de visualización (ho..." value={n(st?.watch_time_hours || 0)} down={(st?.watch_time_change_percent || 0) < 0} />
-          <MCard label="Suscriptores" value={`${(st?.subscribers_net || 0) >= 0 ? '' : ''}${n(st?.subscribers_net || 0)}`} hideArrow />
-          <MCard label="Ingresos estimados" value={`${(st?.estimated_revenue || 0).toFixed(2).replace('.', ',')}€`} down={(st?.revenue_change_percent || 0) < 0} />
+          <AE isAdmin={isAdmin} table="dashboard_stats" column="views" rowId={st?.id || ''} label="Visualizaciones" value={st?.views || 0} type="number">
+            <MCard label="Visualizaciones" value={n(st?.views || 0)} down={false} />
+          </AE>
+          <AE isAdmin={isAdmin} table="dashboard_stats" column="watch_time_hours" rowId={st?.id || ''} label="Tiempo de visualización" value={st?.watch_time_hours || 0} type="number">
+            <MCard label="Tiempo de visualización (ho..." value={n(st?.watch_time_hours || 0)} down={false} />
+          </AE>
+          <AE isAdmin={isAdmin} table="dashboard_stats" column="subscribers_net" rowId={st?.id || ''} label="Suscriptores neto" value={st?.subscribers_net || 0} type="number">
+            <MCard label="Suscriptores" value={n(st?.subscribers_net || 0)} hideArrow />
+          </AE>
+          <AE isAdmin={isAdmin} table="dashboard_stats" column="estimated_revenue" rowId={st?.id || ''} label="Ingresos estimados" value={st?.estimated_revenue || 0} type="number">
+            <MCard label="Ingresos estimados" value={`${st?.estimated_revenue || 0}€`} down={false} />
+          </AE>
         </View>
       </View>
 
@@ -92,10 +109,14 @@ export default function Dashboard() {
           return (
             <View key={v.id} style={s.vCard}>
               {/* Thumbnail + title */}
-              <TouchableOpacity style={s.vTop} activeOpacity={0.7} onPress={() => r.push(`/video/${v.id}`)}>
-                <Image source={{ uri: v.thumbnail_url || 'https://picsum.photos/640/360' }} style={s.vThumb} />
+              <TouchableOpacity style={s.vTop} activeOpacity={0.7} onPress={() => !isAdmin && r.push(`/video/${v.id}`)}>
+                <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId={v.id} label="Thumbnail" value={v.thumbnail_url || ''} type="image">
+                  <Image source={{ uri: v.thumbnail_url || 'https://picsum.photos/640/360' }} style={s.vThumb} />
+                </AE>
                 <View style={s.vInfo}>
-                  <Text style={s.vTitle} numberOfLines={2}>{v.title}</Text>
+                  <AE isAdmin={isAdmin} table="videos" column="title" rowId={v.id} label="Título del video" value={v.title}>
+                    <Text style={s.vTitle} numberOfLines={2}>{v.title}</Text>
+                  </AE>
                   <Text style={s.vDate}>{since(v.published_at)}</Text>
                 </View>
               </TouchableOpacity>
@@ -107,11 +128,17 @@ export default function Dashboard() {
               <View style={s.vQuick}>
                 {v.estimated_revenue > 0 && <Image source={IC.money} style={s.qIcon} resizeMode="contain" />}
                 <Image source={IC.chart} style={s.qIconSm} resizeMode="contain" />
-                <Text style={s.qText}>{n(v.view_count)}</Text>
+                <AE isAdmin={isAdmin} table="videos" column="view_count" rowId={v.id} label="Visualizaciones" value={v.view_count}>
+                  <Text style={s.qText}>{n(v.view_count)}</Text>
+                </AE>
                 <Image source={IC.like} style={s.qIconSm} resizeMode="contain" />
-                <Text style={[s.qText, { marginRight: 25 }]}>{n(v.like_count)}</Text>
+                <AE isAdmin={isAdmin} table="videos" column="like_count" rowId={v.id} label="Likes" value={v.like_count}>
+                  <Text style={[s.qText, { marginRight: 25 }]}>{n(v.like_count)}</Text>
+                </AE>
                 <Image source={IC.comment} style={[s.qIconSm, { marginRight: 5 }]} resizeMode="contain" />
-                <Text style={[s.qText, { marginRight: 0 }]}>{v.comment_count}</Text>
+                <AE isAdmin={isAdmin} table="videos" column="comment_count" rowId={v.id} label="Comentarios" value={v.comment_count}>
+                  <Text style={[s.qText, { marginRight: 0 }]}>{v.comment_count}</Text>
+                </AE>
                 <View style={{ flex: 1 }} />
                 <TouchableOpacity onPress={() => setExp(open ? null : v.id)} hitSlop={12}>
                   <Image source={IC.chevUp} style={[s.chevron, !open && { transform: [{ rotate: '180deg' }] }]} resizeMode="contain" />
@@ -137,7 +164,7 @@ export default function Dashboard() {
                       <Image source={IC.infoCircle} style={s.eInfoIcon} resizeMode="contain" />
                     </View>
                     <Text style={s.eVal}>{v.impression_ctr}%</Text>
-                    <Image source={v.impression_ctr >= 10 ? IC.checkGreen : IC.greenUp} style={s.eCircleIcon} resizeMode="contain" />
+                    <Image source={Number(v.impression_ctr) >= 10 ? IC.checkGreen : IC.greenUp} style={s.eCircleIcon} resizeMode="contain" />
                   </View>
                   <View style={s.eRow}>
                     <Text style={s.eLabel}>Duracion media de las visualizaciones</Text>
