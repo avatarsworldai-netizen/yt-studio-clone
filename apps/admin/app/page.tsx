@@ -81,19 +81,31 @@ export default function AdminEditor() {
 
   const handleSave = async (table: string, column: string, value: string | number, rowId: string) => {
     setSaving(true);
+
+    // Try saving to Supabase first
     const res = await fetch("/api/update", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ table, column, value, rowId }),
     });
 
+    // Always send update to iframe so hardcoded values get updated too
+    iframeRef.current?.contentWindow?.postMessage({
+      type: 'UPDATE_FIELD',
+      id: `${table}_${column}_${rowId}`,
+      value,
+      table, column, rowId,
+    }, '*');
+
     if (res.ok) {
       await fetchData();
-      // Refresh iframe to show changes
-      setTimeout(() => {
-        iframeRef.current?.setAttribute('src', iframeRef.current.src);
-      }, 500);
     }
+
+    // Refresh iframe to show changes
+    setTimeout(() => {
+      iframeRef.current?.setAttribute('src', 'http://localhost:8081');
+    }, 800);
+
     setSaving(false);
   };
 
@@ -113,7 +125,7 @@ export default function AdminEditor() {
           <span className="text-white text-sm font-bold">▶</span>
         </div>
         <button
-          onClick={() => { fetchData(); iframeRef.current?.setAttribute('src', iframeRef.current.src); }}
+          onClick={() => { fetchData(); iframeRef.current?.setAttribute('src', 'http://localhost:8081'); }}
           className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center text-gray-600 text-lg"
           title="Refrescar"
         >
