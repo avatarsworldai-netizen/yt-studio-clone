@@ -34,15 +34,12 @@ export async function POST(req: NextRequest) {
   const { data: urlData } = supabase.storage.from("assets").getPublicUrl(fileName);
   const publicUrl = urlData.publicUrl;
 
-  // Update the row in the database
-  const { error: updateError } = await supabase
+  // Try to update the row in the database (may fail for hardcoded fields)
+  await supabase
     .from(table)
     .update({ [column]: publicUrl })
     .eq("id", rowId);
 
-  if (updateError) {
-    return NextResponse.json({ error: updateError.message }, { status: 500 });
-  }
-
+  // Always return the URL regardless of DB update result
   return NextResponse.json({ url: publicUrl });
 }
