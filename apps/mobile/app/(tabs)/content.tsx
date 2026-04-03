@@ -34,6 +34,13 @@ const LIVES = [
   { id: 'l2', thumb: require('../../assets/figma/live_thumb_2.png'), title: 'SE VIENEN COSITAS!G...', views: '992', likes: '', dur: '1:16:37' },
 ];
 
+const FILTERS = [
+  { id: 'filter_tipo', label: 'Tipo' },
+  { id: 'filter_visibilidad', label: 'Visibilidad' },
+  { id: 'filter_visualizaciones', label: 'Visualizaciones' },
+  { id: 'filter_m', label: 'M' },
+];
+
 export default function ContentScreen() {
   const router = useRouter();
   const qc = useQueryClient();
@@ -47,16 +54,24 @@ export default function ContentScreen() {
       {/* ── Filter chips ── */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.filtersRow}>
         <TouchableOpacity style={s.filterBtn}>
-          <Image source={IC.filter} style={s.filterIcon} resizeMode="contain" />
+          <AE isAdmin={isAdmin} table="ui_content" column="filter_icon" rowId="filter_btn" label="Icono filtro" value="" type="image">
+            <Image source={IC.filter} style={s.filterIcon} resizeMode="contain" />
+          </AE>
         </TouchableOpacity>
-        <FilterChip label="Tipo" />
-        <FilterChip label="Visibilidad" />
-        <FilterChip label="Visualizaciones" />
-        <FilterChip label="M" />
+        {FILTERS.map(f => (
+          <TouchableOpacity key={f.id} style={s.chip}>
+            <AE isAdmin={isAdmin} table="ui_content" column="label" rowId={f.id} label={`Filtro: ${f.label}`} value={f.label}>
+              <Text style={s.chipText}>{f.label}</Text>
+            </AE>
+            <AE isAdmin={isAdmin} table="ui_content" column="dropdown_icon" rowId={f.id} label={`Flecha dropdown (${f.label})`} value="" type="image">
+              <Image source={IC.dropdown} style={s.dropdownIcon} resizeMode="contain" />
+            </AE>
+          </TouchableOpacity>
+        ))}
       </ScrollView>
 
       {/* ── Vídeos ── */}
-      <SectionHead title="Vídeos" />
+      <SectionHead title="Vídeos" sectionId="sec_videos" isAdmin={isAdmin} />
       <FlatList
         horizontal showsHorizontalScrollIndicator={false}
         data={VIDEOS} keyExtractor={i => i.id}
@@ -75,16 +90,30 @@ export default function ContentScreen() {
               <AE isAdmin={isAdmin} table="videos" column="title" rowId={item.id} label="Título video" value={item.title}>
                 <Text style={s.videoTitle} numberOfLines={1}>{item.title}</Text>
               </AE>
-              <TouchableOpacity><Image source={IC.dots} style={s.dotsIcon} resizeMode="contain" /></TouchableOpacity>
+              <AE isAdmin={isAdmin} table="videos" column="dots_icon" rowId={item.id} label="Icono menú" value="" type="image">
+                <Image source={IC.dots} style={s.dotsIcon} resizeMode="contain" />
+              </AE>
             </View>
             <View style={s.statsRow}>
-              {item.money && <Image source={IC.moneyGreen} style={s.statusIcon} resizeMode="contain" />}
-              {item.copyright && <Image source={IC.copyrightRed} style={s.statusIcon} resizeMode="contain" />}
-              <Image source={IC.chart} style={s.statIcon} resizeMode="contain" />
+              {item.money && (
+                <AE isAdmin={isAdmin} table="videos" column="money_icon" rowId={item.id} label="Icono monetización" value="" type="image">
+                  <Image source={IC.moneyGreen} style={s.statusIcon} resizeMode="contain" />
+                </AE>
+              )}
+              {item.copyright && (
+                <AE isAdmin={isAdmin} table="videos" column="copyright_icon" rowId={item.id} label="Icono copyright" value="" type="image">
+                  <Image source={IC.copyrightRed} style={s.statusIcon} resizeMode="contain" />
+                </AE>
+              )}
+              <AE isAdmin={isAdmin} table="videos" column="chart_icon" rowId={item.id} label="Icono gráfica" value="" type="image">
+                <Image source={IC.chart} style={s.statIcon} resizeMode="contain" />
+              </AE>
               <AE isAdmin={isAdmin} table="videos" column="view_count" rowId={item.id} label="Visualizaciones" value={item.views}>
                 <Text style={s.statText}>{item.views}</Text>
               </AE>
-              <Image source={IC.like} style={s.statIcon} resizeMode="contain" />
+              <AE isAdmin={isAdmin} table="videos" column="like_icon" rowId={item.id} label="Icono like" value="" type="image">
+                <Image source={IC.like} style={s.statIcon} resizeMode="contain" />
+              </AE>
               <AE isAdmin={isAdmin} table="videos" column="like_count" rowId={item.id} label="Likes" value={item.likes}>
                 <Text style={s.statText}>{item.likes}</Text>
               </AE>
@@ -94,7 +123,7 @@ export default function ContentScreen() {
       />
 
       {/* ── Shorts ── */}
-      <SectionHead title="Shorts" />
+      <SectionHead title="Shorts" sectionId="sec_shorts" isAdmin={isAdmin} />
       <FlatList
         horizontal showsHorizontalScrollIndicator={false}
         data={SHORTS} keyExtractor={i => i.id}
@@ -106,19 +135,25 @@ export default function ContentScreen() {
                 <Image source={item.thumb} style={s.shortThumb} resizeMode="cover" />
               </AE>
               <TouchableOpacity style={s.shortDotsBtn}>
-                <Image source={IC.dots} style={[s.dotsIcon, { tintColor: '#fff' }]} resizeMode="contain" />
+                <AE isAdmin={isAdmin} table="videos" column="dots_icon" rowId={item.id} label="Icono menú short" value="" type="image">
+                  <Image source={IC.dots} style={[s.dotsIcon, { tintColor: '#fff' }]} resizeMode="contain" />
+                </AE>
               </TouchableOpacity>
             </View>
             <AE isAdmin={isAdmin} table="videos" column="title" rowId={item.id} label="Título short" value={item.title}>
               <Text style={s.shortTitle} numberOfLines={1}>{item.title}</Text>
             </AE>
             <View style={s.statsRow}>
-              <Image source={IC.chart} style={s.statIcon} resizeMode="contain" />
+              <AE isAdmin={isAdmin} table="videos" column="chart_icon" rowId={item.id} label="Icono gráfica" value="" type="image">
+                <Image source={IC.chart} style={s.statIcon} resizeMode="contain" />
+              </AE>
               <AE isAdmin={isAdmin} table="videos" column="view_count" rowId={item.id} label="Visualizaciones" value={item.views}>
                 <Text style={s.statText}>{item.views}</Text>
               </AE>
               {item.likes ? <>
-                <Image source={IC.like} style={s.statIcon} resizeMode="contain" />
+                <AE isAdmin={isAdmin} table="videos" column="like_icon" rowId={item.id} label="Icono like" value="" type="image">
+                  <Image source={IC.like} style={s.statIcon} resizeMode="contain" />
+                </AE>
                 <AE isAdmin={isAdmin} table="videos" column="like_count" rowId={item.id} label="Likes" value={item.likes}>
                   <Text style={s.statText}>{item.likes}</Text>
                 </AE>
@@ -129,7 +164,7 @@ export default function ContentScreen() {
       />
 
       {/* ── En directo ── */}
-      <SectionHead title="En directo" />
+      <SectionHead title="En directo" sectionId="sec_lives" isAdmin={isAdmin} />
       <FlatList
         horizontal showsHorizontalScrollIndicator={false}
         data={LIVES} keyExtractor={i => i.id}
@@ -148,15 +183,21 @@ export default function ContentScreen() {
               <AE isAdmin={isAdmin} table="videos" column="title" rowId={item.id} label="Título directo" value={item.title}>
                 <Text style={s.videoTitle} numberOfLines={1}>{item.title}</Text>
               </AE>
-              <TouchableOpacity><Image source={IC.dots} style={s.dotsIcon} resizeMode="contain" /></TouchableOpacity>
+              <AE isAdmin={isAdmin} table="videos" column="dots_icon" rowId={item.id} label="Icono menú" value="" type="image">
+                <Image source={IC.dots} style={s.dotsIcon} resizeMode="contain" />
+              </AE>
             </View>
             <View style={s.statsRow}>
-              <Image source={IC.chart} style={s.statIcon} resizeMode="contain" />
+              <AE isAdmin={isAdmin} table="videos" column="chart_icon" rowId={item.id} label="Icono gráfica" value="" type="image">
+                <Image source={IC.chart} style={s.statIcon} resizeMode="contain" />
+              </AE>
               <AE isAdmin={isAdmin} table="videos" column="view_count" rowId={item.id} label="Visualizaciones" value={item.views}>
                 <Text style={s.statText}>{item.views}</Text>
               </AE>
               {item.likes ? <>
-                <Image source={IC.like} style={s.statIcon} resizeMode="contain" />
+                <AE isAdmin={isAdmin} table="videos" column="like_icon" rowId={item.id} label="Icono like" value="" type="image">
+                  <Image source={IC.like} style={s.statIcon} resizeMode="contain" />
+                </AE>
                 <AE isAdmin={isAdmin} table="videos" column="like_count" rowId={item.id} label="Likes" value={item.likes}>
                   <Text style={s.statText}>{item.likes}</Text>
                 </AE>
@@ -171,20 +212,17 @@ export default function ContentScreen() {
   );
 }
 
-function FilterChip({ label }: { label: string }) {
-  return (
-    <TouchableOpacity style={s.chip}>
-      <Text style={s.chipText}>{label}</Text>
-      <Image source={require('../../assets/figma/dropdown_arrow.png')} style={s.dropdownIcon} resizeMode="contain" />
-    </TouchableOpacity>
-  );
-}
-
-function SectionHead({ title }: { title: string }) {
+function SectionHead({ title, sectionId, isAdmin }: { title: string; sectionId: string; isAdmin: boolean }) {
   return (
     <View style={s.secHead}>
-      <Text style={s.secTitle}>{title}</Text>
-      <TouchableOpacity style={s.verTodo}><Text style={s.verTodoText}>Ver todo</Text></TouchableOpacity>
+      <AE isAdmin={isAdmin} table="ui_content" column="section_title" rowId={sectionId} label={`Título sección: ${title}`} value={title}>
+        <Text style={s.secTitle}>{title}</Text>
+      </AE>
+      <TouchableOpacity style={s.verTodo}>
+        <AE isAdmin={isAdmin} table="ui_content" column="ver_todo" rowId={sectionId} label={`Botón Ver todo (${title})`} value="Ver todo">
+          <Text style={s.verTodoText}>Ver todo</Text>
+        </AE>
+      </TouchableOpacity>
     </View>
   );
 }

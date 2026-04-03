@@ -3,6 +3,8 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, Animated, Pressable } 
 import { Tabs } from 'expo-router';
 import { C, F } from '../../constants/theme';
 import { supabase } from '../../lib/supabase';
+import { useAdminMode } from '../../hooks/useAdminMode';
+import { AE } from '../../components/AdminEditable';
 
 // Figma icon assets
 const ICONS = {
@@ -23,15 +25,21 @@ const ICONS = {
 };
 
 function Logo() {
+  const isAdmin = useAdminMode();
   return (
     <View style={st.logoWrap}>
-      <Image source={ICONS.ytLogo} style={st.ytLogo} resizeMode="contain" />
-      <Image source={ICONS.studioText} style={st.studioImg} resizeMode="contain" />
+      <AE isAdmin={isAdmin} table="ui_header" column="yt_logo" rowId="header" label="Logo YouTube" value="" type="image">
+        <Image source={ICONS.ytLogo} style={st.ytLogo} resizeMode="contain" />
+      </AE>
+      <AE isAdmin={isAdmin} table="ui_header" column="studio_text" rowId="header" label="Texto Studio" value="" type="image">
+        <Image source={ICONS.studioText} style={st.studioImg} resizeMode="contain" />
+      </AE>
     </View>
   );
 }
 
 function RightIcons() {
+  const isAdmin = useAdminMode();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   useEffect(() => {
     supabase.from('channel').select('avatar_url').eq('id', '00000000-0000-0000-0000-000000000001').single()
@@ -40,10 +48,20 @@ function RightIcons() {
 
   return (
     <View style={st.right}>
-      <TouchableOpacity><Image source={ICONS.plus} style={st.headerIcon} resizeMode="contain" /></TouchableOpacity>
-      <TouchableOpacity><Image source={ICONS.bell} style={st.headerIcon} resizeMode="contain" /></TouchableOpacity>
       <TouchableOpacity>
-        <Image source={{ uri: avatarUrl || 'https://picsum.photos/seed/avatar/200/200' }} style={st.avatar} />
+        <AE isAdmin={isAdmin} table="ui_header" column="plus_icon" rowId="header" label="Icono crear (+)" value="" type="image">
+          <Image source={ICONS.plus} style={st.headerIcon} resizeMode="contain" />
+        </AE>
+      </TouchableOpacity>
+      <TouchableOpacity>
+        <AE isAdmin={isAdmin} table="ui_header" column="bell_icon" rowId="header" label="Icono notificaciones" value="" type="image">
+          <Image source={ICONS.bell} style={st.headerIcon} resizeMode="contain" />
+        </AE>
+      </TouchableOpacity>
+      <TouchableOpacity>
+        <AE isAdmin={isAdmin} table="channel" column="avatar_url" rowId="00000000-0000-0000-0000-000000000001" label="Avatar del canal" value={avatarUrl || ''} type="image">
+          <Image source={{ uri: avatarUrl || 'https://picsum.photos/seed/avatar/200/200' }} style={st.avatar} />
+        </AE>
       </TouchableOpacity>
     </View>
   );

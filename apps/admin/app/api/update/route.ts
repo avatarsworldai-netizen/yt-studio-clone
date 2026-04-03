@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   }
 
-  // First try saving as-is (works for TEXT columns)
+  // First try saving to the original table
   let { error } = await supabase
     .from(table)
     .update({ [column]: value })
@@ -32,9 +32,27 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // If original table update failed (table doesn't exist, column doesn't exist, row not found),
+  // save to field_overrides as fallback for hardcoded values
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const overrideId = `${table}_${column}_${rowId}`;
+    const { error: overrideError } = await supabase
+      .from("field_overrides")
+      .upsert({
+        id: overrideId,
+        table_name: table,
+        column_name: column,
+        row_id: rowId,
+        value: String(value),
+        updated_at: new Date().toISOString(),
+      });
+
+    if (overrideError) {
+      return NextResponse.json({ error: overrideError.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ ok: true, source: "override" });
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, source: "table" });
 }

@@ -19,27 +19,30 @@ export function AE({ table, column, rowId, label, value, type = 'text', isAdmin,
 
   const override = getOverride(table, column, rowId);
 
-  // If not admin, still check for overrides to show updated values
+  // Determine what to render: overridden content or original
+  let content = children;
   if (override !== undefined) {
     if (type === 'image' && override) {
-      // Replace image with override URL
-      return replaceImageChild(children, override);
+      content = replaceImageChild(children, override);
+    } else {
+      content = replaceTextChild(children, override);
     }
-    // Replace text content with override
-    return replaceTextChild(children, override);
   }
 
-  if (!isAdmin || Platform.OS !== 'web') return <>{children}</>;
+  // If not admin or not web, just show content (with or without override)
+  if (!isAdmin || Platform.OS !== 'web') return <>{content}</>;
 
+  // Always wrap with click handler in admin mode, even after override
+  const currentValue = override !== undefined ? override : value;
   const handleClick = (e: any) => {
     e.stopPropagation();
-    sendEditMessage({ id: `${table}_${column}_${rowId}`, label, value, type, table, column, rowId });
+    sendEditMessage({ id: `${table}_${column}_${rowId}`, label, value: currentValue, type, table, column, rowId });
   };
 
   return React.createElement('span', {
     onClick: handleClick,
     style: { display: 'contents', cursor: 'pointer' },
-  }, children);
+  }, content);
 }
 
 // Replace text content in children

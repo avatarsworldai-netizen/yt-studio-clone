@@ -82,14 +82,14 @@ export default function AdminEditor() {
   const handleSave = async (table: string, column: string, value: string | number, rowId: string) => {
     setSaving(true);
 
-    // Try saving to Supabase first
+    // Save to Supabase (original table or field_overrides fallback)
     const res = await fetch("/api/update", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ table, column, value, rowId }),
     });
 
-    // Always send update to iframe so hardcoded values get updated too
+    // Always send update to iframe so values update instantly without reload
     iframeRef.current?.contentWindow?.postMessage({
       type: 'UPDATE_FIELD',
       id: `${table}_${column}_${rowId}`,
@@ -100,11 +100,6 @@ export default function AdminEditor() {
     if (res.ok) {
       await fetchData();
     }
-
-    // Refresh iframe to show changes
-    setTimeout(() => {
-      iframeRef.current?.setAttribute('src', 'http://localhost:8081');
-    }, 800);
 
     setSaving(false);
   };

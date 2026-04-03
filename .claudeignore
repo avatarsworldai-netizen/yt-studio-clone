@@ -1,0 +1,30 @@
+# Build outputs
+.next/
+dist/
+build/
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Cache
+.turbo/
+*.sst
+
+# Binary/media files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.ico
+*.mp4
+*.mp3
+*.woff
+*.woff2
+*.ttf
+*.eot
+*.map
+
+# OS
+.DS_Store

@@ -9,6 +9,8 @@ import { supabase } from '../../lib/supabase';
 import { useRealtimeSubscription } from '../../hooks/useRealtimeSubscription';
 import { C, F } from '../../constants/theme';
 import Svg, { Polyline } from 'react-native-svg';
+import { DynamicLineChart, DynamicBarChart } from '../../components/DynamicChart';
+import { getOverride } from '../../hooks/useFieldOverrides';
 
 const CID = '00000000-0000-0000-0000-000000000001';
 
@@ -139,30 +141,24 @@ export default function AnalyticsScreen() {
 
   /* ── Shared chart component ── */
   function ChartCard() {
+    const revenueVal = st?.estimated_revenue || '0';
+    const tsPoints = ts?.length ? ts.map((d: any) => Number(d.value)) : undefined;
     return (
       <View style={s.chartCard}>
-        <Text style={s.chartLabel}>Ingresos estimados</Text>
-        <AE isAdmin={isAdmin} table="dashboard_stats" column="estimated_revenue" rowId={st?.id || ''} label="Ingresos estimados" value={st?.estimated_revenue || '0'}>
-          <Text style={s.chartValue}>{st?.estimated_revenue || '0'} €</Text>
+        <AE isAdmin={isAdmin} table="ui_analytics" column="chart_label" rowId="chart_main" label="Etiqueta gráfica principal" value="Ingresos estimados">
+          <Text style={s.chartLabel}>Ingresos estimados</Text>
         </AE>
-        <View style={s.chartArea}>
-          <View style={s.yAxisLabels}>
-            {yLabels.map((label, i) => <Text key={i} style={s.axisText}>{label}</Text>)}
-          </View>
-          <View style={s.chartSvgWrap}>
-            <View style={s.gridContainer}>
-              {[0, 1, 2, 3].map(i => <View key={i} style={[s.gridLine, { top: i * (chartH / 3) }]} />)}
-            </View>
-            <View style={s.svgLayer}>
-              <Svg width={chartW} height={chartH}>
-                <Polyline points={buildPoints()} fill="none" stroke={TEAL} strokeWidth="2.5" />
-              </Svg>
-            </View>
-          </View>
-        </View>
-        <View style={s.xAxisRow}>
-          <Text style={s.axisText}>{firstDate}</Text>
-          <Text style={s.axisText}>{lastDate}</Text>
+        <AE isAdmin={isAdmin} table="dashboard_stats" column="estimated_revenue" rowId={st?.id || ''} label="Ingresos estimados" value={revenueVal}>
+          <Text style={s.chartValue}>{revenueVal} €</Text>
+        </AE>
+        <View style={{ marginTop: 20 }}>
+          <DynamicLineChart
+            value={revenueVal}
+            points={tsPoints}
+            xLabels={[firstDate, lastDate]}
+            height={chartH}
+            color="#1db4a5"
+          />
         </View>
       </View>
     );
@@ -176,15 +172,21 @@ export default function AnalyticsScreen() {
           <ChartCard />
         </TouchableOpacity>
         <View style={s.earningsCard}>
-          <Text style={s.earningsTitle}>Cuánto estás ganando</Text>
-          <Text style={s.earningsSub}>Estimación · Últimos 6 meses</Text>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="earnings_title" label="Título: Cuánto estás ganando" value="Cuánto estás ganando">
+            <Text style={s.earningsTitle}>Cuánto estás ganando</Text>
+          </AE>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="subtitle" rowId="earnings_sub" label="Subtítulo ganancias" value="Estimación · Últimos 6 meses">
+            <Text style={s.earningsSub}>Estimación · Últimos 6 meses</Text>
+          </AE>
           {(rev || []).map((r: any, i: number) => {
             const pct = ((Number(r.estimated_revenue) || 0) / maxRev) * 100;
             const monthName = new Date(r.month).toLocaleDateString('es-ES', { month: 'long', year: i >= 3 ? 'numeric' : undefined });
             return (
               <View key={r.id} style={s.monthRow}>
                 <View style={s.monthTop}>
-                  <Text style={s.monthName}>{monthName.charAt(0).toUpperCase() + monthName.slice(1)}{i === 0 ? ' (en curso)' : ''}</Text>
+                  <AE isAdmin={isAdmin} table="revenue" column="month" rowId={r.id} label={`Mes: ${monthName}`} value={monthName.charAt(0).toUpperCase() + monthName.slice(1) + (i === 0 ? ' (en curso)' : '')}>
+                    <Text style={s.monthName}>{monthName.charAt(0).toUpperCase() + monthName.slice(1)}{i === 0 ? ' (en curso)' : ''}</Text>
+                  </AE>
                   <AE isAdmin={isAdmin} table="revenue" column="estimated_revenue" rowId={r.id} label={`Ingresos ${new Date(r.month).toLocaleDateString('es', {month:'long'})}`} value={r.estimated_revenue}>
                     <Text style={s.monthValue}>{r.estimated_revenue} €</Text>
                   </AE>
@@ -200,12 +202,18 @@ export default function AnalyticsScreen() {
           {/* Card 1: Rendimiento de los vídeos */}
           <View style={s.vgChartOuter}>
             <View style={s.rendCard}>
-              <Text style={s.rendTitle}>Rendimiento de los vídeos</Text>
-              <Text style={s.rendSub}>Últimos 28 días</Text>
+              <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="rend_vid_title" label="Título rendimiento vídeos" value="Rendimiento de los vídeos">
+                <Text style={s.rendTitle}>Rendimiento de los vídeos</Text>
+              </AE>
+              <AE isAdmin={isAdmin} table="ui_analytics" column="subtitle" rowId="rend_vid_sub" label="Sub rendimiento vídeos" value="Últimos 28 días">
+                <Text style={s.rendSub}>Últimos 28 días</Text>
+              </AE>
               <AE isAdmin={isAdmin} table="revenue" column="estimated_revenue" rowId="rend_vid" label="Rendimiento vídeos total" value="13,21€">
                 <Text style={s.rendValue}>13,21€</Text>
               </AE>
-              <Text style={s.rendLabel}>Ingresos estimados</Text>
+              <AE isAdmin={isAdmin} table="ui_analytics" column="label" rowId="rend_vid_label" label="Etiqueta ingresos vídeos" value="Ingresos estimados">
+                <Text style={s.rendLabel}>Ingresos estimados</Text>
+              </AE>
               <View style={s.rendVidRow}>
                 <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId="rend_v1" label="Thumbnail rend. vídeo 1" value="" type="image">
                   <Image source={require('../../assets/figma/rend_vid1.png')} style={s.rendThumb} resizeMode="cover" />
@@ -244,12 +252,18 @@ export default function AnalyticsScreen() {
           {/* Card 2: Rendimiento de los Shorts */}
           <View style={s.vgChartOuter}>
             <View style={s.rendCard}>
-              <Text style={s.rendTitle}>Rendimiento de los Shorts</Text>
-              <Text style={s.rendSub}>Últimos 28 días</Text>
+              <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="rend_short_title" label="Título rendimiento Shorts" value="Rendimiento de los Shorts">
+                <Text style={s.rendTitle}>Rendimiento de los Shorts</Text>
+              </AE>
+              <AE isAdmin={isAdmin} table="ui_analytics" column="subtitle" rowId="rend_short_sub" label="Sub rendimiento Shorts" value="Últimos 28 días">
+                <Text style={s.rendSub}>Últimos 28 días</Text>
+              </AE>
               <AE isAdmin={isAdmin} table="revenue" column="estimated_revenue" rowId="rend_short" label="Rendimiento Shorts total" value="0€">
                 <Text style={s.rendValue}>0€</Text>
               </AE>
-              <Text style={s.rendLabel}>Ingresos estimados</Text>
+              <AE isAdmin={isAdmin} table="ui_analytics" column="label" rowId="rend_short_label" label="Etiqueta ingresos Shorts" value="Ingresos estimados">
+                <Text style={s.rendLabel}>Ingresos estimados</Text>
+              </AE>
               <View style={s.rendVidRow}>
                 <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId="rend_s1" label="Thumbnail rend. short" value="" type="image">
                   <Image source={require('../../assets/figma/rend_short1.png')} style={s.rendThumbShort} resizeMode="cover" />
@@ -266,15 +280,25 @@ export default function AnalyticsScreen() {
           {/* Card 3: Actuaciones en directo */}
           <View style={s.vgChartOuter}>
             <View style={s.rendCard}>
-              <Text style={s.rendTitle}>Actuaciones en directo</Text>
-              <Text style={s.rendSub}>Últimos 28 días</Text>
-              <Text style={[s.rendValue, { fontSize: 20 }]}>—</Text>
-              <Text style={s.rendLabel}>Ingresos estimados</Text>
+              <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="rend_live_title" label="Título actuaciones directo" value="Actuaciones en directo">
+                <Text style={s.rendTitle}>Actuaciones en directo</Text>
+              </AE>
+              <AE isAdmin={isAdmin} table="ui_analytics" column="subtitle" rowId="rend_live_sub" label="Sub actuaciones directo" value="Últimos 28 días">
+                <Text style={s.rendSub}>Últimos 28 días</Text>
+              </AE>
+              <AE isAdmin={isAdmin} table="ui_analytics" column="value" rowId="rend_live_val" label="Valor actuaciones directo" value="—">
+                <Text style={[s.rendValue, { fontSize: 20 }]}>—</Text>
+              </AE>
+              <AE isAdmin={isAdmin} table="ui_analytics" column="label" rowId="rend_live_label" label="Etiqueta ingresos directo" value="Ingresos estimados">
+                <Text style={s.rendLabel}>Ingresos estimados</Text>
+              </AE>
               <View style={s.noDataBox}>
                 <View style={s.noDataIcon}>
                   <Text style={{ fontSize: 16, color: '#888' }}>ⓘ</Text>
                 </View>
-                <Text style={s.noDataText}>No hay nada que mostrar para estas fechas</Text>
+                <AE isAdmin={isAdmin} table="ui_analytics" column="text" rowId="nodata_live" label="Texto sin datos directo" value="No hay nada que mostrar para estas fechas">
+                  <Text style={s.noDataText}>No hay nada que mostrar para estas fechas</Text>
+                </AE>
               </View>
             </View>
           </View>
@@ -283,7 +307,9 @@ export default function AnalyticsScreen() {
         {/* ── Cómo ganas dinero ── */}
         <View style={s.earningsCard}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <Text style={s.earningsTitle}>Cómo ganas dinero</Text>
+            <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="como_ganas" label="Título: Cómo ganas dinero" value="Cómo ganas dinero">
+              <Text style={s.earningsTitle}>Cómo ganas dinero</Text>
+            </AE>
             <Image source={require('../../assets/figma/rend_clock.png')} style={{ width: 22, height: 22 }} resizeMode="contain" />
           </View>
           <Text style={s.earningsSub}>Estimación · Últimos 28 días</Text>
@@ -320,14 +346,26 @@ export default function AnalyticsScreen() {
       <>
         <ChartCard />
         <View style={s.earningsCard}>
-          <Text style={s.earningsTitle}>Cuánto pagan los anunciantes</Text>
-          <Text style={s.earningsSub}>Últimos 28 días</Text>
-          <Text style={s.cpmValue}>6,55 €</Text>
-          <Text style={s.cpmDesc}>Coste por cada 1000 reproducciones (CPM basado en reproducciones)</Text>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="anunciantes_title" label="Título anunciantes" value="Cuánto pagan los anunciantes">
+            <Text style={s.earningsTitle}>Cuánto pagan los anunciantes</Text>
+          </AE>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="subtitle" rowId="anunciantes_sub" label="Sub anunciantes" value="Últimos 28 días">
+            <Text style={s.earningsSub}>Últimos 28 días</Text>
+          </AE>
+          <AE isAdmin={isAdmin} table="revenue" column="cpm" rowId="cpm_val" label="CPM valor" value="6,55 €">
+            <Text style={s.cpmValue}>6,55 €</Text>
+          </AE>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="text" rowId="cpm_desc" label="Descripción CPM" value="Coste por cada 1000 reproducciones (CPM basado en reproducciones)">
+            <Text style={s.cpmDesc}>Coste por cada 1000 reproducciones (CPM basado en reproducciones)</Text>
+          </AE>
         </View>
         <View style={s.earningsCard}>
-          <Text style={s.earningsTitle}>Earnings by ad type</Text>
-          <Text style={s.earningsSub}>Ingresos publicitarios de YouTube · Últimos 28 días</Text>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="adtype_title" label="Título tipos anuncio" value="Earnings by ad type">
+            <Text style={s.earningsTitle}>Earnings by ad type</Text>
+          </AE>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="subtitle" rowId="adtype_sub" label="Sub tipos anuncio" value="Ingresos publicitarios de YouTube · Últimos 28 días">
+            <Text style={s.earningsSub}>Ingresos publicitarios de YouTube · Últimos 28 días</Text>
+          </AE>
           {AD_TYPES.map((ad, i) => (
             <View key={i} style={s.adRow}>
               <AE isAdmin={isAdmin} table="revenue" column="ad_revenue" rowId={`adtype_${i}`} label={`Tipo anuncio ${i+1}`} value={ad.label}>
@@ -349,41 +387,42 @@ export default function AnalyticsScreen() {
       <>
         {/* Chart card with 0€ values */}
         <View style={s.chartCard}>
-          <Text style={s.chartLabel}>Ingresos estimados</Text>
-          <Text style={[s.chartValue, { fontSize: 20 }]}>0€</Text>
-          <View style={s.chartArea}>
-            <View style={s.yAxisLabels}>
-              <Text style={s.axisText}>0€</Text>
-              <Text style={s.axisText}>0€</Text>
-              <Text style={s.axisText}>0€</Text>
-              <Text style={s.axisText}>0€</Text>
-            </View>
-            <View style={s.chartSvgWrap}>
-              <View style={s.gridContainer}>
-                {[0, 1, 2, 3].map(i => <View key={i} style={[s.gridLine, { top: i * (chartH / 3) }]} />)}
-              </View>
-              <View style={s.svgLayer}>
-                <Svg width={chartW} height={chartH}>
-                  <Polyline points={`0,${chartH - 5} ${chartW},${chartH - 5}`} fill="none" stroke={TEAL} strokeWidth="2.5" />
-                </Svg>
-              </View>
-            </View>
-          </View>
-          <View style={s.xAxisRow}>
-            <Text style={s.axisText}>{firstDate}</Text>
-            <Text style={s.axisText}>{lastDate}</Text>
-          </View>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="chart_label" rowId="feed_chart" label="Etiqueta gráfica Shorts" value="Ingresos estimados">
+            <Text style={s.chartLabel}>Ingresos estimados</Text>
+          </AE>
+          {(() => {
+            const feedOverride = getOverride('revenue', 'estimated_revenue', 'feed_val');
+            const feedVal = feedOverride || '0€';
+            return (
+              <>
+                <AE isAdmin={isAdmin} table="revenue" column="estimated_revenue" rowId="feed_val" label="Ingresos Shorts feed" value={feedVal}>
+                  <Text style={[s.chartValue, { fontSize: 20 }]}>{feedVal}</Text>
+                </AE>
+                <DynamicLineChart value={feedVal} xLabels={[firstDate, lastDate]} height={chartH} color="#1db4a5" />
+              </>
+            );
+          })()}
         </View>
 
         {/* Shorts con mayores ingresos */}
         <View style={s.earningsCard}>
-          <Text style={s.earningsTitle}>Shorts con mayores ingresos</Text>
-          <Text style={s.earningsSub}>Anuncios del feed de Shorts · Últimos 28 días</Text>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="shorts_mayores" label="Título shorts mayores ingresos" value="Shorts con mayores ingresos">
+            <Text style={s.earningsTitle}>Shorts con mayores ingresos</Text>
+          </AE>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="subtitle" rowId="shorts_mayores_sub" label="Sub shorts mayores" value="Anuncios del feed de Shorts · Últimos 28 días">
+            <Text style={s.earningsSub}>Anuncios del feed de Shorts · Últimos 28 días</Text>
+          </AE>
           <View style={s.shortRow}>
-            <Image source={{ uri: 'https://picsum.photos/seed/short1/200/280' }} style={s.shortThumb} />
+            <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId="feed_short1" label="Thumbnail short feed" value="" type="image">
+              <Image source={{ uri: 'https://picsum.photos/seed/short1/200/280' }} style={s.shortThumb} />
+            </AE>
             <View style={s.shortInfo}>
-              <Text style={s.shortDate}>27 de diciembre de 2024</Text>
-              <Text style={s.shortAmount}>0,00€</Text>
+              <AE isAdmin={isAdmin} table="videos" column="published_at" rowId="feed_short1" label="Fecha short" value="27 de diciembre de 2024">
+                <Text style={s.shortDate}>27 de diciembre de 2024</Text>
+              </AE>
+              <AE isAdmin={isAdmin} table="videos" column="estimated_revenue" rowId="feed_short1" label="Ingresos short" value="0,00€">
+                <Text style={s.shortAmount}>0,00€</Text>
+              </AE>
             </View>
           </View>
         </View>
@@ -409,24 +448,40 @@ export default function AnalyticsScreen() {
         {/* Audiencia por comportamiento */}
         <View style={s.vgPopCard}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Text style={s.vgPopTitle}>Audiencia por comportamiento de visualización</Text>
+            <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="aud_comportamiento" label="Título audiencia comportamiento" value="Audiencia por comportamiento de visualización">
+              <Text style={s.vgPopTitle}>Audiencia por comportamiento de visualización</Text>
+            </AE>
           </View>
-          <Text style={s.vgPopSub}>Audiencia mensual · 29 mar 2026</Text>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="subtitle" rowId="aud_comportamiento_sub" label="Sub audiencia comportamiento" value="Audiencia mensual · 29 mar 2026">
+            <Text style={s.vgPopSub}>Audiencia mensual · 29 mar 2026</Text>
+          </AE>
           <View style={s.audNoDataBox}>
             <Image source={require('../../assets/figma/info_icon.png')} style={s.noDataInfoIcon} resizeMode="contain" />
-            <Text style={s.audNoDataText}>No hay suficientes datos para mostrar este informe</Text>
+            <AE isAdmin={isAdmin} table="ui_analytics" column="text" rowId="aud_nodata" label="Texto sin datos audiencia" value="No hay suficientes datos para mostrar este informe">
+              <Text style={s.audNoDataText}>No hay suficientes datos para mostrar este informe</Text>
+            </AE>
           </View>
         </View>
 
         {/* Popular entre usuarios nuevos */}
         <View style={s.vgPopCard}>
-          <Text style={s.vgPopTitle}>Popular entre usuarios nuevos</Text>
-          <Text style={s.vgPopSub}>Visualizaciones · Últimos 28 dias</Text>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="aud_popular" label="Título popular usuarios nuevos" value="Popular entre usuarios nuevos">
+            <Text style={s.vgPopTitle}>Popular entre usuarios nuevos</Text>
+          </AE>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="subtitle" rowId="aud_popular_sub" label="Sub popular usuarios nuevos" value="Visualizaciones · Últimos 28 dias">
+            <Text style={s.vgPopSub}>Visualizaciones · Últimos 28 dias</Text>
+          </AE>
           {AUD_POPULAR_NUEVOS.map((vid, i) => (
             <View key={i} style={s.vgPopRow}>
-              <Image source={vid.thumb} style={s.vgPopThumb} resizeMode="cover" />
-              <Text style={s.vgPopVidTitle} numberOfLines={1}>{vid.title}</Text>
-              <Text style={s.vgPopViews}>{vid.views}</Text>
+              <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId={`audpop_${i}`} label={`Thumbnail popular nuevo ${i+1}`} value="" type="image">
+                <Image source={vid.thumb} style={s.vgPopThumb} resizeMode="cover" />
+              </AE>
+              <AE isAdmin={isAdmin} table="videos" column="title" rowId={`audpop_${i}`} label={`Título popular nuevo ${i+1}`} value={vid.title}>
+                <Text style={s.vgPopVidTitle} numberOfLines={1}>{vid.title}</Text>
+              </AE>
+              <AE isAdmin={isAdmin} table="videos" column="view_count" rowId={`audpop_${i}`} label={`Views popular nuevo ${i+1}`} value={vid.views}>
+                <Text style={s.vgPopViews}>{vid.views}</Text>
+              </AE>
             </View>
           ))}
         </View>
@@ -444,57 +499,71 @@ export default function AnalyticsScreen() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chipsRow}>
           {CV_CHIPS.map((chip, i) => (
             <TouchableOpacity key={chip} style={[s.chip, cvChip === i && s.chipActive]} onPress={() => setCvChip(i)}>
-              <Text style={[s.chipText, cvChip === i && s.chipTextActive]}>{chip}</Text>
+              <AE isAdmin={isAdmin} table="ui_analytics" column="chip_label" rowId={`cvchip_${i}`} label={`Filtro contenido: ${chip}`} value={chip}>
+                <Text style={[s.chipText, cvChip === i && s.chipTextActive]}>{chip}</Text>
+              </AE>
             </TouchableOpacity>
           ))}
         </ScrollView>
 
         {/* Chart cards carousel */}
         <Carousel itemWidth={Math.round(screenW * 0.75)}>
-          {CV_CHARTS.map((item, idx) => (
-            <View key={idx} style={s.vgChartOuter}>
-              <View style={s.vgChartCardFixed}>
-                <Text style={s.vgChartLabel}>{item.label}</Text>
-                <View style={s.vgValRow}>
-                  <AE isAdmin={isAdmin} table="dashboard_stats" column="views" rowId={`vgchart_${idx}`} label={`${item.label}`} value={item.value}>
-                    <Text style={s.vgChartVal}>{item.value}</Text>
-                  </AE>
-                  {item.arrow && <Image source={item.arrow} style={s.vgArrow} resizeMode="contain" />}
-                </View>
-                {item.sub ? <AE isAdmin={isAdmin} table="dashboard_stats" column="views_change_percent" rowId={`vgchartsub_${idx}`} label={`${item.label} - subtexto`} value={item.sub}>
-                  <Text style={s.vgChartSub}>{item.sub}</Text>
-                </AE> : null}
-                <View style={s.vgChartImgWrap}>
-                  <View style={s.vgYAxis}>
-                    {item.yLabels.map((l, i) => <Text key={i} style={s.axisText}>{l}</Text>)}
+          {CV_CHARTS.map((item, idx) => {
+            const overrideVal = getOverride('dashboard_stats', 'views', `vgchart_${idx}`);
+            const displayVal = overrideVal || item.value;
+            return (
+              <View key={idx} style={s.vgChartOuter}>
+                <View style={s.vgChartCardFixed}>
+                  <Text style={s.vgChartLabel}>{item.label}</Text>
+                  <View style={s.vgValRow}>
+                    <AE isAdmin={isAdmin} table="dashboard_stats" column="views" rowId={`vgchart_${idx}`} label={`${item.label}`} value={displayVal}>
+                      <Text style={s.vgChartVal}>{displayVal}</Text>
+                    </AE>
+                    {item.arrow && <Image source={item.arrow} style={s.vgArrow} resizeMode="contain" />}
                   </View>
-                  <Image source={item.chart} style={s.vgChartImg} resizeMode="contain" />
-                </View>
-                <View style={s.vgXAxis}>
-                  {item.xLabels.map((l, i) => <Text key={i} style={s.axisText}>{l}</Text>)}
+                  {item.sub ? <AE isAdmin={isAdmin} table="dashboard_stats" column="views_change_percent" rowId={`vgchartsub_${idx}`} label={`${item.label} - subtexto`} value={item.sub}>
+                    <Text style={s.vgChartSub}>{item.sub}</Text>
+                  </AE> : null}
+                  <View style={{ marginTop: 12, flex: 1 }}>
+                    <DynamicLineChart value={displayVal} xLabels={item.xLabels} height={90} />
+                  </View>
                 </View>
               </View>
-            </View>
-          ))}
+            );
+          })}
         </Carousel>
 
         {/* Vídeos principales */}
         <View style={s.vgPopCard}>
-          <Text style={s.vgPopTitle}>Vídeos principales</Text>
-          <Text style={s.vgPopSub}>Visualizaciones · Últimos 28 dias</Text>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="cv_principales" label="Título vídeos principales" value="Vídeos principales">
+            <Text style={s.vgPopTitle}>Vídeos principales</Text>
+          </AE>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="subtitle" rowId="cv_principales_sub" label="Sub vídeos principales" value="Visualizaciones · Últimos 28 dias">
+            <Text style={s.vgPopSub}>Visualizaciones · Últimos 28 dias</Text>
+          </AE>
           {CV_VIDEOS.map((vid, i) => (
             <View key={i} style={s.vgPopRow}>
-              <Image source={vid.thumb} style={s.vgPopThumb} resizeMode="cover" />
-              <Text style={s.vgPopVidTitle} numberOfLines={1}>{vid.title}</Text>
-              <Text style={s.vgPopViews}>{vid.views}</Text>
+              <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId={`cvvid_${i}`} label={`Thumbnail vídeo principal ${i+1}`} value="" type="image">
+                <Image source={vid.thumb} style={s.vgPopThumb} resizeMode="cover" />
+              </AE>
+              <AE isAdmin={isAdmin} table="videos" column="title" rowId={`cvvid_${i}`} label={`Título vídeo principal ${i+1}`} value={vid.title}>
+                <Text style={s.vgPopVidTitle} numberOfLines={1}>{vid.title}</Text>
+              </AE>
+              <AE isAdmin={isAdmin} table="videos" column="view_count" rowId={`cvvid_${i}`} label={`Views vídeo principal ${i+1}`} value={vid.views}>
+                <Text style={s.vgPopViews}>{vid.views}</Text>
+              </AE>
             </View>
           ))}
         </View>
 
         {/* Bottom bar */}
         <View style={s.cvBottomBar}>
-          <Text style={s.cvBottomText}>Cómo encuentran tus vídeos los</Text>
-          <Text style={s.cvBottomLink}>Términos</Text>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="text" rowId="cv_bottom" label="Texto inferior contenido" value="Cómo encuentran tus vídeos los">
+            <Text style={s.cvBottomText}>Cómo encuentran tus vídeos los</Text>
+          </AE>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="link" rowId="cv_bottom" label="Link inferior contenido" value="Términos">
+            <Text style={s.cvBottomLink}>Términos</Text>
+          </AE>
         </View>
       </>
     );
@@ -507,35 +576,27 @@ export default function AnalyticsScreen() {
       <>
         {/* Chart cards carousel — 72% width, 6pt gap to peek next card */}
         <Carousel itemWidth={Math.round(screenW * 0.75)}>
-          {VG_CHARTS.map((item, idx) => (
-            <View key={idx} style={s.vgChartOuter}>
-              {item.fullImage ? (
-                <View style={s.vgChartCardFixed}>
-                  <Image source={item.fullImage} style={s.vgFullCardImg} resizeMode="contain" />
-                </View>
-              ) : (
+          {VG_CHARTS.map((item, idx) => {
+            const overrideVal = getOverride('dashboard_stats', 'views', `cvchart_${idx}`);
+            const displayVal = overrideVal || item.value;
+            return (
+              <View key={idx} style={s.vgChartOuter}>
                 <View style={s.vgChartCardFixed}>
                   <Text style={s.vgChartLabel}>{item.label}</Text>
                   <View style={s.vgValRow}>
-                    <AE isAdmin={isAdmin} table="dashboard_stats" column="views" rowId={`cvchart_${idx}`} label={`${item.label}`} value={item.value}>
-                      <Text style={s.vgChartVal}>{item.value}</Text>
+                    <AE isAdmin={isAdmin} table="dashboard_stats" column="views" rowId={`cvchart_${idx}`} label={`${item.label}`} value={displayVal}>
+                      <Text style={s.vgChartVal}>{displayVal}</Text>
                     </AE>
                     {item.arrow && <Image source={item.arrow} style={s.vgArrow} resizeMode="contain" />}
                   </View>
                   {item.sub ? <Text style={[s.vgChartSub, item.subGreen && { color: '#508650' }]}>{item.sub}</Text> : null}
-                  <View style={s.vgChartImgWrap}>
-                    <View style={s.vgYAxis}>
-                      {item.yLabels.map((l, i) => <Text key={i} style={s.axisText}>{l}</Text>)}
-                    </View>
-                    <Image source={item.chart} style={s.vgChartImg} resizeMode="contain" />
-                  </View>
-                  <View style={s.vgXAxis}>
-                    {item.xLabels.map((l, i) => <Text key={i} style={s.axisText}>{l}</Text>)}
+                  <View style={{ marginTop: 12, flex: 1 }}>
+                    <DynamicLineChart value={displayVal} xLabels={item.xLabels} height={90} />
                   </View>
                 </View>
-              )}
-            </View>
-          ))}
+              </View>
+            );
+          })}
         </Carousel>
 
         {/* Tips carousel — 75% width like chart cards */}
@@ -558,12 +619,18 @@ export default function AnalyticsScreen() {
 
         {/* Contenido más popular — inside shadow card */}
         <View style={s.vgPopCard}>
-          <Text style={s.vgPopTitle}>Contenido mas popular</Text>
-          <Text style={s.vgPopSub}>Visualizaciones · Últimos 28 dias</Text>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="vg_popular" label="Título contenido más popular" value="Contenido mas popular">
+            <Text style={s.vgPopTitle}>Contenido mas popular</Text>
+          </AE>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="subtitle" rowId="vg_popular_sub" label="Sub contenido más popular" value="Visualizaciones · Últimos 28 dias">
+            <Text style={s.vgPopSub}>Visualizaciones · Últimos 28 dias</Text>
+          </AE>
           {VG_POPULAR.map((vid, i) => (
             <View key={i}>
               <View style={s.vgPopRow}>
-                <Image source={vid.thumb} style={s.vgPopThumb} resizeMode="cover" />
+                <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId={`vgpop_thumb_${i}`} label={`Thumbnail popular ${i+1}`} value="" type="image">
+                  <Image source={vid.thumb} style={s.vgPopThumb} resizeMode="cover" />
+                </AE>
                 <AE isAdmin={isAdmin} table="videos" column="title" rowId={`vgpop_${i}`} label={`Título popular ${i+1}`} value={vid.title}>
                   <Text style={s.vgPopVidTitle} numberOfLines={1}>{vid.title}</Text>
                 </AE>
@@ -620,11 +687,17 @@ export default function AnalyticsScreen() {
 
         {/* How supers generate money */}
         <View style={s.earningsCard}>
-          <Text style={s.earningsTitle}>Cómo generan dinero los Supers y los regalos</Text>
-          <Text style={s.earningsSub}>Estimación · Últimos 28 días</Text>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="supers_title" label="Título Supers" value="Cómo generan dinero los Supers y los regalos">
+            <Text style={s.earningsTitle}>Cómo generan dinero los Supers y los regalos</Text>
+          </AE>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="subtitle" rowId="supers_sub" label="Sub Supers" value="Estimación · Últimos 28 días">
+            <Text style={s.earningsSub}>Estimación · Últimos 28 días</Text>
+          </AE>
           <View style={s.noDataBox}>
             <Image source={require('../../assets/figma/info_icon.png')} style={s.noDataInfoIcon} resizeMode="contain" />
-            <Text style={s.noDataText}>No hay nada que mostrar para estas fechas</Text>
+            <AE isAdmin={isAdmin} table="ui_analytics" column="text" rowId="supers_nodata" label="Texto sin datos Supers" value="No hay nada que mostrar para estas fechas">
+              <Text style={s.noDataText}>No hay nada que mostrar para estas fechas</Text>
+            </AE>
           </View>
         </View>
       </>
@@ -635,67 +708,34 @@ export default function AnalyticsScreen() {
   const [iePeriod, setIePeriod] = useState(1);
   const [selectedBar, setSelectedBar] = useState<number | null>(null);
 
-  const BAR_DATA = [
-    { month: 'Oct', value: 8.28, color: '#a8e6cf' },
-    { month: 'Nov', value: 4.21, color: '#a8e6cf' },
-    { month: 'Dic', value: 59.74, color: '#a8e6cf' },
-    { month: 'Ene', value: 18.20, color: '#a8e6cf' },
-    { month: 'Feb', value: 39.48, color: '#a8e6cf' },
-    { month: 'Mar', value: 15.72, color: '#1db4a5' },
+  const BAR_DATA_BASE = [
+    { label: 'Oct', value: 8.28, color: '#a8e6cf' },
+    { label: 'Nov', value: 4.21, color: '#a8e6cf' },
+    { label: 'Dic', value: 59.74, color: '#a8e6cf' },
+    { label: 'Ene', value: 18.20, color: '#a8e6cf' },
+    { label: 'Feb', value: 39.48, color: '#a8e6cf' },
+    { label: 'Mar', value: 15.72, color: '#1db4a5' },
   ];
-  const barMax = Math.max(...BAR_DATA.map(b => b.value));
+
+  // Apply overrides to bar data
+  const BAR_DATA = BAR_DATA_BASE.map((bar, i) => {
+    const override = getOverride('revenue', 'bar_value', `bar_${i}`);
+    return override ? { ...bar, value: parseFloat(override.replace(',', '.')) || bar.value } : bar;
+  });
 
   function BarChartView() {
     return (
-      <>
-        <View style={[s.ieChartArea, { height: 170, marginTop: 16, overflow: 'visible' }]}>
-          <View style={s.yAxisLabels}>
-            <Text style={s.axisText}>60 €</Text>
-            <Text style={s.axisText}>40 €</Text>
-            <Text style={s.axisText}>20 €</Text>
-            <Text style={s.axisText}>0 €</Text>
-          </View>
-          <View style={{ flex: 1, height: 170, position: 'relative' }}>
-            {/* Grid lines */}
-            {[0, 1, 2, 3].map(i => (
-              <View key={i} style={{ position: 'absolute', left: 0, right: 0, top: i * (170 / 3), height: 1, backgroundColor: '#ececec' }} />
-            ))}
-            {/* Bars */}
-            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-around', paddingHorizontal: 4 }}>
-              {BAR_DATA.map((bar, i) => {
-                const h = (bar.value / barMax) * 150;
-                return (
-                  <TouchableOpacity
-                    key={i}
-                    activeOpacity={0.8}
-                    onPress={() => {
-                      if (selectedBar === i) { setSelectedBar(null); }
-                      else { setSelectedBar(null); setTimeout(() => setSelectedBar(i), 10); }
-                    }}
-                    style={{ alignItems: 'center', flex: 1 }}
-                  >
-                    <View style={{ width: '65%', height: h, backgroundColor: bar.color, borderRadius: 3 }} />
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-            {/* Single tooltip rendered on top */}
-            {selectedBar !== null && (() => {
-              const bar = BAR_DATA[selectedBar];
-              const barH = (bar.value / barMax) * 150;
-              const barCenterX = ((selectedBar + 0.5) / BAR_DATA.length) * 100;
-              return (
-                <View style={[s.barTooltip, { left: `${barCenterX - 12}%`, top: 170 - barH - 30 }]} pointerEvents="none">
-                  <Text style={s.barTooltipText}>{bar.month}: {Number(bar.value || 0).toFixed(2).replace('.', ',')} €</Text>
-                </View>
-              );
-            })()}
-          </View>
-        </View>
-        <View style={s.ieXAxis}>
-          {BAR_DATA.map((bar, i) => <Text key={i} style={s.axisText}>{bar.month}</Text>)}
-        </View>
-      </>
+      <View style={{ marginHorizontal: 16 }}>
+        <DynamicBarChart
+          data={BAR_DATA}
+          height={170}
+          onBarPress={(i) => {
+            if (selectedBar === i) setSelectedBar(null);
+            else { setSelectedBar(null); setTimeout(() => setSelectedBar(i), 10); }
+          }}
+          selectedBar={selectedBar}
+        />
+      </View>
     );
   }
 
@@ -707,7 +747,9 @@ export default function AnalyticsScreen() {
           <TouchableOpacity onPress={() => setShowIngresosDetail(false)} hitSlop={12}>
             <Image source={require('../../assets/figma/ie_back_arrow.png')} style={s.ieBackArrow} resizeMode="contain" />
           </TouchableOpacity>
-          <Text style={s.ieHeaderTitle}>Ingresos estimados</Text>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="ie_header" label="Título detalle ingresos" value="Ingresos estimados">
+            <Text style={s.ieHeaderTitle}>Ingresos estimados</Text>
+          </AE>
         </View>
       <ScrollView style={s.root} showsVerticalScrollIndicator={false}>
 
@@ -724,111 +766,69 @@ export default function AnalyticsScreen() {
         </ScrollView>
 
         {/* Chart - line chart for 7D/28D/90D/365D, bar chart for months/years/total */}
-        {iePeriod === 9 ? (
-          <>
-            <View style={[s.ieChartArea, { height: 170, marginTop: 16 }]}>
-              <View style={s.yAxisLabels}>
-                <Text style={s.axisText}>51€</Text>
-                <Text style={s.axisText}>34€</Text>
-                <Text style={s.axisText}>17€</Text>
-                <Text style={s.axisText}>0€</Text>
+        {(() => {
+          const ieSumOverride = getOverride('dashboard_stats', 'estimated_revenue', st?.id || '');
+          const ieSumVal = ieSumOverride || (iePeriod < 4 ? '15,72' : iePeriod === 9 ? '2022,14' : '16,02');
+
+          if (iePeriod === 9) {
+            return (
+              <View style={{ marginHorizontal: 16, marginTop: 16 }}>
+                <DynamicLineChart value={ieSumVal} xLabels={['19 sept 2016', '25 jun 2021', '31 mar']} height={170} numPoints={60} color="#1db4a5" />
               </View>
-              <View style={[s.chartSvgWrap, { height: 170, overflow: 'visible' }]}>
-                <View style={s.gridContainer}>
-                  {[0, 1, 2].map(i => <View key={i} style={[s.gridLine, { top: i * (170 / 3) }]} />)}
-                </View>
-                <View style={[s.svgLayer, { overflow: 'visible' }]}>
-                  <AE isAdmin={isAdmin} table="analytics_timeseries" column="value" rowId="ie_chart_total" label="Gráfica ingresos total" value="" type="image">
-                    <Image source={require('../../assets/figma/ie_chart_total.png')} style={{ width: '100%', height: 170 }} resizeMode="stretch" />
-                  </AE>
-                </View>
+            );
+          } else if (iePeriod >= 7 && iePeriod <= 8) {
+            return (
+              <View style={{ marginHorizontal: 16, marginTop: 16 }}>
+                <DynamicLineChart value={ieSumVal} xLabels={['1ene', '14 feb', '31 mar']} height={170} color="#1db4a5" />
               </View>
-            </View>
-            <View style={s.ieXAxis}>
-              <Text style={s.axisText}>19 sept 2016</Text>
-              <Text style={s.axisText}>25 jun 2021</Text>
-              <Text style={s.axisText}>31 mar</Text>
-            </View>
-          </>
-        ) : iePeriod >= 7 && iePeriod <= 8 ? (
-          <>
-            <View style={[s.ieChartArea, { height: 170, marginTop: 16 }]}>
-              <View style={s.yAxisLabels}>
-                <Text style={s.axisText}>6€</Text>
-                <Text style={s.axisText}>4€</Text>
-                <Text style={s.axisText}>2€</Text>
-                <Text style={s.axisText}>0€</Text>
+            );
+          } else if (iePeriod < 4) {
+            const tsPoints = ts?.length ? ts.map((d: any) => Number(d.value)) : undefined;
+            return (
+              <View style={{ marginHorizontal: 16, marginTop: 8 }}>
+                <DynamicLineChart value={ieSumVal} points={tsPoints} xLabels={['1mar', '14 mar', '28 mar']} height={140} color="#1db4a5" />
               </View>
-              <View style={[s.chartSvgWrap, { height: 170, overflow: 'visible' }]}>
-                <View style={s.gridContainer}>
-                  {[0, 1, 2].map(i => <View key={i} style={[s.gridLine, { top: i * (170 / 3) }]} />)}
-                </View>
-                <View style={[s.svgLayer, { overflow: 'visible' }]}>
-                  <AE isAdmin={isAdmin} table="analytics_timeseries" column="value" rowId="ie_chart_year" label="Gráfica ingresos anual" value="" type="image">
-                    <Image source={require('../../assets/figma/ie_chart_year.png')} style={{ width: '100%', height: 170 }} resizeMode="stretch" />
-                  </AE>
-                </View>
-              </View>
-            </View>
-            <View style={s.ieXAxis}>
-              <Text style={s.axisText}>1ene</Text>
-              <Text style={s.axisText}>14 feb</Text>
-              <Text style={s.axisText}>31 mar</Text>
-            </View>
-          </>
-        ) : iePeriod < 4 ? (
-          <>
-            <View style={s.ieChartArea}>
-              <View style={s.yAxisLabels}>
-                <Text style={s.axisText}>4,20€</Text>
-                <Text style={s.axisText}>2,80€</Text>
-                <Text style={s.axisText}>1,40€</Text>
-                <Text style={s.axisText}>0€</Text>
-              </View>
-              <View style={[s.chartSvgWrap, { height: 140, overflow: 'visible' }]}>
-                <View style={s.gridContainer}>
-                  {[0, 1, 2].map(i => <View key={i} style={[s.gridLine, { top: i * (140 / 3) }]} />)}
-                </View>
-                <View style={[s.svgLayer, { overflow: 'visible' }]}>
-                  <AE isAdmin={isAdmin} table="analytics_timeseries" column="value" rowId="ie_chart" label="Gráfica ingresos 28D" value="" type="image">
-                    <Image source={require('../../assets/figma/ie_chart.png')} style={{ width: '100%', height: 140 }} resizeMode="stretch" />
-                  </AE>
-                </View>
-              </View>
-            </View>
-            <View style={s.ieXAxis}>
-              <Text style={s.axisText}>1mar</Text>
-              <Text style={s.axisText}>14 mar</Text>
-              <Text style={s.axisText}>28 mar</Text>
-            </View>
-          </>
-        ) : (
-          <BarChartView />
-        )}
+            );
+          } else {
+            return <BarChartView />;
+          }
+        })()}
 
         {/* Summary */}
         <View style={s.ieSummary}>
           <Image source={require('../../assets/figma/ie_dot_green.png')} style={s.ieDot} resizeMode="contain" />
           <Text style={s.ieSumLabel}>Ingresos estimados</Text>
-          <AE isAdmin={isAdmin} table="dashboard_stats" column="estimated_revenue" rowId={st?.id || ''} label="Ingresos estimados total" value={iePeriod < 4 ? '15,72' : iePeriod === 9 ? '2022,14' : '16,02'}>
-            <Text style={s.ieSumValue}>{iePeriod < 4 ? '15,72 €' : iePeriod === 9 ? '2022,14 €' : '16,02 €'}</Text>
-          </AE>
+          {(() => {
+            const sumOverride = getOverride('revenue', 'ie_summary', 'ie_sum');
+            const sumVal = sumOverride || (iePeriod < 4 ? '15,72' : iePeriod === 9 ? '2022,14' : '16,02');
+            return (
+              <AE isAdmin={isAdmin} table="revenue" column="ie_summary" rowId="ie_sum" label="Ingresos estimados resumen" value={sumVal}>
+                <Text style={s.ieSumValue}>{sumVal} €</Text>
+              </AE>
+            );
+          })()}
         </View>
 
         {/* Processing message for monthly views */}
         {iePeriod >= 4 && (
           <View style={s.ieProcessingRow}>
             <Image source={require('../../assets/figma/ie_clock.png')} style={{ width: 22, height: 22 }} resizeMode="contain" />
-            <Text style={s.ieProcessingText}>Aún se está procesando 1 día de datos</Text>
+            <AE isAdmin={isAdmin} table="ui_analytics" column="text" rowId="ie_processing" label="Texto procesando datos" value="Aún se está procesando 1 día de datos">
+              <Text style={s.ieProcessingText}>Aún se está procesando 1 día de datos</Text>
+            </AE>
           </View>
         )}
 
         {/* Contenido con mayores ingresos */}
-        <Text style={s.ieSecTitle}>Contenido con mayores ingresos</Text>
+        <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="ie_sec_title" label="Título contenido mayores ingresos" value="Contenido con mayores ingresos">
+          <Text style={s.ieSecTitle}>Contenido con mayores ingresos</Text>
+        </AE>
 
         <View style={s.ieWarningBox}>
           <Image source={require('../../assets/figma/ie_warning.png')} style={s.ieWarningIcon} resizeMode="contain" />
-          <Text style={s.ieWarningText}>Los importes se convierten de USD a EUR según el tipo de cambio histórico de la fecha que corresponda</Text>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="text" rowId="ie_warning" label="Texto aviso cambio divisa" value="Los importes se convierten de USD a EUR según el tipo de cambio histórico de la fecha que corresponda">
+            <Text style={s.ieWarningText}>Los importes se convierten de USD a EUR según el tipo de cambio histórico de la fecha que corresponda</Text>
+          </AE>
         </View>
 
         {IE_VIDEOS.map((vid, i) => (
@@ -861,7 +861,9 @@ export default function AnalyticsScreen() {
         {/* Explora temas */}
         <View style={s.tendSection}>
           <View style={s.tendHeaderRow}>
-            <Text style={s.tendTitle}>Explora temas</Text>
+            <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="tend_explora" label="Título Explora temas" value="Explora temas">
+              <Text style={s.tendTitle}>Explora temas</Text>
+            </AE>
             <View style={{ width: 24, height: 24, borderRadius: 12, borderWidth: 1.5, borderColor: '#888', alignItems: 'center', justifyContent: 'center', marginLeft: 8 }}>
               <Text style={{ fontSize: 14, fontWeight: '600', color: '#888' }}>?</Text>
             </View>
@@ -873,14 +875,18 @@ export default function AnalyticsScreen() {
           {/* Search bar */}
           <View style={s.tendSearchBar}>
             <Image source={require('../../assets/figma/tend_search.png')} style={{ width: 20, height: 20, marginRight: 10, tintColor: '#777' }} resizeMode="contain" />
-            <Text style={{ fontSize: 15, color: '#747474' }}>Buscar</Text>
+            <AE isAdmin={isAdmin} table="ui_analytics" column="placeholder" rowId="tend_search" label="Placeholder búsqueda" value="Buscar">
+              <Text style={{ fontSize: 15, color: '#747474' }}>Buscar</Text>
+            </AE>
           </View>
         </View>
 
         {/* Búsquedas principales */}
         <View style={s.tendSection}>
           <View style={s.tendHeaderRow}>
-            <Text style={s.tendTitle}>Búsquedas principales</Text>
+            <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="tend_busquedas" label="Título Búsquedas principales" value="Búsquedas principales">
+              <Text style={s.tendTitle}>Búsquedas principales</Text>
+            </AE>
             <View style={{ flex: 1 }} />
             <Image source={require('../../assets/figma/tend_chevron.png')} style={{ width: 9, height: 14 }} resizeMode="contain" />
           </View>
@@ -904,7 +910,9 @@ export default function AnalyticsScreen() {
         {/* Vídeos recientes */}
         <View style={s.tendSection}>
           <View style={s.tendHeaderRow}>
-            <Text style={s.tendTitle}>Vídeos recientes</Text>
+            <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="tend_recientes" label="Título Vídeos recientes" value="Vídeos recientes">
+              <Text style={s.tendTitle}>Vídeos recientes</Text>
+            </AE>
             <View style={{ flex: 1 }} />
             <Image source={require('../../assets/figma/tend_chevron.png')} style={{ width: 9, height: 14 }} resizeMode="contain" />
           </View>
@@ -964,7 +972,9 @@ export default function AnalyticsScreen() {
               style={[s.chip, activeChip === i && s.chipActive]}
               onPress={() => setActiveChip(i)}
             >
-              <Text style={[s.chipText, activeChip === i && s.chipTextActive]}>{chip}</Text>
+              <AE isAdmin={isAdmin} table="ui_analytics" column="chip_label" rowId={`ingchip_${i}`} label={`Filtro ingresos: ${chip}`} value={chip}>
+                <Text style={[s.chipText, activeChip === i && s.chipTextActive]}>{chip}</Text>
+              </AE>
             </TouchableOpacity>
           ))}
         </ScrollView>
