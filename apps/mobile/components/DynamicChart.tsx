@@ -303,22 +303,27 @@ export function DynamicLineChart({
           ref={chartRef}
           style={{ flex: 1, position: 'relative', height }}
           onLayout={onLayout}
-          onTouchEnd={handleTouch}
         >
           {/* Grid lines (behind) */}
           {[0, 1, 2, 3].map(i => (
             <View key={i} style={{ position: 'absolute', left: 0, right: 0, top: i * (height / 3), height: 1, backgroundColor: GRID_COLOR, zIndex: 0 }} />
           ))}
-          {/* SVG line (on top) */}
-          <Svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 2 }}>
+          {/* SVG line */}
+          <Svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1 }}>
             <Polyline points={polyPoints} fill="none" stroke={color} strokeWidth="2" />
           </Svg>
+          {/* Touch layer on top of everything */}
+          <View
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10 }}
+            onTouchEnd={handleTouch}
+            onStartShouldSetResponder={() => true}
+          />
 
           {/* Selected point indicator */}
           {selectedIdx !== null && (
-            <>
-              {/* Vertical dotted line */}
-              <View style={{ position: 'absolute', left: `${selX}%` as any, top: 0, bottom: 0, width: 1, backgroundColor: '#ccc', zIndex: 3, opacity: 0.6 }} />
+            <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 20 }} pointerEvents="none">
+              {/* Vertical line */}
+              <View style={{ position: 'absolute', left: `${selX}%` as any, top: 0, bottom: 0, width: 1, backgroundColor: '#ccc', opacity: 0.6 }} />
               {/* Dot on the curve */}
               <View style={{
                 position: 'absolute',
@@ -331,7 +336,6 @@ export function DynamicLineChart({
                 borderWidth: 2,
                 borderColor: '#fff',
                 marginLeft: -5,
-                zIndex: 4,
               }} />
               {/* Tooltip */}
               <View style={{
@@ -345,14 +349,13 @@ export function DynamicLineChart({
                 borderRadius: 4,
                 paddingHorizontal: 12,
                 paddingVertical: 6,
-                zIndex: 5,
                 marginLeft: selX > 65 ? 0 : -40,
               }}>
                 <Text style={{ fontSize: 12, fontWeight: '600', color: '#2c2c2c' }}>
                   {getDateLabel(selectedIdx)}: {formatYLabel(selValue, currency)}
                 </Text>
               </View>
-            </>
+            </View>
           )}
         </View>
       </View>
