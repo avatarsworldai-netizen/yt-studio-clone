@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import Svg, { Polyline, Defs, LinearGradient, Stop, Path } from 'react-native-svg';
+import React, { useState, useCallback } from 'react';
+import { View, Text, StyleSheet, LayoutChangeEvent } from 'react-native';
+import Svg, { Polyline, Defs, LinearGradient, Stop, Path, Circle, Line } from 'react-native-svg';
 
 const SKY_BLUE = '#64b5f6';
 const GRID_COLOR = '#ececec';
@@ -23,6 +23,10 @@ type LineChartProps = {
   hideXLabels?: boolean;
   /** Pattern ID (1-10) for chart shape */
   pattern?: string;
+  /** Enable tap-to-show-tooltip on data points */
+  interactive?: boolean;
+  /** Date labels for tooltip (one per data point, e.g. ["1 mar", "2 mar", ...]) */
+  dateLabels?: string[];
 };
 
 /**
@@ -210,6 +214,8 @@ export function DynamicLineChart({
   hideYLabels = false,
   hideXLabels = false,
   pattern,
+  interactive = true,
+  dateLabels,
 }: LineChartProps) {
   const numericValue = parseValue(value);
   const currency = forceCurrency !== undefined ? forceCurrency : isCurrencyValue(value);
@@ -234,6 +240,53 @@ export function DynamicLineChart({
 
   const yLabels = inputYLabels || ySteps.map(v => formatYLabel(v, currency));
 
+  // Interactive state
+  const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+  const [chartWidth, setChartWidth] = useState(0);
+
+  const onLayout = useCallback((e: LayoutChangeEvent) => {
+    setChartWidth(e.nativeEvent.layout.width);
+  }, []);
+
+  const chartRef = React.useRef<View>(null);
+
+  const handleTouch = useCallback((evt: any) => {
+    if (!interactive || chartWidth === 0) return;
+    try {
+      // Get x position - works on both web (offsetX) and native (locationX)
+      let x = evt?.nativeEvent?.locationX ?? evt?.nativeEvent?.offsetX;
+      if (x === undefined || x === null) {
+        // Fallback for web click events
+        const rect = (evt?.target as any)?.getBoundingClientRect?.();
+        const clientX = evt?.nativeEvent?.clientX ?? evt?.clientX;
+        if (rect && clientX) {
+          x = clientX - rect.left;
+        } else {
+          return;
+        }
+      }
+      const idx = Math.round((x / chartWidth) * (pts.length - 1));
+      const clamped = Math.max(0, Math.min(pts.length - 1, idx));
+      setSelectedIdx(prev => prev === clamped ? null : clamped);
+    } catch (e) {
+      // Silently fail
+    }
+  }, [interactive, chartWidth, pts.length]);
+
+  // Generate default date labels if not provided
+  const getDateLabel = (idx: number): string => {
+    if (dateLabels && dateLabels[idx]) return dateLabels[idx];
+    // Auto-generate based on today's date going backwards
+    const d = new Date();
+    d.setDate(d.getDate() - (pts.length - 1 - idx));
+    return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+
+  // Selected point position
+  const selX = selectedIdx !== null ? (selectedIdx / (pts.length - 1)) * 100 : 0;
+  const selY = selectedIdx !== null ? (pts[selectedIdx] / yMax) * (height - 6) : 0;
+  const selValue = selectedIdx !== null ? pts[selectedIdx] : 0;
+
   return (
     <View>
       <View style={{ flexDirection: 'row', height }}>
@@ -246,7 +299,12 @@ export function DynamicLineChart({
           </View>
         )}
         {/* Chart area */}
-        <View style={{ flex: 1, position: 'relative', height }}>
+        <View
+          ref={chartRef}
+          style={{ flex: 1, position: 'relative', height }}
+          onLayout={onLayout}
+          onTouchEnd={handleTouch}
+        >
           {/* Grid lines (behind) */}
           {[0, 1, 2, 3].map(i => (
             <View key={i} style={{ position: 'absolute', left: 0, right: 0, top: i * (height / 3), height: 1, backgroundColor: GRID_COLOR, zIndex: 0 }} />
@@ -255,6 +313,47 @@ export function DynamicLineChart({
           <Svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 2 }}>
             <Polyline points={polyPoints} fill="none" stroke={color} strokeWidth="2" />
           </Svg>
+
+          {/* Selected point indicator */}
+          {selectedIdx !== null && (
+            <>
+              {/* Vertical dotted line */}
+              <View style={{ position: 'absolute', left: `${selX}%` as any, top: 0, bottom: 0, width: 1, backgroundColor: '#ccc', zIndex: 3, opacity: 0.6 }} />
+              {/* Dot on the curve */}
+              <View style={{
+                position: 'absolute',
+                left: `${selX}%` as any,
+                bottom: selY - 5,
+                width: 10,
+                height: 10,
+                borderRadius: 5,
+                backgroundColor: color,
+                borderWidth: 2,
+                borderColor: '#fff',
+                marginLeft: -5,
+                zIndex: 4,
+              }} />
+              {/* Tooltip */}
+              <View style={{
+                position: 'absolute',
+                left: selX > 65 ? undefined : (`${selX}%` as any),
+                right: selX > 65 ? 0 : undefined,
+                bottom: selY + 14,
+                backgroundColor: '#fff',
+                borderWidth: 1,
+                borderColor: '#e0e0e0',
+                borderRadius: 4,
+                paddingHorizontal: 12,
+                paddingVertical: 6,
+                zIndex: 5,
+                marginLeft: selX > 65 ? 0 : -40,
+              }}>
+                <Text style={{ fontSize: 12, fontWeight: '600', color: '#2c2c2c' }}>
+                  {getDateLabel(selectedIdx)}: {formatYLabel(selValue, currency)}
+                </Text>
+              </View>
+            </>
+          )}
         </View>
       </View>
       {/* X-axis */}
