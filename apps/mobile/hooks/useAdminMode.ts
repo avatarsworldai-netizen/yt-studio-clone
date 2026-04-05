@@ -19,8 +19,9 @@ export function useAdminMode() {
           setIsAdmin(true);
         }
       } catch (e) {
-        _isAdmin = true;
-        setIsAdmin(true);
+        // Cross-origin iframe access blocked — do NOT assume admin mode
+        _isAdmin = false;
+        setIsAdmin(false);
       }
     }
   }, []);
