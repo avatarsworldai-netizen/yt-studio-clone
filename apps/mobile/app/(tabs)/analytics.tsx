@@ -187,6 +187,7 @@ export default function AnalyticsScreen() {
               color="#1db4a5"
               hideYLabels
               pattern={chartPattern}
+              tooltipId="chart_main"
             />
           </View>
         </View>
@@ -433,7 +434,7 @@ export default function AnalyticsScreen() {
                 {isAdmin && <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId="feed_chart" label={`Patrón gráfica feed (1-10): ${feedPatternName}`} value={feedPattern}>
                   <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{'📈 ' + feedPatternName}</Text>
                 </AE>}
-                <DynamicLineChart value={feedVal} xLabels={[firstDate, lastDate]} height={chartH} color="#1db4a5" pattern={feedPattern} />
+                <DynamicLineChart value={feedVal} xLabels={[firstDate, lastDate]} height={chartH} color="#1db4a5" pattern={feedPattern} tooltipId="feed_chart" />
               </>
             );
           })()}
@@ -903,7 +904,7 @@ export default function AnalyticsScreen() {
                 <View style={{ flexDirection: 'row' }}>
                   <EditableYLabels />
                   <View style={{ flex: 1 }}>
-                    <DynamicLineChart value={ieSumVal} height={170} numPoints={60} color="#1db4a5" hideYLabels hideXLabels pattern={iePattern} />
+                    <DynamicLineChart value={ieSumVal} height={170} numPoints={60} color="#1db4a5" hideYLabels hideXLabels pattern={iePattern} tooltipId={`ie_${periodKey}`} />
                   </View>
                 </View>
                 <EditableXLabels />
@@ -916,7 +917,7 @@ export default function AnalyticsScreen() {
                 <View style={{ flexDirection: 'row' }}>
                   <EditableYLabels />
                   <View style={{ flex: 1 }}>
-                    <DynamicLineChart value={ieSumVal} height={170} color="#1db4a5" hideYLabels hideXLabels pattern={iePattern} />
+                    <DynamicLineChart value={ieSumVal} height={170} color="#1db4a5" hideYLabels hideXLabels pattern={iePattern} tooltipId={`ie_${periodKey}`} />
                   </View>
                 </View>
                 <EditableXLabels />
@@ -929,7 +930,7 @@ export default function AnalyticsScreen() {
                 <View style={{ flexDirection: 'row' }}>
                   <EditableYLabels />
                   <View style={{ flex: 1 }}>
-                    <DynamicLineChart value={ieSumVal} height={140} color="#1db4a5" hideYLabels hideXLabels pattern={iePattern} />
+                    <DynamicLineChart value={ieSumVal} height={140} color="#1db4a5" hideYLabels hideXLabels pattern={iePattern} tooltipId={`ie_${periodKey}`} />
                   </View>
                 </View>
                 <EditableXLabels />

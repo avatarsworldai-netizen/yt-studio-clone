@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, LayoutChangeEvent, Platform } from 'react-native';
 import Svg, { Polyline, Defs, LinearGradient, Stop, Path, Circle, Line } from 'react-native-svg';
+import { sendEditMessage } from '../hooks/useAdminMode';
 
 const SKY_BLUE = '#64b5f6';
 const GRID_COLOR = '#ececec';
@@ -27,6 +28,8 @@ type LineChartProps = {
   interactive?: boolean;
   /** Date labels for tooltip (one per data point, e.g. ["1 mar", "2 mar", ...]) */
   dateLabels?: string[];
+  /** ID prefix for editable tooltip (e.g. "chart_main" → allows editing point values) */
+  tooltipId?: string;
 };
 
 /**
@@ -216,6 +219,7 @@ export function DynamicLineChart({
   pattern,
   interactive = true,
   dateLabels,
+  tooltipId,
 }: LineChartProps) {
   const numericValue = parseValue(value);
   const currency = forceCurrency !== undefined ? forceCurrency : isCurrencyValue(value);
@@ -267,6 +271,29 @@ export function DynamicLineChart({
     el.addEventListener('click', handler);
     return () => el.removeEventListener('click', handler);
   }, [interactive, chartWidth, pts.length]);
+
+  // Click on tooltip → open editor
+  useEffect(() => {
+    if (Platform.OS !== 'web' || selectedIdx === null || !tooltipId) return;
+    const tooltipEl = document.getElementById(`tooltip-${touchLayerId}-${selectedIdx}`);
+    if (!tooltipEl) return;
+    const handler = (e: MouseEvent) => {
+      e.stopPropagation();
+      const dateLabel = getDateLabel(selectedIdx);
+      const valueStr = formatYLabel(pts[selectedIdx], currency);
+      sendEditMessage({
+        id: `${tooltipId}_point_${selectedIdx}`,
+        label: `${dateLabel} — ingresos`,
+        value: valueStr,
+        type: 'text',
+        table: 'ui_analytics',
+        column: 'point_value',
+        rowId: `${tooltipId}_${selectedIdx}`,
+      });
+    };
+    tooltipEl.addEventListener('click', handler);
+    return () => tooltipEl.removeEventListener('click', handler);
+  }, [selectedIdx, tooltipId]);
 
   const handleTouch = useCallback((evt: any) => {
     if (!interactive || chartWidth === 0 || Platform.OS === 'web') return;
@@ -328,41 +355,46 @@ export function DynamicLineChart({
 
           {/* Selected point indicator */}
           {selectedIdx !== null && (
-            <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 20 }} pointerEvents="none">
-              {/* Vertical line */}
-              <View style={{ position: 'absolute', left: `${selX}%` as any, top: 0, bottom: 0, width: 1, backgroundColor: '#ccc', opacity: 0.6 }} />
-              {/* Dot on the curve */}
-              <View style={{
-                position: 'absolute',
-                left: `${selX}%` as any,
-                bottom: selY - 5,
-                width: 10,
-                height: 10,
-                borderRadius: 5,
-                backgroundColor: color,
-                borderWidth: 2,
-                borderColor: '#fff',
-                marginLeft: -5,
-              }} />
-              {/* Tooltip */}
-              <View style={{
-                position: 'absolute',
-                left: selX > 65 ? undefined : (`${selX}%` as any),
-                right: selX > 65 ? 0 : undefined,
-                bottom: selY + 14,
-                backgroundColor: '#fff',
-                borderWidth: 1,
-                borderColor: '#e0e0e0',
-                borderRadius: 4,
-                paddingHorizontal: 12,
-                paddingVertical: 6,
-                marginLeft: selX > 65 ? 0 : -40,
-              }}>
+            <>
+              {/* Vertical line + dot (non-interactive) */}
+              <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 20 }} pointerEvents="none">
+                <View style={{ position: 'absolute', left: `${selX}%` as any, top: 0, bottom: 0, width: 1, backgroundColor: '#ccc', opacity: 0.6 }} />
+                <View style={{
+                  position: 'absolute',
+                  left: `${selX}%` as any,
+                  bottom: selY - 5,
+                  width: 10,
+                  height: 10,
+                  borderRadius: 5,
+                  backgroundColor: color,
+                  borderWidth: 2,
+                  borderColor: '#fff',
+                  marginLeft: -5,
+                }} />
+              </View>
+              {/* Tooltip (clickeable to edit) */}
+              <View
+                nativeID={`tooltip-${touchLayerId}-${selectedIdx}`}
+                style={{
+                  position: 'absolute',
+                  left: selX > 65 ? undefined : (`${selX}%` as any),
+                  right: selX > 65 ? 0 : undefined,
+                  bottom: selY + 14,
+                  backgroundColor: '#fff',
+                  borderWidth: 1,
+                  borderColor: '#e0e0e0',
+                  borderRadius: 4,
+                  paddingHorizontal: 12,
+                  paddingVertical: 6,
+                  marginLeft: selX > 65 ? 0 : -40,
+                  zIndex: 25,
+                  cursor: 'pointer',
+                } as any}>
                 <Text style={{ fontSize: 12, fontWeight: '600', color: '#2c2c2c' }}>
                   {getDateLabel(selectedIdx)}: {formatYLabel(selValue, currency)}
                 </Text>
               </View>
-            </View>
+            </>
           )}
         </View>
       </View>
