@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, LayoutChangeEvent } from 'react-native';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, LayoutChangeEvent, Platform } from 'react-native';
 import Svg, { Polyline, Defs, LinearGradient, Stop, Path, Circle, Line } from 'react-native-svg';
 
 const SKY_BLUE = '#64b5f6';
@@ -248,29 +248,35 @@ export function DynamicLineChart({
     setChartWidth(e.nativeEvent.layout.width);
   }, []);
 
-  const chartRef = React.useRef<View>(null);
+  const chartRef = useRef<View>(null);
+  const touchLayerId = useRef(`chart-touch-${Math.random().toString(36).slice(2)}`).current;
 
-  const handleTouch = useCallback((evt: any) => {
-    if (!interactive || chartWidth === 0) return;
-    try {
-      // Get x position - works on both web (offsetX) and native (locationX)
-      let x = evt?.nativeEvent?.locationX ?? evt?.nativeEvent?.offsetX;
-      if (x === undefined || x === null) {
-        // Fallback for web click events
-        const rect = (evt?.target as any)?.getBoundingClientRect?.();
-        const clientX = evt?.nativeEvent?.clientX ?? evt?.clientX;
-        if (rect && clientX) {
-          x = clientX - rect.left;
-        } else {
-          return;
-        }
-      }
+  // Attach native click listener for web
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !interactive) return;
+    const el = document.getElementById(touchLayerId);
+    if (!el) return;
+    const handler = (e: MouseEvent) => {
+      if (chartWidth === 0) return;
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left;
       const idx = Math.round((x / chartWidth) * (pts.length - 1));
       const clamped = Math.max(0, Math.min(pts.length - 1, idx));
       setSelectedIdx(prev => prev === clamped ? null : clamped);
-    } catch (e) {
-      // Silently fail
-    }
+    };
+    el.addEventListener('click', handler);
+    return () => el.removeEventListener('click', handler);
+  }, [interactive, chartWidth, pts.length]);
+
+  const handleTouch = useCallback((evt: any) => {
+    if (!interactive || chartWidth === 0 || Platform.OS === 'web') return;
+    try {
+      const x = evt?.nativeEvent?.locationX;
+      if (x === undefined) return;
+      const idx = Math.round((x / chartWidth) * (pts.length - 1));
+      const clamped = Math.max(0, Math.min(pts.length - 1, idx));
+      setSelectedIdx(prev => prev === clamped ? null : clamped);
+    } catch (e) {}
   }, [interactive, chartWidth, pts.length]);
 
   // Generate default date labels if not provided
@@ -312,9 +318,10 @@ export function DynamicLineChart({
           <Svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1 }}>
             <Polyline points={polyPoints} fill="none" stroke={color} strokeWidth="2" />
           </Svg>
-          {/* Touch layer on top of everything */}
+          {/* Touch/click layer on top of everything */}
           <View
-            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10 }}
+            nativeID={touchLayerId}
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10, cursor: 'pointer' } as any}
             onTouchEnd={handleTouch}
             onStartShouldSetResponder={() => true}
           />
