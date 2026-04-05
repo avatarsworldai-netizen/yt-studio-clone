@@ -225,20 +225,7 @@ export function DynamicLineChart({
   useFieldOverrides(); // Subscribe to override changes
   const numericValue = parseValue(value);
   const currency = forceCurrency !== undefined ? forceCurrency : isCurrencyValue(value);
-  const rawPts = inputPoints || generatePoints(numericValue, numPoints, pattern);
-
-  // Apply per-point overrides — parse numeric value from full tooltip text like "1 abr 2026: 5,00 €"
-  const pts = tooltipId ? rawPts.map((v, i) => {
-    const override = getOverride('ui_analytics', 'point_value', `${tooltipId}_${i}`);
-    if (override) {
-      // Extract the value after the last ":" if present
-      const parts = override.split(':');
-      const valuePart = parts.length > 1 ? parts[parts.length - 1].trim() : override;
-      const parsed = parseValue(valuePart);
-      return parsed > 0 ? parsed : v;
-    }
-    return v;
-  }) : rawPts;
+  const pts = inputPoints || generatePoints(numericValue, numPoints, pattern);
 
   const maxVal = Math.max(...pts, 0.01);
   const minVal = Math.min(...pts, 0);
