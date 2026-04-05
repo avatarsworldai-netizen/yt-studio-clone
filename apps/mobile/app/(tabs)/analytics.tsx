@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, RefreshControl, Dimensions } from 'react-native';
 import { useRouter, useNavigation } from 'expo-router';
-import { useAdminMode } from '../../hooks/useAdminMode';
+import { useAdminMode, sendEditMessage } from '../../hooks/useAdminMode';
 import { AE } from '../../components/AdminEditable';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Carousel } from '../../components/ui/Carousel';
@@ -9,7 +9,7 @@ import { supabase } from '../../lib/supabase';
 import { useRealtimeSubscription } from '../../hooks/useRealtimeSubscription';
 import { C, F } from '../../constants/theme';
 import Svg, { Polyline } from 'react-native-svg';
-import { DynamicLineChart, DynamicBarChart, parseValue, niceStep, formatYLabel, PATTERN_LIST } from '../../components/DynamicChart';
+import { DynamicLineChart, DynamicBarChart, parseValue, niceStep, formatYLabel, PATTERN_LIST, BAR_PATTERN_LIST, generateBarData } from '../../components/DynamicChart';
 import { getOverride, useFieldOverrides } from '../../hooks/useFieldOverrides';
 
 const CID = '00000000-0000-0000-0000-000000000001';
@@ -167,7 +167,7 @@ export default function AnalyticsScreen() {
         </AE>
         {/* Editable chart pattern selector */}
         <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId="chart_main" label={`Patrón gráfica (1-10): ${patternName}`} value={chartPattern}>
-          <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{isAdmin ? '📈 ' + (PATTERN_LIST.find(p => p.id === chartPattern)?.name || chartPattern) : ''}</Text>
+          <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{'📈 ' + (PATTERN_LIST.find(p => p.id === chartPattern)?.name || chartPattern)}</Text>
         </AE>
         <View style={{ marginTop: 20, flexDirection: 'row' }}>
           {/* Editable Y-axis labels */}
@@ -431,7 +431,7 @@ export default function AnalyticsScreen() {
                   <Text style={[s.chartValue, { fontSize: 20 }]}>{feedVal}</Text>
                 </AE>
                 <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId="feed_chart" label={`Patrón gráfica feed (1-10): ${feedPatternName}`} value={feedPattern}>
-                  <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{isAdmin ? '📈 ' + feedPatternName : ''}</Text>
+                  <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{'📈 ' + feedPatternName}</Text>
                 </AE>
                 <DynamicLineChart value={feedVal} xLabels={[firstDate, lastDate]} height={chartH} color="#1db4a5" pattern={feedPattern} />
               </>
@@ -562,7 +562,7 @@ export default function AnalyticsScreen() {
                     <Text style={s.vgChartSub}>{item.sub}</Text>
                   </AE> : null}
                   <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId={`cv_chart_${idx}`} label={`Patrón gráfica contenido ${idx+1} (1-10): ${cvPatternName}`} value={cvPattern}>
-                    <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{isAdmin ? '📈 ' + cvPatternName : ''}</Text>
+                    <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{'📈 ' + cvPatternName}</Text>
                   </AE>
                   <View style={{ marginTop: 12, flex: 1 }}>
                     <DynamicLineChart value={displayVal} xLabels={item.xLabels} height={90} pattern={cvPattern} />
@@ -639,7 +639,7 @@ export default function AnalyticsScreen() {
                     <Text style={[s.vgChartSub, item.subGreen && { color: '#508650' }]}>{item.sub}</Text>
                   </AE> : null}
                   <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId={`vg_chart_${idx}`} label={`Patrón gráfica VG ${idx+1} (1-10): ${vgPatternName}`} value={vgPattern}>
-                    <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{isAdmin ? '📈 ' + vgPatternName : ''}</Text>
+                    <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{'📈 ' + vgPatternName}</Text>
                   </AE>
                   <View style={{ marginTop: 12, flex: 1 }}>
                     <DynamicLineChart value={displayVal} xLabels={item.xLabels} height={90} pattern={vgPattern} />
@@ -759,26 +759,33 @@ export default function AnalyticsScreen() {
   const [iePeriod, setIePeriod] = useState(1);
   const [selectedBar, setSelectedBar] = useState<number | null>(null);
 
-  const BAR_DATA_BASE = [
-    { label: 'Oct', value: 8.28, color: '#a8e6cf' },
-    { label: 'Nov', value: 4.21, color: '#a8e6cf' },
-    { label: 'Dic', value: 59.74, color: '#a8e6cf' },
-    { label: 'Ene', value: 18.20, color: '#a8e6cf' },
-    { label: 'Feb', value: 39.48, color: '#a8e6cf' },
-    { label: 'Mar', value: 15.72, color: '#1db4a5' },
-  ];
-
-  // Apply overrides to bar data
-  const BAR_DATA = BAR_DATA_BASE.map((bar, i) => {
-    const override = getOverride('revenue', 'bar_value', `bar_${i}`);
-    return override ? { ...bar, value: parseFloat(override.replace(',', '.')) || bar.value } : bar;
-  });
+  const BAR_LABELS = ['Oct', 'Nov', 'Dic', 'Ene', 'Feb', 'Mar'];
 
   function BarChartView() {
+    const periodKey = ['7d','28d','90d','365d','mar','feb','ene','2026','2025','total'][iePeriod] || 'mar';
+    const currentBarPatternId = getOverride('ui_analytics', 'bar_pattern', `ie_${periodKey}`) || '4';
+    const currentBarPatternName = BAR_PATTERN_LIST.find(p => p.id === currentBarPatternId)?.name || 'Pico diciembre';
+
+    const barTotalOverride = getOverride('revenue', 'ie_summary', 'ie_sum');
+    const barTotal = parseValue(barTotalOverride || '145.93');
+    const barData = generateBarData(barTotal, BAR_LABELS, currentBarPatternId);
+
+    const barDataFinal = barData.map((bar, i) => {
+      const override = getOverride('revenue', 'bar_value', `bar_${periodKey}_${i}`);
+      return override ? { ...bar, value: parseFloat(override.replace(',', '.')) || bar.value } : bar;
+    });
+
     return (
       <View style={{ marginHorizontal: 16 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 4 }}>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="bar_pattern" rowId={`ie_${periodKey}`} label={`Patrón barras ${periodKey} (1-10): ${currentBarPatternName}`} value={currentBarPatternId}>
+            <View style={{ backgroundColor: '#f0f0f0', borderRadius: 6, paddingHorizontal: 10, paddingVertical: 4 }}>
+              <Text style={{ fontSize: 11, color: '#888' }}>📊 {currentBarPatternName}</Text>
+            </View>
+          </AE>
+        </View>
         <DynamicBarChart
-          data={BAR_DATA}
+          data={barDataFinal}
           height={170}
           onBarPress={(i) => {
             if (selectedBar === i) setSelectedBar(null);
@@ -853,8 +860,15 @@ export default function AnalyticsScreen() {
 
           const xLabelsMap: Record<string, string[]> = {
             'total': ['19 sept 2016', '25 jun 2021', '31 mar'],
-            'year': ['1ene', '14 feb', '31 mar'],
+            '2026': ['1ene', '14 feb', '31 mar'],
+            '2025': ['1ene', '14 feb', '31 mar'],
+            '7d': ['25 mar', '28 mar', '31 mar'],
             '28d': ['1mar', '14 mar', '28 mar'],
+            '90d': ['1ene', '14 feb', '31 mar'],
+            '365d': ['1abr 2025', '1oct 2025', '31 mar'],
+            'mar': ['1 mar', '15 mar', '31 mar'],
+            'feb': ['1 feb', '14 feb', '28 feb'],
+            'ene': ['1 ene', '15 ene', '31 ene'],
           };
           const currentXLabels = xLabelsMap[periodKey] || xLabelsMap['28d'];
 
@@ -876,7 +890,7 @@ export default function AnalyticsScreen() {
           function PatternSelector() {
             return (
               <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId={`ie_${periodKey}`} label={`Patrón gráfica ${periodKey} (1-10): ${iePatternName}`} value={iePattern}>
-                <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{isAdmin ? '📈 ' + iePatternName : ''}</Text>
+                <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{'📈 ' + iePatternName}</Text>
               </AE>
             );
           }

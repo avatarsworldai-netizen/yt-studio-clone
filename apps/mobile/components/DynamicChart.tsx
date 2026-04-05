@@ -140,6 +140,46 @@ export const CHART_PATTERNS: Record<string, { name: string; fn: (t: number, i: n
 export const PATTERN_LIST = Object.entries(CHART_PATTERNS).map(([id, p]) => ({ id, name: p.name }));
 
 /**
+ * 10 bar chart patterns — each returns an array of 6 multipliers (0→1) for monthly bars.
+ * The multipliers scale relative to the max value.
+ */
+export const BAR_PATTERNS: Record<string, { name: string; values: number[] }> = {
+  '1': { name: 'Estable', values: [0.4, 0.45, 0.5, 0.42, 0.48, 0.44] },
+  '2': { name: 'Crecimiento', values: [0.1, 0.2, 0.35, 0.5, 0.7, 0.95] },
+  '3': { name: 'Decrecimiento', values: [0.95, 0.75, 0.55, 0.35, 0.2, 0.1] },
+  '4': { name: 'Pico diciembre', values: [0.15, 0.08, 0.95, 0.3, 0.65, 0.25] },
+  '5': { name: 'Pico febrero', values: [0.12, 0.06, 0.2, 0.15, 0.9, 0.3] },
+  '6': { name: 'Doble pico', values: [0.1, 0.85, 0.15, 0.9, 0.2, 0.12] },
+  '7': { name: 'Valle central', values: [0.7, 0.6, 0.1, 0.08, 0.55, 0.8] },
+  '8': { name: 'Escalera', values: [0.15, 0.3, 0.45, 0.6, 0.75, 0.9] },
+  '9': { name: 'Dientes de sierra', values: [0.8, 0.15, 0.7, 0.1, 0.9, 0.2] },
+  '10': { name: 'Todo alto', values: [0.75, 0.85, 0.9, 0.8, 0.88, 0.82] },
+};
+
+export const BAR_PATTERN_LIST = Object.entries(BAR_PATTERNS).map(([id, p]) => ({ id, name: p.name }));
+
+/**
+ * Generate bar data from a total value and a bar pattern.
+ */
+export function generateBarData(
+  totalValue: number,
+  labels: string[],
+  patternId: string = '1',
+  activeColor: string = '#1db4a5',
+  inactiveColor: string = '#a8e6cf',
+): { label: string; value: number; color: string }[] {
+  const pattern = BAR_PATTERNS[patternId] || BAR_PATTERNS['1'];
+  const maxMultiplier = Math.max(...pattern.values);
+
+  return labels.map((label, i) => {
+    const multiplier = pattern.values[i % pattern.values.length];
+    const value = (totalValue / labels.length) * (multiplier / maxMultiplier) * 2;
+    const isLast = i === labels.length - 1;
+    return { label, value, color: isLast ? activeColor : inactiveColor };
+  });
+}
+
+/**
  * Generate chart data points from a total value using a named pattern.
  */
 function generatePoints(totalValue: number, count: number, patternId?: string): number[] {
