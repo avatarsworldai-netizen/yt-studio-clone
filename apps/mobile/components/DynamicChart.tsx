@@ -17,12 +17,18 @@ type LineChartProps = {
   filled?: boolean;
   /** If true, value is a total (e.g. monthly) and daily values are derived */
   isCurrency?: boolean;
+  /** If true, hide built-in Y labels (caller renders them externally) */
+  hideYLabels?: boolean;
+  /** If true, hide built-in X labels (caller renders them externally) */
+  hideXLabels?: boolean;
+  /** Pattern ID (1-10) for chart shape */
+  pattern?: string;
 };
 
 /**
  * Parse a formatted value string to a number.
  */
-function parseValue(v: string | number): number {
+export function parseValue(v: string | number): number {
   if (typeof v === 'number') return v;
   let s = String(v).replace(/[€$\s]/g, '').trim();
   const hasK = s.toUpperCase().includes('K');
@@ -47,7 +53,7 @@ function isCurrencyValue(v: string | number): boolean {
  * Pick a "nice" round step for Y-axis given the max value.
  * E.g. max=4.2 → step=1.40, max=900 → step=300, max=15 → step=5
  */
-function niceStep(maxVal: number): number {
+export function niceStep(maxVal: number): number {
   if (maxVal <= 0) return 1;
   const magnitude = Math.pow(10, Math.floor(Math.log10(maxVal)));
   const normalized = maxVal / magnitude;
@@ -62,7 +68,7 @@ function niceStep(maxVal: number): number {
 /**
  * Format Y-axis label with appropriate precision and unit.
  */
-function formatYLabel(val: number, currency: boolean): string {
+export function formatYLabel(val: number, currency: boolean): string {
   let str: string;
   if (Math.abs(val) >= 1000) {
     str = (val / 1000).toFixed(1).replace('.', ',') + ' K';
@@ -80,23 +86,71 @@ function formatYLabel(val: number, currency: boolean): string {
 }
 
 /**
- * Generate plausible DAILY chart data points from a total/period value.
- * Creates a smooth, natural-looking curve like the original YT Studio.
- * The sum of daily values approximates the total.
+ * 10 chart patterns — each is a function that takes (t: 0→1) and returns a multiplier (0→1).
  */
-function generatePoints(totalValue: number, count: number): number[] {
-  const daily = Math.abs(totalValue) / count;
+/**
+ * Seeded random for deterministic noise per pattern.
+ */
+function seededRand(seed: number): number {
+  const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453;
+  return x - Math.floor(x);
+}
+
+/**
+ * Build a pattern function with sharp daily noise (like real YT Studio data).
+ * `shape` defines the overall trend, noise adds daily randomness.
+ */
+function makePattern(shape: (t: number) => number, seed: number = 0) {
+  return (t: number, i: number, count: number): number => {
+    const base = shape(t);
+    // Sharp daily noise — each "day" gets a random spike/dip
+    const noise = (seededRand(i * 13.37 + seed) - 0.5) * 0.3;
+    return Math.max(0, base + noise);
+  };
+}
+
+export const CHART_PATTERNS: Record<string, { name: string; fn: (t: number, i: number, count: number) => number }> = {
+  '1': { name: 'Estable bajo', fn: makePattern((t) => 0.15, 1) },
+  '2': { name: 'Subida gradual', fn: makePattern((t) => 0.05 + t * 0.6, 2) },
+  '3': { name: 'Bajada gradual', fn: makePattern((t) => 0.7 - t * 0.6, 3) },
+  '4': { name: 'Pico al inicio', fn: makePattern((t) => t < 0.15 ? t * 6.5 : Math.max(0.05, 0.8 - (t - 0.15) * 0.9), 4) },
+  '5': { name: 'Pico al final', fn: makePattern((t) => t > 0.85 ? 0.1 + (t - 0.85) * 6 : 0.08 + t * 0.05, 5) },
+  '6': { name: 'Pico en el medio', fn: makePattern((t) => {
+    const d = Math.abs(t - 0.45);
+    return d < 0.08 ? 1.0 - d * 5 : 0.1 + 0.15 * (1 - d);
+  }, 6) },
+  '7': { name: 'Valle en el medio', fn: makePattern((t) => {
+    const d = Math.abs(t - 0.5);
+    return d < 0.15 ? 0.05 + d * 2 : 0.4 + d * 0.3;
+  }, 7) },
+  '8': { name: 'Dos picos', fn: makePattern((t) => {
+    const d1 = Math.abs(t - 0.3);
+    const d2 = Math.abs(t - 0.75);
+    const p1 = d1 < 0.08 ? 0.9 - d1 * 8 : 0;
+    const p2 = d2 < 0.06 ? 0.5 - d2 * 6 : 0;
+    return 0.08 + Math.max(p1, p2);
+  }, 8) },
+  '9': { name: 'Crecimiento explosivo', fn: makePattern((t) => 0.03 + 0.9 * (t ** 3), 9) },
+  '10': { name: 'Dientes de sierra', fn: makePattern((t) => {
+    const cycle = (t * 5) % 1;
+    return 0.1 + cycle * 0.5;
+  }, 10) },
+};
+
+export const PATTERN_LIST = Object.entries(CHART_PATTERNS).map(([id, p]) => ({ id, name: p.name }));
+
+/**
+ * Generate chart data points from a total value using a named pattern.
+ */
+function generatePoints(totalValue: number, count: number, patternId?: string): number[] {
+  const pattern = CHART_PATTERNS[patternId || '1'] || CHART_PATTERNS['1'];
   const pts: number[] = [];
+  const peak = Math.abs(totalValue) / count;
 
   for (let i = 0; i < count; i++) {
     const t = i / (count - 1);
-    // Base: relatively flat with gentle waves (like real daily revenue)
-    const base = daily;
-    // Gentle sine waves at different frequencies for natural variation
-    const wave1 = daily * 0.3 * Math.sin(t * Math.PI * 3.2 + 1.2);
-    const wave2 = daily * 0.15 * Math.sin(t * Math.PI * 7.1 + 0.5);
-    const wave3 = daily * 0.08 * Math.sin(t * Math.PI * 12.4 + 2.8);
-    pts.push(Math.max(0, base + wave1 + wave2 + wave3));
+    const multiplier = pattern.fn(t, i, count);
+    pts.push(Math.max(0, peak * 2.5 * multiplier));
   }
 
   return pts;
@@ -113,10 +167,13 @@ export function DynamicLineChart({
   color = SKY_BLUE,
   filled = false,
   isCurrency: forceCurrency,
+  hideYLabels = false,
+  hideXLabels = false,
+  pattern,
 }: LineChartProps) {
   const numericValue = parseValue(value);
   const currency = forceCurrency !== undefined ? forceCurrency : isCurrencyValue(value);
-  const pts = inputPoints || generatePoints(numericValue, numPoints);
+  const pts = inputPoints || generatePoints(numericValue, numPoints, pattern);
 
   const maxVal = Math.max(...pts, 0.01);
   const minVal = Math.min(...pts, 0);
@@ -141,11 +198,13 @@ export function DynamicLineChart({
     <View>
       <View style={{ flexDirection: 'row', height }}>
         {/* Y-axis */}
-        <View style={{ width: 42, justifyContent: 'space-between', paddingRight: 4 }}>
-          {yLabels.map((l, i) => (
-            <Text key={i} style={cs.axisText}>{l}</Text>
-          ))}
-        </View>
+        {!hideYLabels && (
+          <View style={{ width: 42, justifyContent: 'space-between', paddingRight: 4 }}>
+            {yLabels.map((l, i) => (
+              <Text key={i} style={cs.axisText}>{l}</Text>
+            ))}
+          </View>
+        )}
         {/* Chart area */}
         <View style={{ flex: 1, position: 'relative', height }}>
           {/* Grid lines (behind) */}
@@ -154,13 +213,13 @@ export function DynamicLineChart({
           ))}
           {/* SVG line (on top) */}
           <Svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 2 }}>
-            <Polyline points={polyPoints} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+            <Polyline points={polyPoints} fill="none" stroke={color} strokeWidth="2" />
           </Svg>
         </View>
       </View>
       {/* X-axis */}
-      {xLabels && (
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 42, marginTop: 4 }}>
+      {xLabels && !hideXLabels && (
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingLeft: hideYLabels ? 0 : 42, marginTop: 4 }}>
           {xLabels.map((l, i) => (
             <Text key={i} style={cs.axisText}>{l}</Text>
           ))}

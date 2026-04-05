@@ -9,8 +9,8 @@ import { supabase } from '../../lib/supabase';
 import { useRealtimeSubscription } from '../../hooks/useRealtimeSubscription';
 import { C, F } from '../../constants/theme';
 import Svg, { Polyline } from 'react-native-svg';
-import { DynamicLineChart, DynamicBarChart } from '../../components/DynamicChart';
-import { getOverride } from '../../hooks/useFieldOverrides';
+import { DynamicLineChart, DynamicBarChart, parseValue, niceStep, formatYLabel, PATTERN_LIST } from '../../components/DynamicChart';
+import { getOverride, useFieldOverrides } from '../../hooks/useFieldOverrides';
 
 const CID = '00000000-0000-0000-0000-000000000001';
 
@@ -104,6 +104,7 @@ export default function AnalyticsScreen() {
   const navigation = useNavigation();
   const qc = useQueryClient();
   const isAdmin = useAdminMode();
+  useFieldOverrides(); // Subscribe to override changes for instant chart updates
   const screenW = Dimensions.get('window').width;
   const [activeTab, setActiveTab] = useState(0);
   const [activeChip, setActiveChip] = useState(0);
@@ -143,6 +144,19 @@ export default function AnalyticsScreen() {
   function ChartCard() {
     const revenueVal = st?.estimated_revenue || '0';
     const tsPoints = ts?.length ? ts.map((d: any) => Number(d.value)) : undefined;
+    const chartPattern = getOverride('ui_analytics', 'chart_pattern', 'chart_main') || '1';
+    // Compute Y labels for editable rendering
+    const pts = tsPoints || [];
+    const maxPt = Math.max(...(pts.length ? pts : [parseValue(revenueVal) / 28]), 0.01);
+    const stepVal = niceStep(maxPt);
+    const yMax = Math.ceil(maxPt / stepVal) * stepVal;
+    const defaultYLabels = [
+      formatYLabel(yMax, true),
+      formatYLabel(yMax * 2 / 3, true),
+      formatYLabel(yMax / 3, true),
+      '0 €',
+    ];
+    const patternName = PATTERN_LIST.find(p => p.id === chartPattern)?.name || 'Estable';
     return (
       <View style={s.chartCard}>
         <AE isAdmin={isAdmin} table="ui_analytics" column="chart_label" rowId="chart_main" label="Etiqueta gráfica principal" value="Ingresos estimados">
@@ -151,14 +165,30 @@ export default function AnalyticsScreen() {
         <AE isAdmin={isAdmin} table="dashboard_stats" column="estimated_revenue" rowId={st?.id || ''} label="Ingresos estimados" value={revenueVal}>
           <Text style={s.chartValue}>{revenueVal} €</Text>
         </AE>
-        <View style={{ marginTop: 20 }}>
-          <DynamicLineChart
-            value={revenueVal}
-            points={tsPoints}
-            xLabels={[firstDate, lastDate]}
-            height={chartH}
-            color="#1db4a5"
-          />
+        {/* Editable chart pattern selector */}
+        <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId="chart_main" label={`Patrón gráfica (1-10): ${patternName}`} value={chartPattern}>
+          <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{isAdmin ? '📈 ' + (PATTERN_LIST.find(p => p.id === chartPattern)?.name || chartPattern) : ''}</Text>
+        </AE>
+        <View style={{ marginTop: 20, flexDirection: 'row' }}>
+          {/* Editable Y-axis labels */}
+          <View style={{ width: 42, justifyContent: 'space-between', paddingRight: 4, height: chartH }}>
+            {defaultYLabels.map((label, i) => (
+              <AE key={i} isAdmin={isAdmin} table="ui_analytics" column="y_label" rowId={`chart_main_y${i}`} label={`Eje Y gráfica: ${label}`} value={label}>
+                <Text style={{ fontSize: 10, fontWeight: '500', color: '#7a7a7a' }}>{label}</Text>
+              </AE>
+            ))}
+          </View>
+          <View style={{ flex: 1 }}>
+            <DynamicLineChart
+              value={revenueVal}
+              points={tsPoints}
+              xLabels={[firstDate, lastDate]}
+              height={chartH}
+              color="#1db4a5"
+              hideYLabels
+              pattern={chartPattern}
+            />
+          </View>
         </View>
       </View>
     );
@@ -393,12 +423,17 @@ export default function AnalyticsScreen() {
           {(() => {
             const feedOverride = getOverride('revenue', 'estimated_revenue', 'feed_val');
             const feedVal = feedOverride || '0€';
+            const feedPattern = getOverride('ui_analytics', 'chart_pattern', 'feed_chart') || '1';
+            const feedPatternName = PATTERN_LIST.find(p => p.id === feedPattern)?.name || 'Estable';
             return (
               <>
                 <AE isAdmin={isAdmin} table="revenue" column="estimated_revenue" rowId="feed_val" label="Ingresos Shorts feed" value={feedVal}>
                   <Text style={[s.chartValue, { fontSize: 20 }]}>{feedVal}</Text>
                 </AE>
-                <DynamicLineChart value={feedVal} xLabels={[firstDate, lastDate]} height={chartH} color="#1db4a5" />
+                <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId="feed_chart" label={`Patrón gráfica feed (1-10): ${feedPatternName}`} value={feedPattern}>
+                  <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{isAdmin ? '📈 ' + feedPatternName : ''}</Text>
+                </AE>
+                <DynamicLineChart value={feedVal} xLabels={[firstDate, lastDate]} height={chartH} color="#1db4a5" pattern={feedPattern} />
               </>
             );
           })()}
@@ -511,6 +546,8 @@ export default function AnalyticsScreen() {
           {CV_CHARTS.map((item, idx) => {
             const overrideVal = getOverride('dashboard_stats', 'views', `vgchart_${idx}`);
             const displayVal = overrideVal || item.value;
+            const cvPattern = getOverride('ui_analytics', 'chart_pattern', `cv_chart_${idx}`) || '1';
+            const cvPatternName = PATTERN_LIST.find(p => p.id === cvPattern)?.name || 'Estable';
             return (
               <View key={idx} style={s.vgChartOuter}>
                 <View style={s.vgChartCardFixed}>
@@ -524,8 +561,11 @@ export default function AnalyticsScreen() {
                   {item.sub ? <AE isAdmin={isAdmin} table="dashboard_stats" column="views_change_percent" rowId={`vgchartsub_${idx}`} label={`${item.label} - subtexto`} value={item.sub}>
                     <Text style={s.vgChartSub}>{item.sub}</Text>
                   </AE> : null}
+                  <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId={`cv_chart_${idx}`} label={`Patrón gráfica contenido ${idx+1} (1-10): ${cvPatternName}`} value={cvPattern}>
+                    <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{isAdmin ? '📈 ' + cvPatternName : ''}</Text>
+                  </AE>
                   <View style={{ marginTop: 12, flex: 1 }}>
-                    <DynamicLineChart value={displayVal} xLabels={item.xLabels} height={90} />
+                    <DynamicLineChart value={displayVal} xLabels={item.xLabels} height={90} pattern={cvPattern} />
                   </View>
                 </View>
               </View>
@@ -579,19 +619,30 @@ export default function AnalyticsScreen() {
           {VG_CHARTS.map((item, idx) => {
             const overrideVal = getOverride('dashboard_stats', 'views', `cvchart_${idx}`);
             const displayVal = overrideVal || item.value;
+            const vgPattern = getOverride('ui_analytics', 'chart_pattern', `vg_chart_${idx}`) || '1';
+            const vgPatternName = PATTERN_LIST.find(p => p.id === vgPattern)?.name || 'Estable';
             return (
               <View key={idx} style={s.vgChartOuter}>
                 <View style={s.vgChartCardFixed}>
-                  <Text style={s.vgChartLabel}>{item.label}</Text>
+                  <AE isAdmin={isAdmin} table="ui_analytics" column="chart_label" rowId={`vg_label_${idx}`} label={`Etiqueta gráfica VG: ${item.label}`} value={item.label}>
+                    <Text style={s.vgChartLabel}>{item.label}</Text>
+                  </AE>
                   <View style={s.vgValRow}>
                     <AE isAdmin={isAdmin} table="dashboard_stats" column="views" rowId={`cvchart_${idx}`} label={`${item.label}`} value={displayVal}>
                       <Text style={s.vgChartVal}>{displayVal}</Text>
                     </AE>
-                    {item.arrow && <Image source={item.arrow} style={s.vgArrow} resizeMode="contain" />}
+                    {item.arrow && <AE isAdmin={isAdmin} table="ui_analytics" column="arrow_icon" rowId={`vg_arrow_${idx}`} label={`Flecha gráfica VG ${idx+1}`} value="" type="image">
+                      <Image source={item.arrow} style={s.vgArrow} resizeMode="contain" />
+                    </AE>}
                   </View>
-                  {item.sub ? <Text style={[s.vgChartSub, item.subGreen && { color: '#508650' }]}>{item.sub}</Text> : null}
+                  {item.sub ? <AE isAdmin={isAdmin} table="dashboard_stats" column="views_change_percent" rowId={`vgchartsub_${idx}`} label={`${item.label} - subtexto`} value={item.sub}>
+                    <Text style={[s.vgChartSub, item.subGreen && { color: '#508650' }]}>{item.sub}</Text>
+                  </AE> : null}
+                  <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId={`vg_chart_${idx}`} label={`Patrón gráfica VG ${idx+1} (1-10): ${vgPatternName}`} value={vgPattern}>
+                    <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{isAdmin ? '📈 ' + vgPatternName : ''}</Text>
+                  </AE>
                   <View style={{ marginTop: 12, flex: 1 }}>
-                    <DynamicLineChart value={displayVal} xLabels={item.xLabels} height={90} />
+                    <DynamicLineChart value={displayVal} xLabels={item.xLabels} height={90} pattern={vgPattern} />
                   </View>
                 </View>
               </View>
@@ -745,7 +796,9 @@ export default function AnalyticsScreen() {
         {/* Custom header that covers the tab header */}
         <View style={s.ieHeaderOverlay}>
           <TouchableOpacity onPress={() => setShowIngresosDetail(false)} hitSlop={12}>
-            <Image source={require('../../assets/figma/ie_back_arrow.png')} style={s.ieBackArrow} resizeMode="contain" />
+            <AE isAdmin={isAdmin} table="ui_analytics" column="icon" rowId="ie_back_arrow" label="Flecha volver" value="" type="image">
+              <Image source={require('../../assets/figma/ie_back_arrow.png')} style={s.ieBackArrow} resizeMode="contain" />
+            </AE>
           </TouchableOpacity>
           <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="ie_header" label="Título detalle ingresos" value="Ingresos estimados">
             <Text style={s.ieHeaderTitle}>Ingresos estimados</Text>
@@ -770,23 +823,101 @@ export default function AnalyticsScreen() {
           const ieSumOverride = getOverride('dashboard_stats', 'estimated_revenue', st?.id || '');
           const ieSumVal = ieSumOverride || (iePeriod < 4 ? '15,72' : iePeriod === 9 ? '2022,14' : '16,02');
 
+          // Compute Y labels for editable rendering
+          const numVal = parseValue(ieSumVal);
+          const numPts = iePeriod === 9 ? 60 : 28;
+          const dailyMax = numVal / numPts;
+          const ieStep = niceStep(dailyMax);
+          const ieYMax = Math.ceil(dailyMax / ieStep) * ieStep;
+          const ieYLabels = [
+            formatYLabel(ieYMax, true),
+            formatYLabel(ieYMax * 2 / 3, true),
+            formatYLabel(ieYMax / 3, true),
+            '0 €',
+          ];
+          const periodKeys = ['7d', '28d', '90d', '365d', 'mar', 'feb', 'ene', '2026', '2025', 'total'];
+          const periodKey = periodKeys[iePeriod] || '28d';
+          const chartH_ie = iePeriod < 4 ? 140 : 170;
+
+          function EditableYLabels() {
+            return (
+              <View style={{ width: 42, justifyContent: 'space-between', paddingRight: 4, height: chartH_ie }}>
+                {ieYLabels.map((label, i) => (
+                  <AE key={i} isAdmin={isAdmin} table="ui_analytics" column="y_label" rowId={`ie_${periodKey}_y${i}`} label={`Eje Y detalle (${periodKey}): ${label}`} value={label}>
+                    <Text style={{ fontSize: 10, fontWeight: '500', color: '#7a7a7a' }}>{label}</Text>
+                  </AE>
+                ))}
+              </View>
+            );
+          }
+
+          const xLabelsMap: Record<string, string[]> = {
+            'total': ['19 sept 2016', '25 jun 2021', '31 mar'],
+            'year': ['1ene', '14 feb', '31 mar'],
+            '28d': ['1mar', '14 mar', '28 mar'],
+          };
+          const currentXLabels = xLabelsMap[periodKey] || xLabelsMap['28d'];
+
+          function EditableXLabels() {
+            return (
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 42, marginTop: 4 }}>
+                {currentXLabels.map((label, i) => (
+                  <AE key={i} isAdmin={isAdmin} table="ui_analytics" column="x_label" rowId={`ie_${periodKey}_x${i}`} label={`Eje X detalle (${periodKey}): ${label}`} value={label}>
+                    <Text style={{ fontSize: 10, fontWeight: '500', color: '#7a7a7a' }}>{label}</Text>
+                  </AE>
+                ))}
+              </View>
+            );
+          }
+
+          const iePattern = getOverride('ui_analytics', 'chart_pattern', `ie_${periodKey}`) || '1';
+          const iePatternName = PATTERN_LIST.find(p => p.id === iePattern)?.name || 'Estable';
+
+          function PatternSelector() {
+            return (
+              <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId={`ie_${periodKey}`} label={`Patrón gráfica ${periodKey} (1-10): ${iePatternName}`} value={iePattern}>
+                <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{isAdmin ? '📈 ' + iePatternName : ''}</Text>
+              </AE>
+            );
+          }
+
           if (iePeriod === 9) {
             return (
               <View style={{ marginHorizontal: 16, marginTop: 16 }}>
-                <DynamicLineChart value={ieSumVal} xLabels={['19 sept 2016', '25 jun 2021', '31 mar']} height={170} numPoints={60} color="#1db4a5" />
+                <PatternSelector />
+                <View style={{ flexDirection: 'row' }}>
+                  <EditableYLabels />
+                  <View style={{ flex: 1 }}>
+                    <DynamicLineChart value={ieSumVal} height={170} numPoints={60} color="#1db4a5" hideYLabels hideXLabels pattern={iePattern} />
+                  </View>
+                </View>
+                <EditableXLabels />
               </View>
             );
           } else if (iePeriod >= 7 && iePeriod <= 8) {
             return (
               <View style={{ marginHorizontal: 16, marginTop: 16 }}>
-                <DynamicLineChart value={ieSumVal} xLabels={['1ene', '14 feb', '31 mar']} height={170} color="#1db4a5" />
+                <PatternSelector />
+                <View style={{ flexDirection: 'row' }}>
+                  <EditableYLabels />
+                  <View style={{ flex: 1 }}>
+                    <DynamicLineChart value={ieSumVal} height={170} color="#1db4a5" hideYLabels hideXLabels pattern={iePattern} />
+                  </View>
+                </View>
+                <EditableXLabels />
               </View>
             );
           } else if (iePeriod < 4) {
-            const tsPoints = ts?.length ? ts.map((d: any) => Number(d.value)) : undefined;
             return (
               <View style={{ marginHorizontal: 16, marginTop: 8 }}>
-                <DynamicLineChart value={ieSumVal} points={tsPoints} xLabels={['1mar', '14 mar', '28 mar']} height={140} color="#1db4a5" />
+                <PatternSelector />
+                <View style={{ flexDirection: 'row' }}>
+                  <EditableYLabels />
+                  <View style={{ flex: 1 }}>
+                    <DynamicLineChart value={ieSumVal} height={140} color="#1db4a5" hideYLabels hideXLabels pattern={iePattern} />
+                  </View>
+                </View>
+                <EditableXLabels />
               </View>
             );
           } else {
@@ -796,8 +927,12 @@ export default function AnalyticsScreen() {
 
         {/* Summary */}
         <View style={s.ieSummary}>
-          <Image source={require('../../assets/figma/ie_dot_green.png')} style={s.ieDot} resizeMode="contain" />
-          <Text style={s.ieSumLabel}>Ingresos estimados</Text>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="icon" rowId="ie_dot" label="Icono punto verde" value="" type="image">
+            <Image source={require('../../assets/figma/ie_dot_green.png')} style={s.ieDot} resizeMode="contain" />
+          </AE>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="label" rowId="ie_sum_label" label="Label resumen ingresos" value="Ingresos estimados">
+            <Text style={s.ieSumLabel}>Ingresos estimados</Text>
+          </AE>
           {(() => {
             const sumOverride = getOverride('revenue', 'ie_summary', 'ie_sum');
             const sumVal = sumOverride || (iePeriod < 4 ? '15,72' : iePeriod === 9 ? '2022,14' : '16,02');
@@ -812,7 +947,9 @@ export default function AnalyticsScreen() {
         {/* Processing message for monthly views */}
         {iePeriod >= 4 && (
           <View style={s.ieProcessingRow}>
-            <Image source={require('../../assets/figma/ie_clock.png')} style={{ width: 22, height: 22 }} resizeMode="contain" />
+            <AE isAdmin={isAdmin} table="ui_analytics" column="icon" rowId="ie_clock" label="Icono reloj procesando" value="" type="image">
+              <Image source={require('../../assets/figma/ie_clock.png')} style={{ width: 22, height: 22 }} resizeMode="contain" />
+            </AE>
             <AE isAdmin={isAdmin} table="ui_analytics" column="text" rowId="ie_processing" label="Texto procesando datos" value="Aún se está procesando 1 día de datos">
               <Text style={s.ieProcessingText}>Aún se está procesando 1 día de datos</Text>
             </AE>
@@ -825,7 +962,9 @@ export default function AnalyticsScreen() {
         </AE>
 
         <View style={s.ieWarningBox}>
-          <Image source={require('../../assets/figma/ie_warning.png')} style={s.ieWarningIcon} resizeMode="contain" />
+          <AE isAdmin={isAdmin} table="ui_analytics" column="icon" rowId="ie_warning_icon" label="Icono aviso" value="" type="image">
+            <Image source={require('../../assets/figma/ie_warning.png')} style={s.ieWarningIcon} resizeMode="contain" />
+          </AE>
           <AE isAdmin={isAdmin} table="ui_analytics" column="text" rowId="ie_warning" label="Texto aviso cambio divisa" value="Los importes se convierten de USD a EUR según el tipo de cambio histórico de la fecha que corresponda">
             <Text style={s.ieWarningText}>Los importes se convierten de USD a EUR según el tipo de cambio histórico de la fecha que corresponda</Text>
           </AE>
