@@ -793,6 +793,7 @@ export default function AnalyticsScreen() {
             else { setSelectedBar(null); setTimeout(() => setSelectedBar(i), 10); }
           }}
           selectedBar={selectedBar}
+          tooltipId={`bar_${periodKey}`}
         />
       </View>
     );

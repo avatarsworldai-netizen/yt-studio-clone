@@ -427,6 +427,8 @@ type BarChartProps = {
   yLabels?: string[];
   onBarPress?: (index: number) => void;
   selectedBar?: number | null;
+  /** ID prefix for editable bar tooltips */
+  tooltipId?: string;
 };
 
 export function DynamicBarChart({
@@ -437,7 +439,10 @@ export function DynamicBarChart({
   yLabels: inputYLabels,
   onBarPress,
   selectedBar,
+  tooltipId,
 }: BarChartProps) {
+  useFieldOverrides();
+  const barTooltipId = useRef(`bar-tooltip-${Math.random().toString(36).slice(2)}`).current;
   const maxVal = Math.max(...data.map(d => d.value), 1);
   const step = niceStep(maxVal);
   const yMax = Math.ceil(maxVal / step) * step;
@@ -448,6 +453,31 @@ export function DynamicBarChart({
     formatYLabel(yMax / 3, true),
     '0 €',
   ];
+
+  // Click on bar tooltip → open editor
+  useEffect(() => {
+    if (Platform.OS !== 'web' || selectedBar === null || !tooltipId) return;
+    const el = document.getElementById(`${barTooltipId}-${selectedBar}`);
+    if (!el) return;
+    const handler = (e: MouseEvent) => {
+      e.stopPropagation();
+      const bar = data[selectedBar];
+      if (!bar) return;
+      const override = getOverride('ui_analytics', 'bar_tooltip', `${tooltipId}_${selectedBar}`);
+      const currentText = override || `${bar.label}: ${Number(bar.value || 0).toFixed(2).replace('.', ',')} €`;
+      sendEditMessage({
+        id: `ui_analytics_bar_tooltip_${tooltipId}_${selectedBar}`,
+        label: `Barra ${bar.label} — ingresos`,
+        value: currentText,
+        type: 'text',
+        table: 'ui_analytics',
+        column: 'bar_tooltip',
+        rowId: `${tooltipId}_${selectedBar}`,
+      });
+    };
+    el.addEventListener('click', handler);
+    return () => el.removeEventListener('click', handler);
+  }, [selectedBar, tooltipId, data]);
 
   return (
     <View>
@@ -480,15 +510,20 @@ export function DynamicBarChart({
               );
             })}
           </View>
-          {/* Tooltip */}
+          {/* Tooltip (clickeable to edit) */}
           {selectedBar !== null && selectedBar !== undefined && selectedBar >= 0 && (() => {
             const bar = data[selectedBar];
             if (!bar) return null;
             const barH = (bar.value / yMax) * (height - 20);
             const barCenterX = ((selectedBar + 0.5) / data.length) * 100;
+            const override = tooltipId ? getOverride('ui_analytics', 'bar_tooltip', `${tooltipId}_${selectedBar}`) : undefined;
+            const displayText = override || `${bar.label}: ${Number(bar.value || 0).toFixed(2).replace('.', ',')} €`;
             return (
-              <View style={{ position: 'absolute', left: `${barCenterX - 12}%` as any, top: height - barH - 30, backgroundColor: '#fefefe', borderWidth: 1, borderColor: '#e4e4e4', borderRadius: 2, paddingHorizontal: 12, paddingVertical: 6, zIndex: 99, minWidth: 100 }} pointerEvents="none">
-                <Text style={{ fontSize: 11, fontWeight: '600', color: '#2c2c2c' }}>{bar.label}: {Number(bar.value || 0).toFixed(2).replace('.', ',')} €</Text>
+              <View
+                nativeID={`${barTooltipId}-${selectedBar}`}
+                style={{ position: 'absolute', left: `${barCenterX - 12}%` as any, top: height - barH - 30, backgroundColor: '#fefefe', borderWidth: 1, borderColor: '#e4e4e4', borderRadius: 2, paddingHorizontal: 12, paddingVertical: 6, zIndex: 99, minWidth: 100, cursor: 'pointer' } as any}
+              >
+                <Text style={{ fontSize: 11, fontWeight: '600', color: '#2c2c2c' }}>{displayText}</Text>
               </View>
             );
           })()}
