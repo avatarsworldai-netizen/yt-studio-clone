@@ -227,11 +227,14 @@ export function DynamicLineChart({
   const currency = forceCurrency !== undefined ? forceCurrency : isCurrencyValue(value);
   const rawPts = inputPoints || generatePoints(numericValue, numPoints, pattern);
 
-  // Apply per-point overrides
+  // Apply per-point overrides — parse numeric value from full tooltip text like "1 abr 2026: 5,00 €"
   const pts = tooltipId ? rawPts.map((v, i) => {
     const override = getOverride('ui_analytics', 'point_value', `${tooltipId}_${i}`);
     if (override) {
-      const parsed = parseValue(override);
+      // Extract the value after the last ":" if present
+      const parts = override.split(':');
+      const valuePart = parts.length > 1 ? parts[parts.length - 1].trim() : override;
+      const parsed = parseValue(valuePart);
       return parsed > 0 ? parsed : v;
     }
     return v;
@@ -293,10 +296,11 @@ export function DynamicLineChart({
       e.stopPropagation();
       const dateLabel = getDateLabel(selectedIdx);
       const valueStr = formatYLabel(pts[selectedIdx], currency);
+      const fullText = `${dateLabel}: ${valueStr}`;
       sendEditMessage({
         id: `${tooltipId}_point_${selectedIdx}`,
-        label: `${dateLabel} — ingresos`,
-        value: valueStr,
+        label: `Tooltip gráfica — punto ${selectedIdx + 1}`,
+        value: fullText,
         type: 'text',
         table: 'ui_analytics',
         column: 'point_value',
@@ -331,6 +335,12 @@ export function DynamicLineChart({
   const selX = selectedIdx !== null ? (selectedIdx / (pts.length - 1)) * 100 : 0;
   const selY = selectedIdx !== null ? (pts[selectedIdx] / yMax) * (height - 6) : 0;
   const selValue = selectedIdx !== null ? pts[selectedIdx] : 0;
+
+  // Get tooltip override text (full content like "1 abr 2026: 0,50 €")
+  const tooltipOverride = selectedIdx !== null && tooltipId
+    ? getOverride('ui_analytics', 'point_value', `${tooltipId}_${selectedIdx}`)
+    : undefined;
+  const tooltipText = tooltipOverride || (selectedIdx !== null ? `${getDateLabel(selectedIdx)}: ${formatYLabel(selValue, currency)}` : '');
 
   return (
     <View>
@@ -403,7 +413,7 @@ export function DynamicLineChart({
                   cursor: 'pointer',
                 } as any}>
                 <Text style={{ fontSize: 12, fontWeight: '600', color: '#2c2c2c' }}>
-                  {getDateLabel(selectedIdx)}: {formatYLabel(selValue, currency)}
+                  {tooltipText}
                 </Text>
               </View>
             </>
