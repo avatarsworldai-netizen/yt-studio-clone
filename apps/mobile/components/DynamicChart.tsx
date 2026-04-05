@@ -454,6 +454,23 @@ export function DynamicBarChart({
     '0 €',
   ];
 
+  // Click on bars (web) — onTouchEnd doesn't work with mouse
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const handlers: Array<{ el: HTMLElement; fn: (e: MouseEvent) => void }> = [];
+    data.forEach((_, i) => {
+      const el = document.getElementById(`${barTooltipId}-bar-${i}`);
+      if (!el) return;
+      const fn = (e: MouseEvent) => {
+        e.stopPropagation();
+        onBarPress?.(i);
+      };
+      el.addEventListener('click', fn);
+      handlers.push({ el, fn });
+    });
+    return () => handlers.forEach(({ el, fn }) => el.removeEventListener('click', fn));
+  }, [data.length, barTooltipId]);
+
   // Click on bar tooltip → open editor
   useEffect(() => {
     if (Platform.OS !== 'web' || selectedBar === null || !tooltipId) return;
@@ -502,7 +519,8 @@ export function DynamicBarChart({
               return (
                 <View
                   key={i}
-                  style={{ alignItems: 'center', flex: 1 }}
+                  nativeID={`${barTooltipId}-bar-${i}`}
+                  style={{ alignItems: 'center', flex: 1, cursor: 'pointer' } as any}
                   onTouchEnd={() => onBarPress?.(i)}
                 >
                   <View style={{ width: '65%', height: Math.max(h, 2), backgroundColor: bar.color || (isLast ? activeColor : inactiveColor), borderRadius: 3 }} />
