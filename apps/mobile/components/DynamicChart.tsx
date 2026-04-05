@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, LayoutChangeEvent, Platform } from 'react-native';
 import Svg, { Polyline, Defs, LinearGradient, Stop, Path, Circle, Line } from 'react-native-svg';
 import { sendEditMessage } from '../hooks/useAdminMode';
+import { getOverride, useFieldOverrides } from '../hooks/useFieldOverrides';
 
 const SKY_BLUE = '#64b5f6';
 const GRID_COLOR = '#ececec';
@@ -221,9 +222,20 @@ export function DynamicLineChart({
   dateLabels,
   tooltipId,
 }: LineChartProps) {
+  useFieldOverrides(); // Subscribe to override changes
   const numericValue = parseValue(value);
   const currency = forceCurrency !== undefined ? forceCurrency : isCurrencyValue(value);
-  const pts = inputPoints || generatePoints(numericValue, numPoints, pattern);
+  const rawPts = inputPoints || generatePoints(numericValue, numPoints, pattern);
+
+  // Apply per-point overrides
+  const pts = tooltipId ? rawPts.map((v, i) => {
+    const override = getOverride('ui_analytics', 'point_value', `${tooltipId}_${i}`);
+    if (override) {
+      const parsed = parseValue(override);
+      return parsed > 0 ? parsed : v;
+    }
+    return v;
+  }) : rawPts;
 
   const maxVal = Math.max(...pts, 0.01);
   const minVal = Math.min(...pts, 0);
