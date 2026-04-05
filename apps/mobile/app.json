@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "YT Studio Clone",
+    "name": "YT Studio",
     "slug": "yt-studio-clone",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -27,7 +27,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png",
-      "bundler": "metro"
+      "bundler": "metro",
+      "name": "YT Studio",
+      "shortName": "YT Studio",
+      "themeColor": "#ffffff",
+      "backgroundColor": "#ffffff"
     },
     "plugins": [
       "expo-router",
