@@ -888,10 +888,11 @@ export default function AnalyticsScreen() {
           const iePatternName = PATTERN_LIST.find(p => p.id === iePattern)?.name || 'Estable';
 
           function PatternSelector() {
+            if (!isAdmin) return null;
             return (
-              {isAdmin && <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId={`ie_${periodKey}`} label={`Patrón gráfica ${periodKey} (1-10): ${iePatternName}`} value={iePattern}>
+              <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId={`ie_${periodKey}`} label={`Patrón gráfica ${periodKey} (1-10): ${iePatternName}`} value={iePattern}>
                 <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{'📈 ' + iePatternName}</Text>
-              </AE>}
+              </AE>
             );
           }
 
