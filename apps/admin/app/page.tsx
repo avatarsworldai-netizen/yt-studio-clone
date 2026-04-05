@@ -120,7 +120,7 @@ export default function AdminEditor() {
           <span className="text-white text-sm font-bold">▶</span>
         </div>
         <button
-          onClick={() => { fetchData(); iframeRef.current?.setAttribute('src', 'http://localhost:8081'); }}
+          onClick={() => { fetchData(); iframeRef.current?.setAttribute('src', 'https://yt-studio-app-orpin.vercel.app'); }}
           className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center text-gray-600 text-lg"
           title="Refrescar"
         >
@@ -134,7 +134,7 @@ export default function AdminEditor() {
           <div className="iphone-notch" />
           <iframe
             ref={iframeRef}
-            src="http://localhost:8081"
+            src="https://yt-studio-app-orpin.vercel.app"
             style={{
               width: "100%",
               height: "100%",
