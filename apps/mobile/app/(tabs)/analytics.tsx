@@ -831,7 +831,7 @@ export default function AnalyticsScreen() {
         {(() => {
           const periodKeys_sum = ['7d', '28d', '90d', '365d', 'mar', 'feb', 'ene', '2026', '2025', 'total'];
           const periodKey_sum = periodKeys_sum[iePeriod] || '28d';
-          const ieSumOverride = getOverride('dashboard_stats', 'estimated_revenue', `ie_${periodKey_sum}`);
+          const ieSumOverride = getOverride('revenue', 'ie_summary', `ie_sum_${periodKey_sum}`);
           const ieSumVal = ieSumOverride || (iePeriod < 4 ? '15,72' : iePeriod === 9 ? '2022,14' : '16,02');
 
           // Compute Y labels for editable rendering
