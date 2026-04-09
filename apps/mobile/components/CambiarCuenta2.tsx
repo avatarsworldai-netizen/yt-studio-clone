@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useAdminMode } from '../hooks/useAdminMode';
 import { AE } from './AdminEditable';
+import { useChannel } from '../contexts/ChannelContext';
 
 const IC = {
   close: require('../assets/figma/cc2_close.png'),
@@ -11,13 +12,13 @@ const IC = {
 };
 
 const CHANNELS = [
-  { name: 'Joel Pedroche', handle: '@joelpedroche6206', subs: '1 suscriptor', avatar: require('../assets/figma/cc2_avatar_joel.png'), selected: false, rowId: 'cc2_ch_0' },
-  { name: 'CEOCRYPTO | MEME COINS', handle: '@ceocryptomemecoins', subs: '67.400 suscriptores', avatar: require('../assets/figma/cc2_avatar_ceocrypto_meme.png'), selected: true, rowId: 'cc2_ch_1' },
-  { name: 'Wild Crypto', handle: '@WildCrypto', subs: '1210 suscriptores', avatar: require('../assets/figma/cc2_avatar_wild.png'), selected: false, rowId: 'cc2_ch_2' },
-  { name: 'PEAKY WORLD', handle: '@peakyworld', subs: '3220 suscriptores', avatar: require('../assets/figma/cc2_avatar_peaky.png'), selected: false, rowId: 'cc2_ch_3' },
-  { name: 'THENI - Axie Infinity en Español', handle: '@theni-axieinfinityenespano4320', subs: '20 suscriptores', avatar: require('../assets/figma/cc2_avatar_theni.png'), selected: false, rowId: 'cc2_ch_4' },
-  { name: 'Bitmoon by Blackmoon', handle: '@BitmoonbyBlackmoon-rj3hb', subs: 'Sin suscriptores', avatar: null, letterAvatar: 'B', rowId: 'cc2_ch_5' },
-  { name: 'CEOCRYPTO', handle: '@ceocryptoio', subs: '157.000 suscriptores', avatar: require('../assets/figma/cc2_avatar_ceocrypto.png'), selected: false, rowId: 'cc2_ch_6' },
+  { id: '00000000-0000-0000-0000-000000000002', name: 'Joel Pedroche', handle: '@joelpedroche6206', subs: '1 suscriptor', avatar: require('../assets/figma/cc2_avatar_joel.png'), rowId: 'cc2_ch_0' },
+  { id: '00000000-0000-0000-0000-000000000001', name: 'CEOCRYPTO | MEME COINS', handle: '@ceocryptomemecoins', subs: '67.400 suscriptores', avatar: require('../assets/figma/cc2_avatar_ceocrypto_meme.png'), rowId: 'cc2_ch_1' },
+  { id: '00000000-0000-0000-0000-000000000003', name: 'Wild Crypto', handle: '@WildCrypto', subs: '1210 suscriptores', avatar: require('../assets/figma/cc2_avatar_wild.png'), rowId: 'cc2_ch_2' },
+  { id: '00000000-0000-0000-0000-000000000004', name: 'PEAKY WORLD', handle: '@peakyworld', subs: '3220 suscriptores', avatar: require('../assets/figma/cc2_avatar_peaky.png'), rowId: 'cc2_ch_3' },
+  { id: '00000000-0000-0000-0000-000000000005', name: 'THENI - Axie Infinity en Español', handle: '@theni-axieinfinityenespano4320', subs: '20 suscriptores', avatar: require('../assets/figma/cc2_avatar_theni.png'), rowId: 'cc2_ch_4' },
+  { id: '00000000-0000-0000-0000-000000000006', name: 'Bitmoon by Blackmoon', handle: '@BitmoonbyBlackmoon-rj3hb', subs: 'Sin suscriptores', avatar: null as any, letterAvatar: 'B', rowId: 'cc2_ch_5' },
+  { id: '00000000-0000-0000-0000-000000000007', name: 'CEOCRYPTO', handle: '@ceocryptoio', subs: '157.000 suscriptores', avatar: require('../assets/figma/cc2_avatar_ceocrypto.png'), rowId: 'cc2_ch_6' },
 ];
 
 type Props = {
@@ -26,6 +27,12 @@ type Props = {
 
 export default function CambiarCuenta2({ onClose }: Props) {
   const isAdmin = useAdminMode();
+  const { activeChannelId, setActiveChannelId } = useChannel();
+
+  const handleSelectChannel = (channelId: string) => {
+    setActiveChannelId(channelId);
+    onClose();
+  };
 
   return (
     <View style={s.container}>
@@ -54,7 +61,7 @@ export default function CambiarCuenta2({ onClose }: Props) {
 
         {/* Channel list */}
         {CHANNELS.map((ch, i) => (
-          <TouchableOpacity key={i} style={s.channelRow}>
+          <TouchableOpacity key={i} style={s.channelRow} onPress={() => handleSelectChannel(ch.id)}>
             {ch.avatar ? (
               <AE isAdmin={isAdmin} table="ui_account" column="avatar" rowId={ch.rowId} label={`Avatar ${ch.name}`} value="" type="image">
                 <Image source={ch.avatar} style={s.channelAvatar} resizeMode="cover" />
@@ -75,7 +82,7 @@ export default function CambiarCuenta2({ onClose }: Props) {
                 <Text style={s.channelMeta}>{ch.subs}</Text>
               </AE>
             </View>
-            {ch.selected && (
+            {ch.id === activeChannelId && (
               <Image source={IC.checkmark} style={s.checkmark} resizeMode="contain" />
             )}
           </TouchableOpacity>

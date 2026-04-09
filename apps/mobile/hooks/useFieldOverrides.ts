@@ -6,6 +6,17 @@ const overrides: Record<string, string> = {};
 const listeners: Set<() => void> = new Set();
 let loaded = false;
 
+// Active channel ID — updated by ChannelContext
+let _activeChannelId = '00000000-0000-0000-0000-000000000001';
+
+export function setActiveChannelForOverrides(channelId: string) {
+  _activeChannelId = channelId;
+}
+
+export function getActiveChannelForOverrides() {
+  return _activeChannelId;
+}
+
 function notify() {
   listeners.forEach(fn => fn());
 }
@@ -38,6 +49,10 @@ if (Platform.OS === 'web') {
   try {
     window.addEventListener('message', (e) => {
       if (e.data?.type === 'UPDATE_FIELD' && e.data.id) {
+        // Store with channel prefix
+        const channelKey = `${_activeChannelId}_${e.data.id}`;
+        overrides[channelKey] = String(e.data.value);
+        // Also store without prefix for backward compat
         overrides[e.data.id] = String(e.data.value);
         try { localStorage.setItem('yt_overrides', JSON.stringify(overrides)); } catch {}
         notify();
@@ -64,6 +79,10 @@ export function useFieldOverrides() {
 }
 
 export function getOverride(table: string, column: string, rowId: string): string | undefined {
+  // First try channel-specific key
+  const channelKey = `${_activeChannelId}_${table}_${column}_${rowId}`;
+  if (overrides[channelKey] !== undefined) return overrides[channelKey];
+  // Fallback to global key (backward compat)
   const id = `${table}_${column}_${rowId}`;
   return overrides[id];
 }

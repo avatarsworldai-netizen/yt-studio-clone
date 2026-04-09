@@ -5,13 +5,13 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import { useRealtimeSubscription } from '../hooks/useRealtimeSubscription';
 import { C, F } from '../constants/theme';
-
-const CID = '00000000-0000-0000-0000-000000000001';
+import { useChannel } from '../contexts/ChannelContext';
 function n(v: number) { if (v >= 1e6) return `${(v / 1e6).toFixed(1)} M`; if (v >= 1e3) return `${(v / 1e3).toFixed(1)} K`; return v.toLocaleString('es-ES'); }
 
 export default function ProfileScreen() {
+  const { activeChannelId: CID } = useChannel();
   useRealtimeSubscription('channel', ['cp2']);
-  const { data: ch } = useQuery({ queryKey: ['cp2'], queryFn: async () => { const { data } = await supabase.from('channel').select('*').eq('id', CID).single(); return data } });
+  const { data: ch } = useQuery({ queryKey: ['cp2', CID], queryFn: async () => { const { data } = await supabase.from('channel').select('*').eq('id', CID).single(); return data } });
   if (!ch) return <View style={[s.root, { justifyContent: 'center', alignItems: 'center' }]}><Text style={{ color: C.textTer }}>Cargando...</Text></View>;
 
   return (

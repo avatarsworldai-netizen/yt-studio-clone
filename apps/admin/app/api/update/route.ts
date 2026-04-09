@@ -7,7 +7,7 @@ const supabase = createClient(
 );
 
 export async function POST(req: NextRequest) {
-  const { table, column, value, rowId } = await req.json();
+  const { table, column, value, rowId, channelId } = await req.json();
 
   if (!table || !column || !rowId) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
@@ -35,7 +35,11 @@ export async function POST(req: NextRequest) {
   // If original table update failed (table doesn't exist, column doesn't exist, row not found),
   // save to field_overrides as fallback for hardcoded values
   if (error) {
-    const overrideId = `${table}_${column}_${rowId}`;
+    // Use channel-specific key if channelId is provided
+    const overrideId = channelId
+      ? `${channelId}_${table}_${column}_${rowId}`
+      : `${table}_${column}_${rowId}`;
+
     const { error: overrideError } = await supabase
       .from("field_overrides")
       .upsert({

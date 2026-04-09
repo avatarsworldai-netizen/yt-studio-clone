@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
+import { getActiveChannelForOverrides } from './useFieldOverrides';
 
 let _isAdmin = false;
 
@@ -40,7 +41,8 @@ export function sendEditMessage(field: {
 }) {
   if (Platform.OS === 'web') {
     try {
-      window.parent.postMessage({ type: 'EDIT_FIELD', field }, '*');
+      const channelId = getActiveChannelForOverrides();
+      window.parent.postMessage({ type: 'EDIT_FIELD', field: { ...field, channelId } }, '*');
     } catch (e) {}
   }
 }

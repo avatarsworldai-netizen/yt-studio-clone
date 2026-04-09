@@ -7,6 +7,7 @@ import { useAdminMode } from '../../hooks/useAdminMode';
 import { AE } from '../../components/AdminEditable';
 import CambiarCuenta from '../../components/CambiarCuenta';
 import CambiarCuenta2 from '../../components/CambiarCuenta2';
+import { useChannel } from '../../contexts/ChannelContext';
 
 const AccountScreenContext = createContext<{ open: () => void }>({ open: () => {} });
 
@@ -45,11 +46,12 @@ function Logo() {
 function RightIcons() {
   const isAdmin = useAdminMode();
   const { open: openAccountScreen } = useContext(AccountScreenContext);
+  const { activeChannelId } = useChannel();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   useEffect(() => {
-    supabase.from('channel').select('avatar_url').eq('id', '00000000-0000-0000-0000-000000000001').single()
+    supabase.from('channel').select('avatar_url').eq('id', activeChannelId).single()
       .then(({ data }) => { if (data?.avatar_url) setAvatarUrl(data.avatar_url); });
-  }, []);
+  }, [activeChannelId]);
 
   return (
     <View style={st.right}>
@@ -108,7 +110,7 @@ export default function TabLayout() {
     <AccountScreenContext.Provider value={{ open: () => setShowAccount(true) }}>
     {showAccount2 && (
       <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1001, backgroundColor: '#fff' }}>
-        <CambiarCuenta2 onClose={() => setShowAccount2(false)} />
+        <CambiarCuenta2 onClose={() => { setShowAccount2(false); setShowAccount(false); }} />
       </View>
     )}
     {showAccount && (

@@ -3,8 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'rea
 import { supabase } from '../lib/supabase';
 import { useAdminMode } from '../hooks/useAdminMode';
 import { AE } from './AdminEditable';
-
-const CID = '00000000-0000-0000-0000-000000000001';
+import { useChannel } from '../contexts/ChannelContext';
 
 const IC = {
   backArrow: require('../assets/figma/cc_back_arrow.png'),
@@ -33,17 +32,19 @@ type Props = {
 
 export default function CambiarCuenta({ onClose, onOpenCambiarCuenta2 }: Props) {
   const isAdmin = useAdminMode();
+  const { activeChannelId: CID } = useChannel();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [channelName, setChannelName] = useState('CEOCRYPTO IMEME COINS');
-  const [handle, setHandle] = useState('@ceocryptomemecoins');
+  const [channelName, setChannelName] = useState('');
+  const [handle, setHandle] = useState('');
 
   useEffect(() => {
-    supabase.from('channel').select('avatar_url, name').eq('id', CID).single()
+    supabase.from('channel').select('avatar_url, name, handle').eq('id', CID).single()
       .then(({ data }) => {
         if (data?.avatar_url) setAvatarUrl(data.avatar_url);
         if (data?.name) setChannelName(data.name);
+        if (data?.handle) setHandle(data.handle);
       });
-  }, []);
+  }, [CID]);
 
   return (
     <View style={s.container}>

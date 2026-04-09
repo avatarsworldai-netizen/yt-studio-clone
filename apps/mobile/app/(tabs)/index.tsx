@@ -7,8 +7,7 @@ import { useRealtimeSubscription } from '../../hooks/useRealtimeSubscription';
 import { useAdminMode } from '../../hooks/useAdminMode';
 import { AE } from '../../components/AdminEditable';
 import { C, F } from '../../constants/theme';
-
-const CID = '00000000-0000-0000-0000-000000000001';
+import { useChannel } from '../../contexts/ChannelContext';
 
 // Figma icon assets
 const IC = {
@@ -44,6 +43,7 @@ export default function Dashboard() {
   const r = useRouter();
   const qc = useQueryClient();
   const isAdmin = useAdminMode();
+  const { activeChannelId: CID } = useChannel();
   const [exp, setExp] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -57,9 +57,9 @@ export default function Dashboard() {
   useRealtimeSubscription('channel', ['ch']);
   useRealtimeSubscription('videos', ['lv']);
 
-  const { data: ch } = useQuery({ queryKey: ['ch'], queryFn: async () => { const { data } = await supabase.from('channel').select('*').eq('id', CID).single(); return data } });
-  const { data: st } = useQuery({ queryKey: ['ds'], queryFn: async () => { const { data } = await supabase.from('dashboard_stats').select('*').eq('channel_id', CID).eq('period', 'last_28_days').single(); return data } });
-  const { data: vids } = useQuery({ queryKey: ['lv'], queryFn: async () => { const { data } = await supabase.from('videos').select('*').eq('channel_id', CID).eq('status', 'published').eq('visibility', 'public').order('published_at', { ascending: false }).limit(3); return data ?? [] } });
+  const { data: ch } = useQuery({ queryKey: ['ch', CID], queryFn: async () => { const { data } = await supabase.from('channel').select('*').eq('id', CID).single(); return data } });
+  const { data: st } = useQuery({ queryKey: ['ds', CID], queryFn: async () => { const { data } = await supabase.from('dashboard_stats').select('*').eq('channel_id', CID).eq('period', 'last_28_days').single(); return data } });
+  const { data: vids } = useQuery({ queryKey: ['lv', CID], queryFn: async () => { const { data } = await supabase.from('videos').select('*').eq('channel_id', CID).eq('status', 'published').eq('visibility', 'public').order('published_at', { ascending: false }).limit(3); return data ?? [] } });
 
   return (
     <ScrollView style={s.root} showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#1db4a5" />}>
