@@ -767,7 +767,7 @@ export default function AnalyticsScreen() {
     const currentBarPatternId = getOverride('ui_analytics', 'bar_pattern', `ie_${periodKey}`) || '4';
     const currentBarPatternName = BAR_PATTERN_LIST.find(p => p.id === currentBarPatternId)?.name || 'Pico diciembre';
 
-    const barTotalOverride = getOverride('revenue', 'ie_summary', 'ie_sum');
+    const barTotalOverride = getOverride('revenue', 'ie_summary', `ie_sum_${periodKey}`);
     const barTotal = parseValue(barTotalOverride || '145.93');
     const barData = generateBarData(barTotal, BAR_LABELS, currentBarPatternId);
 
@@ -829,7 +829,9 @@ export default function AnalyticsScreen() {
 
         {/* Chart - line chart for 7D/28D/90D/365D, bar chart for months/years/total */}
         {(() => {
-          const ieSumOverride = getOverride('dashboard_stats', 'estimated_revenue', st?.id || '');
+          const periodKeys_sum = ['7d', '28d', '90d', '365d', 'mar', 'feb', 'ene', '2026', '2025', 'total'];
+          const periodKey_sum = periodKeys_sum[iePeriod] || '28d';
+          const ieSumOverride = getOverride('dashboard_stats', 'estimated_revenue', `ie_${periodKey_sum}`);
           const ieSumVal = ieSumOverride || (iePeriod < 4 ? '15,72' : iePeriod === 9 ? '2022,14' : '16,02');
 
           // Compute Y labels for editable rendering
@@ -951,10 +953,12 @@ export default function AnalyticsScreen() {
             <Text style={s.ieSumLabel}>Ingresos estimados</Text>
           </AE>
           {(() => {
-            const sumOverride = getOverride('revenue', 'ie_summary', 'ie_sum');
+            const sumPeriodKeys = ['7d', '28d', '90d', '365d', 'mar', 'feb', 'ene', '2026', '2025', 'total'];
+            const sumPeriodKey = sumPeriodKeys[iePeriod] || '28d';
+            const sumOverride = getOverride('revenue', 'ie_summary', `ie_sum_${sumPeriodKey}`);
             const sumVal = sumOverride || (iePeriod < 4 ? '15,72' : iePeriod === 9 ? '2022,14' : '16,02');
             return (
-              <AE isAdmin={isAdmin} table="revenue" column="ie_summary" rowId="ie_sum" label="Ingresos estimados resumen" value={sumVal}>
+              <AE isAdmin={isAdmin} table="revenue" column="ie_summary" rowId={`ie_sum_${sumPeriodKey}`} label={`Ingresos estimados resumen (${sumPeriodKey})`} value={sumVal}>
                 <Text style={s.ieSumValue}>{sumVal} €</Text>
               </AE>
             );
