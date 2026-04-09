@@ -11,8 +11,7 @@ import { C, F } from '../../constants/theme';
 import Svg, { Polyline } from 'react-native-svg';
 import { DynamicLineChart, DynamicBarChart, parseValue, niceStep, formatYLabel, PATTERN_LIST, BAR_PATTERN_LIST, generateBarData } from '../../components/DynamicChart';
 import { getOverride, useFieldOverrides } from '../../hooks/useFieldOverrides';
-
-const CID = '00000000-0000-0000-0000-000000000001';
+import { useChannel } from '../../contexts/ChannelContext';
 
 function fmt(v: any) {
   return String(v ?? '');
@@ -104,6 +103,7 @@ export default function AnalyticsScreen() {
   const navigation = useNavigation();
   const qc = useQueryClient();
   const isAdmin = useAdminMode();
+  const { activeChannelId: CID } = useChannel();
   useFieldOverrides(); // Subscribe to override changes for instant chart updates
   const screenW = Dimensions.get('window').width;
   const [activeTab, setActiveTab] = useState(0);
@@ -120,9 +120,9 @@ export default function AnalyticsScreen() {
   useRealtimeSubscription('analytics_timeseries', ['ts3']);
   useRealtimeSubscription('revenue', ['rv3']);
 
-  const { data: st } = useQuery({ queryKey: ['as3'], queryFn: async () => { const { data } = await supabase.from('dashboard_stats').select('*').eq('channel_id', CID).eq('period', 'last_28_days').single(); return data } });
-  const { data: ts } = useQuery({ queryKey: ['ts3'], queryFn: async () => { const { data } = await supabase.from('analytics_timeseries').select('*').eq('channel_id', CID).eq('metric_type', 'revenue').order('date', { ascending: true }).limit(30); return data ?? [] } });
-  const { data: rev } = useQuery({ queryKey: ['rv3'], queryFn: async () => { const { data } = await supabase.from('revenue').select('*').eq('channel_id', CID).order('month', { ascending: false }).limit(6); return data ?? [] } });
+  const { data: st } = useQuery({ queryKey: ['as3', CID], queryFn: async () => { const { data } = await supabase.from('dashboard_stats').select('*').eq('channel_id', CID).eq('period', 'last_28_days').single(); return data } });
+  const { data: ts } = useQuery({ queryKey: ['ts3', CID], queryFn: async () => { const { data } = await supabase.from('analytics_timeseries').select('*').eq('channel_id', CID).eq('metric_type', 'revenue').order('date', { ascending: true }).limit(30); return data ?? [] } });
+  const { data: rev } = useQuery({ queryKey: ['rv3', CID], queryFn: async () => { const { data } = await supabase.from('revenue').select('*').eq('channel_id', CID).order('month', { ascending: false }).limit(6); return data ?? [] } });
 
   const chartW = 338;
   const chartH = 100;
