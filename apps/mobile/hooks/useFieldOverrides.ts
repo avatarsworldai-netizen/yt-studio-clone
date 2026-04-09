@@ -11,6 +11,8 @@ let _activeChannelId = '00000000-0000-0000-0000-000000000001';
 
 export function setActiveChannelForOverrides(channelId: string) {
   _activeChannelId = channelId;
+  // Notify all components to re-render with new channel's overrides
+  notify();
 }
 
 export function getActiveChannelForOverrides() {
@@ -21,10 +23,8 @@ function notify() {
   listeners.forEach(fn => fn());
 }
 
-// Fetch overrides from Supabase on startup
+// Fetch ALL overrides from Supabase
 async function loadFromSupabase() {
-  if (loaded) return;
-  loaded = true;
   try {
     const url = process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://dyzwlxhghmkrnuvesxqf.supabase.co';
     const key = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5endseGhnaG1rcm51dmVzeHFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1Njk3MjQsImV4cCI6MjA5MDE0NTcyNH0.b3TWo5ZUd-qB1PHIc6ct2IlL14nT2nTVNh7l6qAU8ew';
@@ -44,6 +44,11 @@ async function loadFromSupabase() {
 // Load overrides on module init
 loadFromSupabase();
 
+// Reload overrides from Supabase (called when switching channels or after save)
+export function reloadOverrides() {
+  loadFromSupabase();
+}
+
 // Listen for postMessage from admin panel (iframe mode)
 if (Platform.OS === 'web') {
   try {
@@ -55,15 +60,9 @@ if (Platform.OS === 'web') {
         overrides[channelKey] = String(e.data.value);
         // Also store without prefix for backward compat
         overrides[e.data.id] = String(e.data.value);
-        try { localStorage.setItem('yt_overrides', JSON.stringify(overrides)); } catch {}
         notify();
       }
     });
-    // Load saved overrides from localStorage
-    try {
-      const saved = localStorage.getItem('yt_overrides');
-      if (saved) Object.assign(overrides, JSON.parse(saved));
-    } catch {}
   } catch {}
 }
 

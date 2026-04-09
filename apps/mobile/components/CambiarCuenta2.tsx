@@ -4,6 +4,7 @@ import { useAdminMode } from '../hooks/useAdminMode';
 import { AE } from './AdminEditable';
 import { useChannel } from '../contexts/ChannelContext';
 import { supabase } from '../lib/supabase';
+import { useRouter } from 'expo-router';
 
 const IC = {
   close: require('../assets/figma/cc2_close.png'),
@@ -47,6 +48,7 @@ type Props = {
 export default function CambiarCuenta2({ onClose }: Props) {
   const isAdmin = useAdminMode();
   const { activeChannelId, setActiveChannelId } = useChannel();
+  const router = useRouter();
   const [channels, setChannels] = useState<any[]>([]);
 
   useEffect(() => {
@@ -62,6 +64,7 @@ export default function CambiarCuenta2({ onClose }: Props) {
 
   const handleSelectChannel = (channelId: string) => {
     setActiveChannelId(channelId);
+    router.replace('/(tabs)');
     onClose();
   };
 

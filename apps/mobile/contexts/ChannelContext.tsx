@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { setActiveChannelForOverrides } from '../hooks/useFieldOverrides';
+import { setActiveChannelForOverrides, reloadOverrides } from '../hooks/useFieldOverrides';
 
 export type ChannelInfo = {
   id: string;
@@ -26,6 +26,7 @@ export function ChannelProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setActiveChannelForOverrides(activeChannelId);
+    reloadOverrides();
   }, [activeChannelId]);
 
   return (
