@@ -66,7 +66,7 @@ export default function CambiarCuenta({ onClose, onOpenCambiarCuenta2 }: Props) 
               <AE isAdmin={isAdmin} table="channel" column="name" rowId={CID} label="Nombre del canal" value={channelName}>
                 <Text style={s.channelName}>{channelName}</Text>
               </AE>
-              <AE isAdmin={isAdmin} table="ui_account" column="handle" rowId="cc_handle" label="Handle del canal" value={handle}>
+              <AE isAdmin={isAdmin} table="channel" column="handle" rowId={CID} label="Handle del canal" value={handle}>
                 <Text style={s.handle}>{handle}</Text>
               </AE>
             </View>
