@@ -809,6 +809,7 @@ export default function AnalyticsScreen() {
               data={barDataFinal}
               height={170}
               hideYLabels
+              hideXLabels
               onBarPress={(i) => {
                 if (selectedBar === i) setSelectedBar(null);
                 else { setSelectedBar(null); setTimeout(() => setSelectedBar(i), 10); }
@@ -816,6 +817,14 @@ export default function AnalyticsScreen() {
               selectedBar={selectedBar}
               tooltipId={`bar_${periodKey}`}
             />
+            {/* Editable X-axis labels */}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 4 }}>
+              {barDataFinal.map((bar, i) => (
+                <AE key={i} isAdmin={isAdmin} table="ui_analytics" column="x_label" rowId={`ie_bar_${periodKey}_x${i}`} label={`Mes barra ${i+1} (${periodKey}): ${bar.label}`} value={bar.label}>
+                  <Text style={{ fontSize: 10, fontWeight: '500', color: '#7a7a7a' }}>{bar.label}</Text>
+                </AE>
+              ))}
+            </View>
           </View>
         </View>
       </View>
@@ -828,9 +837,7 @@ export default function AnalyticsScreen() {
         {/* Custom header that covers the tab header */}
         <View style={s.ieHeaderOverlay}>
           <TouchableOpacity onPress={() => setShowIngresosDetail(false)} hitSlop={12}>
-            <AE isAdmin={isAdmin} table="ui_analytics" column="icon" rowId="ie_back_arrow" label="Flecha volver" value="" type="image">
-              <Image source={require('../../assets/figma/ie_back_arrow.png')} style={s.ieBackArrow} resizeMode="contain" />
-            </AE>
+            <Image source={require('../../assets/figma/ie_back_arrow.png')} style={s.ieBackArrow} resizeMode="contain" />
           </TouchableOpacity>
           <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="ie_header" label="Título detalle ingresos" value="Ingresos estimados">
             <Text style={s.ieHeaderTitle}>Ingresos estimados</Text>

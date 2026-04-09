@@ -574,6 +574,7 @@ type BarChartProps = {
   inactiveColor?: string;
   yLabels?: string[];
   hideYLabels?: boolean;
+  hideXLabels?: boolean;
   onBarPress?: (index: number) => void;
   selectedBar?: number | null;
   /** ID prefix for editable bar tooltips */
@@ -587,6 +588,7 @@ export function DynamicBarChart({
   inactiveColor = '#a8e6cf',
   yLabels: inputYLabels,
   hideYLabels,
+  hideXLabels,
   onBarPress,
   selectedBar,
   tooltipId,
@@ -700,11 +702,13 @@ export function DynamicBarChart({
         </View>
       </View>
       {/* X-axis labels */}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-around', paddingLeft: 45, marginTop: 4 }}>
-        {data.map((bar, i) => (
-          <Text key={i} style={cs.axisText}>{bar.label}</Text>
-        ))}
-      </View>
+      {!hideXLabels && (
+        <View style={{ flexDirection: 'row', justifyContent: 'space-around', paddingLeft: hideYLabels ? 0 : 54, marginTop: 4 }}>
+          {data.map((bar, i) => (
+            <Text key={i} style={cs.axisText}>{bar.label}</Text>
+          ))}
+        </View>
+      )}
     </View>
   );
 }
