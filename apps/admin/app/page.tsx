@@ -9,6 +9,10 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
+const iframeSrc = process.env.NODE_ENV === 'development'
+  ? 'http://localhost:8081'
+  : 'https://yt-studio-app-orpin.vercel.app';
+
 export type EditableField = {
   id: string;
   label: string;
@@ -120,7 +124,7 @@ export default function AdminEditor() {
           <span className="text-white text-sm font-bold">▶</span>
         </div>
         <button
-          onClick={() => { fetchData(); iframeRef.current?.setAttribute('src', 'https://yt-studio-app-orpin.vercel.app'); }}
+          onClick={() => { fetchData(); iframeRef.current?.setAttribute('src', iframeSrc); }}
           className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center text-gray-600 text-lg"
           title="Refrescar"
         >
@@ -134,7 +138,7 @@ export default function AdminEditor() {
           <div className="iphone-notch" />
           <iframe
             ref={iframeRef}
-            src="https://yt-studio-app-orpin.vercel.app"
+            src={iframeSrc}
             style={{
               width: "100%",
               height: "100%",

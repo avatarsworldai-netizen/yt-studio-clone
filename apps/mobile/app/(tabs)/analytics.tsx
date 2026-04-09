@@ -991,22 +991,26 @@ export default function AnalyticsScreen() {
           </AE>
         </View>
 
-        {IE_VIDEOS.map((vid, i) => (
-          <View key={i}>
-            <View style={s.ieVideoRow}>
-              <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId={`ievid_${i}`} label={`Thumbnail ingresos ${i+1}`} value="" type="image">
-                <Image source={vid.thumb} style={s.ieVideoThumb} resizeMode="cover" />
-              </AE>
-              <AE isAdmin={isAdmin} table="videos" column="title" rowId={`ievid_${i}`} label={`Título video ingresos ${i+1}`} value={vid.title}>
-                <Text style={s.ieVideoTitle} numberOfLines={1}>{vid.title}</Text>
-              </AE>
-              <AE isAdmin={isAdmin} table="videos" column="estimated_revenue" rowId={`ievid_${i}`} label={`Ingresos video ${i+1}`} value={vid.amount}>
-                <Text style={s.ieVideoAmt}>{vid.amount}</Text>
-              </AE>
+        {(() => {
+          const vidPeriodKeys = ['7d', '28d', '90d', '365d', 'mar', 'feb', 'ene', '2026', '2025', 'total'];
+          const vidPK = vidPeriodKeys[iePeriod] || '28d';
+          return IE_VIDEOS.map((vid, i) => (
+            <View key={i}>
+              <View style={s.ieVideoRow}>
+                <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId={`ievid_${vidPK}_${i}`} label={`Thumbnail ingresos ${i+1} (${vidPK})`} value="" type="image">
+                  <Image source={vid.thumb} style={s.ieVideoThumb} resizeMode="cover" />
+                </AE>
+                <AE isAdmin={isAdmin} table="videos" column="title" rowId={`ievid_${vidPK}_${i}`} label={`Título video ingresos ${i+1} (${vidPK})`} value={vid.title}>
+                  <Text style={s.ieVideoTitle} numberOfLines={1}>{vid.title}</Text>
+                </AE>
+                <AE isAdmin={isAdmin} table="videos" column="estimated_revenue" rowId={`ievid_${vidPK}_${i}`} label={`Ingresos video ${i+1} (${vidPK})`} value={vid.amount}>
+                  <Text style={s.ieVideoAmt}>{vid.amount}</Text>
+                </AE>
+              </View>
+              {i < IE_VIDEOS.length - 1 && <View style={s.ieVideoDivider} />}
             </View>
-            {i < IE_VIDEOS.length - 1 && <View style={s.ieVideoDivider} />}
-          </View>
-        ))}
+          ));
+        })()}
 
         <View style={{ height: 40 }} />
       </ScrollView>
