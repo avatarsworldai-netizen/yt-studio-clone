@@ -1,10 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, createContext, useContext } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Animated, Pressable } from 'react-native';
 import { Tabs } from 'expo-router';
 import { C, F } from '../../constants/theme';
 import { supabase } from '../../lib/supabase';
 import { useAdminMode } from '../../hooks/useAdminMode';
 import { AE } from '../../components/AdminEditable';
+import CambiarCuenta from '../../components/CambiarCuenta';
+import CambiarCuenta2 from '../../components/CambiarCuenta2';
+
+const AccountScreenContext = createContext<{ open: () => void }>({ open: () => {} });
 
 // Figma icon assets
 const ICONS = {
@@ -40,6 +44,7 @@ function Logo() {
 
 function RightIcons() {
   const isAdmin = useAdminMode();
+  const { open: openAccountScreen } = useContext(AccountScreenContext);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   useEffect(() => {
     supabase.from('channel').select('avatar_url').eq('id', '00000000-0000-0000-0000-000000000001').single()
@@ -58,10 +63,8 @@ function RightIcons() {
           <Image source={ICONS.bell} style={st.headerIcon} resizeMode="contain" />
         </AE>
       </TouchableOpacity>
-      <TouchableOpacity>
-        <AE isAdmin={isAdmin} table="channel" column="avatar_url" rowId="00000000-0000-0000-0000-000000000001" label="Avatar del canal" value={avatarUrl || ''} type="image">
-          <Image source={{ uri: avatarUrl || 'https://picsum.photos/seed/avatar/200/200' }} style={st.avatar} />
-        </AE>
+      <TouchableOpacity onPress={openAccountScreen}>
+        <Image source={{ uri: avatarUrl || 'https://picsum.photos/seed/avatar/200/200' }} style={st.avatar} />
       </TouchableOpacity>
     </View>
   );
@@ -98,11 +101,25 @@ function RippleTabButton({ children, onPress, ...rest }: any) {
 }
 
 export default function TabLayout() {
+  const [showAccount, setShowAccount] = useState(false);
+  const [showAccount2, setShowAccount2] = useState(false);
+
   return (
-    <Tabs screenOptions={{
+    <AccountScreenContext.Provider value={{ open: () => setShowAccount(true) }}>
+    {showAccount2 && (
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1001, backgroundColor: '#fff' }}>
+        <CambiarCuenta2 onClose={() => setShowAccount2(false)} />
+      </View>
+    )}
+    {showAccount && (
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 95, zIndex: 1000, backgroundColor: '#fff' }}>
+        <CambiarCuenta onClose={() => setShowAccount(false)} onOpenCambiarCuenta2={() => setShowAccount2(true)} />
+      </View>
+    )}
+    <Tabs screenListeners={{ tabPress: () => { setShowAccount(false); setShowAccount2(false); } }} screenOptions={{
       headerStyle: { backgroundColor: C.white, elevation: 0, shadowOpacity: 0, borderBottomWidth: 0 },
       headerShadowVisible: false,
-      tabBarStyle: { backgroundColor: C.white, borderTopColor: C.divider, borderTopWidth: 0.5, height: 95, paddingBottom: 34, paddingTop: 8, overflow: 'hidden' },
+      tabBarStyle: { backgroundColor: C.white, borderTopColor: '#c8c8c8', borderTopWidth: 0.8, height: 95, paddingBottom: 34, paddingTop: -3, overflow: 'hidden' },
       tabBarActiveTintColor: C.tabText,
       tabBarInactiveTintColor: C.tabText,
       tabBarLabelStyle: { fontSize: F.s10, fontWeight: '400', marginTop: 4 },
@@ -154,6 +171,7 @@ export default function TabLayout() {
           : <TabIcon source={ICONS.ingresos} color={color} />,
       }} />
     </Tabs>
+    </AccountScreenContext.Provider>
   );
 }
 
