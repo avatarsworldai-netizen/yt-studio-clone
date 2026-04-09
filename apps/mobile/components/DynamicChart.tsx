@@ -23,7 +23,7 @@ type LineChartProps = {
   hideYLabels?: boolean;
   /** If true, hide built-in X labels (caller renders them externally) */
   hideXLabels?: boolean;
-  /** Pattern ID (1-10) for chart shape */
+  /** Pattern ID (1-40) for chart shape */
   pattern?: string;
   /** Enable tap-to-show-tooltip on data points */
   interactive?: boolean;
@@ -143,6 +143,84 @@ export const CHART_PATTERNS: Record<string, { name: string; fn: (t: number, i: n
     const cycle = (t * 5) % 1;
     return 0.1 + cycle * 0.5;
   }, 10) },
+  '11': { name: 'Meseta alta', fn: makePattern((t) => t < 0.2 ? t * 4 : t > 0.8 ? 0.8 - (t - 0.8) * 4 : 0.8, 11) },
+  '12': { name: 'Meseta baja', fn: makePattern((t) => t < 0.2 ? 0.5 - t * 2 : t > 0.8 ? 0.1 + (t - 0.8) * 2 : 0.1, 12) },
+  '13': { name: 'Subida escalonada', fn: makePattern((t) => {
+    if (t < 0.33) return 0.15;
+    if (t < 0.66) return 0.45;
+    return 0.75;
+  }, 13) },
+  '14': { name: 'Bajada escalonada', fn: makePattern((t) => {
+    if (t < 0.33) return 0.75;
+    if (t < 0.66) return 0.45;
+    return 0.15;
+  }, 14) },
+  '15': { name: 'Onda suave', fn: makePattern((t) => 0.4 + 0.35 * Math.sin(t * Math.PI * 2), 15) },
+  '16': { name: 'Doble onda', fn: makePattern((t) => 0.4 + 0.3 * Math.sin(t * Math.PI * 4), 16) },
+  '17': { name: 'Triple pico', fn: makePattern((t) => {
+    const d1 = Math.abs(t - 0.2), d2 = Math.abs(t - 0.5), d3 = Math.abs(t - 0.8);
+    const p1 = d1 < 0.07 ? 0.8 - d1 * 8 : 0;
+    const p2 = d2 < 0.07 ? 0.9 - d2 * 9 : 0;
+    const p3 = d3 < 0.07 ? 0.7 - d3 * 7 : 0;
+    return 0.06 + Math.max(p1, p2, p3);
+  }, 17) },
+  '18': { name: 'Rampa con caída', fn: makePattern((t) => t < 0.7 ? t * 1.2 : 0.84 - (t - 0.7) * 2.5, 18) },
+  '19': { name: 'Caída con rebote', fn: makePattern((t) => t < 0.4 ? 0.8 - t * 1.8 : 0.08 + (t - 0.4) * 1.2, 19) },
+  '20': { name: 'Estable alto', fn: makePattern((t) => 0.75, 20) },
+  '21': { name: 'Estable medio', fn: makePattern((t) => 0.45, 21) },
+  '22': { name: 'Pico doble asimétrico', fn: makePattern((t) => {
+    const d1 = Math.abs(t - 0.25), d2 = Math.abs(t - 0.7);
+    const p1 = d1 < 0.1 ? 0.95 - d1 * 7 : 0;
+    const p2 = d2 < 0.06 ? 0.5 - d2 * 5 : 0;
+    return 0.05 + Math.max(p1, p2);
+  }, 22) },
+  '23': { name: 'Logarítmico', fn: makePattern((t) => 0.1 + 0.7 * Math.log10(1 + t * 9), 23) },
+  '24': { name: 'Exponencial suave', fn: makePattern((t) => 0.05 + 0.7 * (t ** 2), 24) },
+  '25': { name: 'Curva S', fn: makePattern((t) => 0.05 + 0.85 / (1 + Math.exp(-12 * (t - 0.5))), 25) },
+  '26': { name: 'Campana gaussiana', fn: makePattern((t) => 0.05 + 0.9 * Math.exp(-((t - 0.5) ** 2) / 0.03), 26) },
+  '27': { name: 'Campana ancha', fn: makePattern((t) => 0.05 + 0.8 * Math.exp(-((t - 0.5) ** 2) / 0.08), 27) },
+  '28': { name: 'W doble valle', fn: makePattern((t) => {
+    const d1 = Math.abs(t - 0.3), d2 = Math.abs(t - 0.7);
+    return 0.7 - Math.max(0, 0.6 - d1 * 5) - Math.max(0, 0.6 - d2 * 5);
+  }, 28) },
+  '29': { name: 'Inicio explosivo', fn: makePattern((t) => t < 0.1 ? t * 9 : 0.9 * Math.exp(-(t - 0.1) * 3), 29) },
+  '30': { name: 'Final explosivo', fn: makePattern((t) => t > 0.9 ? 0.1 + (t - 0.9) * 9 : 0.1 * Math.exp(-(0.9 - t) * 0.5), 30) },
+  '31': { name: 'Zigzag suave', fn: makePattern((t) => {
+    const cycle = (t * 3) % 1;
+    return 0.2 + 0.5 * (cycle < 0.5 ? cycle * 2 : 2 - cycle * 2);
+  }, 31) },
+  '32': { name: 'Pulso central', fn: makePattern((t) => t > 0.4 && t < 0.6 ? 0.85 : 0.1, 32) },
+  '33': { name: 'Doble meseta', fn: makePattern((t) => {
+    if (t < 0.15 || (t > 0.45 && t < 0.55) || t > 0.85) return 0.1;
+    return t < 0.45 ? 0.7 : 0.7;
+  }, 33) },
+  '34': { name: 'Montaña rusa', fn: makePattern((t) => 0.4 + 0.35 * Math.sin(t * Math.PI * 6), 34) },
+  '35': { name: 'Arranque lento', fn: makePattern((t) => t < 0.6 ? 0.05 + t * 0.1 : 0.05 + (t - 0.6) * 2.2, 35) },
+  '36': { name: 'Frenazo', fn: makePattern((t) => t < 0.4 ? 0.1 + t * 2 : 0.9 - (t - 0.4) * 0.1, 36) },
+  '37': { name: 'Valle al inicio', fn: makePattern((t) => {
+    const d = Math.abs(t - 0.15);
+    return d < 0.12 ? 0.05 + d * 3 : 0.5 + t * 0.3;
+  }, 37) },
+  '38': { name: 'Valle al final', fn: makePattern((t) => {
+    const d = Math.abs(t - 0.85);
+    return d < 0.12 ? 0.05 + d * 3 : 0.7 - t * 0.3;
+  }, 38) },
+  '39': { name: 'Crecimiento con bache', fn: makePattern((t) => {
+    const base = 0.1 + t * 0.7;
+    const dip = Math.abs(t - 0.5) < 0.08 ? -0.4 : 0;
+    return Math.max(0.05, base + dip);
+  }, 39) },
+  '40': { name: 'Caos controlado', fn: makePattern((t) => 0.3 + 0.3 * Math.sin(t * 17) * Math.cos(t * 7), 40) },
+  '41': { name: 'Estable muy bajo', fn: makePattern((t) => 0.08, 41) },
+  '42': { name: 'Estable bajo con micro subida', fn: makePattern((t) => 0.12 + t * 0.06, 42) },
+  '43': { name: 'Estable bajo con micro bajada', fn: makePattern((t) => 0.2 - t * 0.06, 43) },
+  '44': { name: 'Estable bajo ondulado', fn: makePattern((t) => 0.15 + 0.04 * Math.sin(t * Math.PI * 2), 44) },
+  '45': { name: 'Estable bajo con bache', fn: makePattern((t) => Math.abs(t - 0.5) < 0.08 ? 0.08 : 0.16, 45) },
+  '46': { name: 'Estable bajo con mini pico', fn: makePattern((t) => Math.abs(t - 0.5) < 0.06 ? 0.3 : 0.14, 46) },
+  '47': { name: 'Estable bajo irregular', fn: makePattern((t) => 0.13 + 0.04 * Math.sin(t * Math.PI * 6), 47) },
+  '48': { name: 'Estable bajo creciente', fn: makePattern((t) => 0.1 + t * 0.12, 48) },
+  '49': { name: 'Estable bajo decreciente', fn: makePattern((t) => 0.22 - t * 0.12, 49) },
+  '50': { name: 'Estable bajo con doble onda', fn: makePattern((t) => 0.15 + 0.05 * Math.sin(t * Math.PI * 4), 50) },
 };
 
 export const PATTERN_LIST = Object.entries(CHART_PATTERNS).map(([id, p]) => ({ id, name: p.name }));
@@ -162,6 +240,76 @@ export const BAR_PATTERNS: Record<string, { name: string; values: number[] }> = 
   '8': { name: 'Escalera', values: [0.15, 0.3, 0.45, 0.6, 0.75, 0.9] },
   '9': { name: 'Dientes de sierra', values: [0.8, 0.15, 0.7, 0.1, 0.9, 0.2] },
   '10': { name: 'Todo alto', values: [0.75, 0.85, 0.9, 0.8, 0.88, 0.82] },
+  '11': { name: 'Todo bajo', values: [0.12, 0.08, 0.1, 0.14, 0.09, 0.11] },
+  '12': { name: 'Pico octubre', values: [0.9, 0.15, 0.2, 0.12, 0.18, 0.1] },
+  '13': { name: 'Pico enero', values: [0.1, 0.12, 0.15, 0.92, 0.2, 0.18] },
+  '14': { name: 'Pico marzo', values: [0.12, 0.08, 0.15, 0.1, 0.18, 0.9] },
+  '15': { name: 'Últimos 3 altos', values: [0.08, 0.1, 0.12, 0.7, 0.8, 0.9] },
+  '16': { name: 'Primeros 3 altos', values: [0.9, 0.8, 0.7, 0.12, 0.1, 0.08] },
+  '17': { name: 'Alternado alto-bajo', values: [0.85, 0.1, 0.8, 0.12, 0.9, 0.08] },
+  '18': { name: 'Alternado bajo-alto', values: [0.1, 0.85, 0.08, 0.8, 0.12, 0.9] },
+  '19': { name: 'V invertida', values: [0.1, 0.4, 0.9, 0.85, 0.35, 0.08] },
+  '20': { name: 'V normal', values: [0.85, 0.45, 0.1, 0.12, 0.5, 0.9] },
+  '21': { name: 'Rampa suave', values: [0.15, 0.25, 0.4, 0.55, 0.65, 0.75] },
+  '22': { name: 'Bajada suave', values: [0.75, 0.65, 0.55, 0.4, 0.25, 0.15] },
+  '23': { name: 'Meseta central', values: [0.1, 0.12, 0.75, 0.8, 0.15, 0.1] },
+  '24': { name: 'Extremos altos', values: [0.9, 0.15, 0.1, 0.12, 0.18, 0.88] },
+  '25': { name: 'Solo diciembre', values: [0.08, 0.06, 0.92, 0.05, 0.07, 0.06] },
+  '26': { name: 'Triple pico', values: [0.85, 0.1, 0.8, 0.08, 0.9, 0.12] },
+  '27': { name: 'Crecimiento lento', values: [0.1, 0.12, 0.18, 0.25, 0.4, 0.9] },
+  '28': { name: 'Caída lenta', values: [0.9, 0.4, 0.25, 0.18, 0.12, 0.1] },
+  '29': { name: 'Pico nov-dic', values: [0.1, 0.85, 0.9, 0.15, 0.12, 0.08] },
+  '30': { name: 'Pico ene-feb', values: [0.08, 0.1, 0.12, 0.85, 0.9, 0.15] },
+  '31': { name: 'Estable medio', values: [0.45, 0.5, 0.48, 0.52, 0.47, 0.5] },
+  '32': { name: 'Onda creciente', values: [0.2, 0.5, 0.15, 0.6, 0.1, 0.9] },
+  '33': { name: 'Onda decreciente', values: [0.9, 0.1, 0.6, 0.15, 0.5, 0.2] },
+  '34': { name: 'Dos valles', values: [0.7, 0.1, 0.65, 0.08, 0.7, 0.75] },
+  '35': { name: 'Arranque fuerte', values: [0.95, 0.6, 0.3, 0.25, 0.2, 0.18] },
+  '36': { name: 'Cierre fuerte', values: [0.18, 0.2, 0.25, 0.3, 0.6, 0.95] },
+  '37': { name: 'Solo febrero', values: [0.06, 0.05, 0.08, 0.07, 0.92, 0.06] },
+  '38': { name: 'Mitad y mitad', values: [0.8, 0.85, 0.82, 0.1, 0.12, 0.08] },
+  '39': { name: 'Centro hundido', values: [0.8, 0.7, 0.08, 0.1, 0.75, 0.85] },
+  '40': { name: 'Irregular', values: [0.3, 0.9, 0.45, 0.15, 0.7, 0.55] },
+  '41': { name: 'Estable muy bajo', values: [0.08, 0.1, 0.07, 0.09, 0.08, 0.1] },
+  '42': { name: 'Estable bajo con micro subida', values: [0.1, 0.11, 0.13, 0.14, 0.16, 0.18] },
+  '43': { name: 'Estable bajo con micro bajada', values: [0.18, 0.16, 0.14, 0.13, 0.11, 0.1] },
+  '44': { name: 'Estable bajo ondulado', values: [0.12, 0.18, 0.1, 0.17, 0.11, 0.16] },
+  '45': { name: 'Estable bajo con bache', values: [0.15, 0.14, 0.06, 0.07, 0.14, 0.15] },
+  '46': { name: 'Estable bajo con mini pico', values: [0.1, 0.12, 0.1, 0.28, 0.11, 0.1] },
+  '47': { name: 'Estable bajo irregular', values: [0.14, 0.09, 0.16, 0.08, 0.15, 0.11] },
+  '48': { name: 'Estable bajo creciente', values: [0.08, 0.1, 0.12, 0.15, 0.18, 0.22] },
+  '49': { name: 'Estable bajo decreciente', values: [0.22, 0.18, 0.15, 0.12, 0.1, 0.08] },
+  '50': { name: 'Estable bajo con doble onda', values: [0.1, 0.18, 0.09, 0.19, 0.1, 0.17] },
+  '51': { name: 'Alcista total', values: [0.88, 0.92, 0.95, 0.90, 0.93, 0.97] },
+  '52': { name: 'Alcista creciente', values: [0.7, 0.78, 0.84, 0.89, 0.94, 0.98] },
+  '53': { name: 'Alcista decreciente', values: [0.98, 0.94, 0.89, 0.84, 0.78, 0.7] },
+  '54': { name: 'Alcista con pico final', values: [0.6, 0.65, 0.7, 0.72, 0.8, 0.98] },
+  '55': { name: 'Alcista con pico inicio', values: [0.98, 0.8, 0.72, 0.7, 0.65, 0.6] },
+  '56': { name: 'Alcista ondulado', values: [0.85, 0.7, 0.9, 0.75, 0.95, 0.8] },
+  '57': { name: 'Alcista estable alto', values: [0.92, 0.90, 0.93, 0.91, 0.92, 0.94] },
+  '58': { name: 'Alcista explosivo', values: [0.3, 0.45, 0.6, 0.78, 0.9, 0.98] },
+  '59': { name: 'Alcista con valle', values: [0.9, 0.85, 0.55, 0.6, 0.92, 0.97] },
+  '60': { name: 'Alcista doble techo', values: [0.95, 0.7, 0.75, 0.68, 0.97, 0.72] },
+  '61': { name: 'Rally final', values: [0.2, 0.25, 0.3, 0.55, 0.85, 0.98] },
+  '62': { name: 'Rally inicio', values: [0.98, 0.85, 0.55, 0.3, 0.25, 0.2] },
+  '63': { name: 'Alcista con dip central', values: [0.85, 0.9, 0.45, 0.5, 0.92, 0.96] },
+  '64': { name: 'Montaña alta', values: [0.5, 0.75, 0.95, 0.97, 0.78, 0.55] },
+  '65': { name: 'Meseta alta', values: [0.3, 0.88, 0.92, 0.90, 0.91, 0.35] },
+  '66': { name: 'Alcista zigzag', values: [0.7, 0.95, 0.72, 0.97, 0.75, 0.98] },
+  '67': { name: 'Todos máximo', values: [0.95, 0.97, 0.96, 0.98, 0.95, 0.97] },
+  '68': { name: 'Alcista con retroceso', values: [0.5, 0.8, 0.92, 0.7, 0.88, 0.96] },
+  '69': { name: 'Despegue tardío', values: [0.12, 0.15, 0.18, 0.45, 0.82, 0.97] },
+  '70': { name: 'Caída con recuperación', values: [0.9, 0.55, 0.3, 0.5, 0.78, 0.95] },
+  '71': { name: 'Alcista 3 picos', values: [0.95, 0.5, 0.92, 0.48, 0.97, 0.55] },
+  '72': { name: 'Rampa alta', values: [0.6, 0.7, 0.78, 0.85, 0.92, 0.95] },
+  '73': { name: 'Techo con caída', values: [0.92, 0.95, 0.97, 0.93, 0.6, 0.35] },
+  '74': { name: 'Suelo con subida', values: [0.35, 0.6, 0.93, 0.97, 0.95, 0.92] },
+  '75': { name: 'Alcista irregular', values: [0.88, 0.6, 0.95, 0.7, 0.58, 0.97] },
+  '76': { name: 'Bull run', values: [0.4, 0.55, 0.72, 0.85, 0.93, 0.98] },
+  '77': { name: 'Consolidación alta', values: [0.82, 0.85, 0.83, 0.86, 0.84, 0.87] },
+  '78': { name: 'Breakout', values: [0.3, 0.32, 0.35, 0.33, 0.75, 0.97] },
+  '79': { name: 'Doble suelo alcista', values: [0.85, 0.4, 0.88, 0.38, 0.92, 0.96] },
+  '80': { name: 'Blow-off top', values: [0.45, 0.6, 0.78, 0.98, 0.65, 0.4] },
 };
 
 export const BAR_PATTERN_LIST = Object.entries(BAR_PATTERNS).map(([id, p]) => ({ id, name: p.name }));
@@ -177,11 +325,11 @@ export function generateBarData(
   inactiveColor: string = '#a8e6cf',
 ): { label: string; value: number; color: string }[] {
   const pattern = BAR_PATTERNS[patternId] || BAR_PATTERNS['1'];
-  const maxMultiplier = Math.max(...pattern.values);
+  const sumMultipliers = pattern.values.slice(0, labels.length).reduce((a, b) => a + b, 0);
 
   return labels.map((label, i) => {
     const multiplier = pattern.values[i % pattern.values.length];
-    const value = (totalValue / labels.length) * (multiplier / maxMultiplier) * 2;
+    const value = totalValue * (multiplier / sumMultipliers);
     const isLast = i === labels.length - 1;
     return { label, value, color: isLast ? activeColor : inactiveColor };
   });
@@ -334,9 +482,9 @@ export function DynamicLineChart({
       <View style={{ flexDirection: 'row', height }}>
         {/* Y-axis */}
         {!hideYLabels && (
-          <View style={{ width: 42, justifyContent: 'space-between', paddingRight: 4 }}>
+          <View style={{ width: 54, justifyContent: 'space-between', paddingRight: 4 }}>
             {yLabels.map((l, i) => (
-              <Text key={i} style={cs.axisText}>{l}</Text>
+              <Text key={i} style={cs.axisText} numberOfLines={1}>{l}</Text>
             ))}
           </View>
         )}
@@ -425,6 +573,7 @@ type BarChartProps = {
   activeColor?: string;
   inactiveColor?: string;
   yLabels?: string[];
+  hideYLabels?: boolean;
   onBarPress?: (index: number) => void;
   selectedBar?: number | null;
   /** ID prefix for editable bar tooltips */
@@ -437,6 +586,7 @@ export function DynamicBarChart({
   activeColor = '#1db4a5',
   inactiveColor = '#a8e6cf',
   yLabels: inputYLabels,
+  hideYLabels,
   onBarPress,
   selectedBar,
   tooltipId,
@@ -500,11 +650,13 @@ export function DynamicBarChart({
     <View>
       <View style={{ flexDirection: 'row', height, marginTop: 16 }}>
         {/* Y-axis */}
-        <View style={{ width: 45, justifyContent: 'space-between', paddingRight: 6 }}>
-          {yLabels.map((l, i) => (
-            <Text key={i} style={cs.axisText}>{l}</Text>
-          ))}
-        </View>
+        {!hideYLabels && (
+          <View style={{ width: 54, justifyContent: 'space-between', paddingRight: 6 }}>
+            {yLabels.map((l, i) => (
+              <Text key={i} style={cs.axisText} numberOfLines={1}>{l}</Text>
+            ))}
+          </View>
+        )}
         {/* Bars area */}
         <View style={{ flex: 1, height, position: 'relative' }}>
           {/* Grid lines */}

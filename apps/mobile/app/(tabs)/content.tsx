@@ -29,11 +29,6 @@ const SHORTS = [
   { id: 's4', thumb: require('../../assets/figma/short_thumb_4.png'), title: '$PENG...', views: '1', likes: '' },
 ];
 
-const LIVES = [
-  { id: 'l1', thumb: require('../../assets/figma/live_thumb_1.png'), title: 'Creando tokens en Dum...', views: '2K', likes: '127', dur: '1:27:29' },
-  { id: 'l2', thumb: require('../../assets/figma/live_thumb_2.png'), title: 'SE VIENEN COSITAS!G...', views: '992', likes: '', dur: '1:16:37' },
-];
-
 const FILTERS = [
   { id: 'filter_tipo', label: 'Tipo' },
   { id: 'filter_visibilidad', label: 'Visibilidad' },
@@ -163,49 +158,6 @@ export default function ContentScreen() {
         )}
       />
 
-      {/* ── En directo ── */}
-      <SectionHead title="En directo" sectionId="sec_lives" isAdmin={isAdmin} />
-      <FlatList
-        horizontal showsHorizontalScrollIndicator={false}
-        data={LIVES} keyExtractor={i => i.id}
-        contentContainerStyle={s.carousel}
-        renderItem={({ item }) => (
-          <View style={s.videoCard}>
-            <View style={s.thumbWrap}>
-              <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId={item.id} label="Thumbnail directo" value="" type="image">
-                <Image source={item.thumb} style={s.thumb} resizeMode="cover" />
-              </AE>
-              <AE isAdmin={isAdmin} table="videos" column="duration" rowId={item.id} label="Duración" value={item.dur}>
-                <View style={s.durBadge}><Text style={s.durText}>{item.dur}</Text></View>
-              </AE>
-            </View>
-            <View style={s.titleRow}>
-              <AE isAdmin={isAdmin} table="videos" column="title" rowId={item.id} label="Título directo" value={item.title}>
-                <Text style={s.videoTitle} numberOfLines={1}>{item.title}</Text>
-              </AE>
-              <AE isAdmin={isAdmin} table="videos" column="dots_icon" rowId={item.id} label="Icono menú" value="" type="image">
-                <Image source={IC.dots} style={s.dotsIcon} resizeMode="contain" />
-              </AE>
-            </View>
-            <View style={s.statsRow}>
-              <AE isAdmin={isAdmin} table="videos" column="chart_icon" rowId={item.id} label="Icono gráfica" value="" type="image">
-                <Image source={IC.chart} style={s.statIcon} resizeMode="contain" />
-              </AE>
-              <AE isAdmin={isAdmin} table="videos" column="view_count" rowId={item.id} label="Visualizaciones" value={item.views}>
-                <Text style={s.statText}>{item.views}</Text>
-              </AE>
-              {item.likes ? <>
-                <AE isAdmin={isAdmin} table="videos" column="like_icon" rowId={item.id} label="Icono like" value="" type="image">
-                  <Image source={IC.like} style={s.statIcon} resizeMode="contain" />
-                </AE>
-                <AE isAdmin={isAdmin} table="videos" column="like_count" rowId={item.id} label="Likes" value={item.likes}>
-                  <Text style={s.statText}>{item.likes}</Text>
-                </AE>
-              </> : null}
-            </View>
-          </View>
-        )}
-      />
 
       <View style={{ height: 40 }} />
     </ScrollView>
