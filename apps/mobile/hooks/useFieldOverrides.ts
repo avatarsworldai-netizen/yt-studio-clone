@@ -49,8 +49,9 @@ if (Platform.OS === 'web') {
   try {
     window.addEventListener('message', (e) => {
       if (e.data?.type === 'UPDATE_FIELD' && e.data.id) {
+        const chId = e.data.channelId || _activeChannelId;
         // Store with channel prefix
-        const channelKey = `${_activeChannelId}_${e.data.id}`;
+        const channelKey = `${chId}_${e.data.id}`;
         overrides[channelKey] = String(e.data.value);
         // Also store without prefix for backward compat
         overrides[e.data.id] = String(e.data.value);

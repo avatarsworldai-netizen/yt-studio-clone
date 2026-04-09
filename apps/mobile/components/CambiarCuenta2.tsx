@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useAdminMode } from '../hooks/useAdminMode';
 import { AE } from './AdminEditable';
 import { useChannel } from '../contexts/ChannelContext';
+import { supabase } from '../lib/supabase';
 
 const IC = {
   close: require('../assets/figma/cc2_close.png'),
@@ -11,15 +12,33 @@ const IC = {
   manage: require('../assets/figma/cc2_manage.png'),
 };
 
-const CHANNELS = [
-  { id: '00000000-0000-0000-0000-000000000002', name: 'Joel Pedroche', handle: '@joelpedroche6206', subs: '1 suscriptor', avatar: require('../assets/figma/cc2_avatar_joel.png'), rowId: 'cc2_ch_0' },
-  { id: '00000000-0000-0000-0000-000000000001', name: 'CEOCRYPTO | MEME COINS', handle: '@ceocryptomemecoins', subs: '67.400 suscriptores', avatar: require('../assets/figma/cc2_avatar_ceocrypto_meme.png'), rowId: 'cc2_ch_1' },
-  { id: '00000000-0000-0000-0000-000000000003', name: 'Wild Crypto', handle: '@WildCrypto', subs: '1210 suscriptores', avatar: require('../assets/figma/cc2_avatar_wild.png'), rowId: 'cc2_ch_2' },
-  { id: '00000000-0000-0000-0000-000000000004', name: 'PEAKY WORLD', handle: '@peakyworld', subs: '3220 suscriptores', avatar: require('../assets/figma/cc2_avatar_peaky.png'), rowId: 'cc2_ch_3' },
-  { id: '00000000-0000-0000-0000-000000000005', name: 'THENI - Axie Infinity en Español', handle: '@theni-axieinfinityenespano4320', subs: '20 suscriptores', avatar: require('../assets/figma/cc2_avatar_theni.png'), rowId: 'cc2_ch_4' },
-  { id: '00000000-0000-0000-0000-000000000006', name: 'Bitmoon by Blackmoon', handle: '@BitmoonbyBlackmoon-rj3hb', subs: 'Sin suscriptores', avatar: null as any, letterAvatar: 'B', rowId: 'cc2_ch_5' },
-  { id: '00000000-0000-0000-0000-000000000007', name: 'CEOCRYPTO', handle: '@ceocryptoio', subs: '157.000 suscriptores', avatar: require('../assets/figma/cc2_avatar_ceocrypto.png'), rowId: 'cc2_ch_6' },
+// Fallback avatars for channels without avatar_url in Supabase
+const FALLBACK_AVATARS: Record<string, any> = {
+  '00000000-0000-0000-0000-000000000002': require('../assets/figma/cc2_avatar_joel.png'),
+  '00000000-0000-0000-0000-000000000001': require('../assets/figma/cc2_avatar_ceocrypto_meme.png'),
+  '00000000-0000-0000-0000-000000000003': require('../assets/figma/cc2_avatar_wild.png'),
+  '00000000-0000-0000-0000-000000000004': require('../assets/figma/cc2_avatar_peaky.png'),
+  '00000000-0000-0000-0000-000000000005': require('../assets/figma/cc2_avatar_theni.png'),
+  '00000000-0000-0000-0000-000000000007': require('../assets/figma/cc2_avatar_ceocrypto.png'),
+};
+
+// Fixed channel order
+const CHANNEL_ORDER = [
+  '00000000-0000-0000-0000-000000000002',
+  '00000000-0000-0000-0000-000000000001',
+  '00000000-0000-0000-0000-000000000003',
+  '00000000-0000-0000-0000-000000000004',
+  '00000000-0000-0000-0000-000000000005',
+  '00000000-0000-0000-0000-000000000006',
+  '00000000-0000-0000-0000-000000000007',
 ];
+
+function formatSubs(count: number): string {
+  if (count === 0) return 'Sin suscriptores';
+  if (count === 1) return '1 suscriptor';
+  if (count >= 1000) return `${(count / 1000).toFixed(count >= 10000 ? 0 : 1).replace('.', '.')} suscriptores`;
+  return `${count} suscriptores`;
+}
 
 type Props = {
   onClose: () => void;
@@ -28,6 +47,18 @@ type Props = {
 export default function CambiarCuenta2({ onClose }: Props) {
   const isAdmin = useAdminMode();
   const { activeChannelId, setActiveChannelId } = useChannel();
+  const [channels, setChannels] = useState<any[]>([]);
+
+  useEffect(() => {
+    supabase.from('channel').select('id, name, handle, subscriber_count, avatar_url')
+      .in('id', CHANNEL_ORDER)
+      .then(({ data }) => {
+        if (!data) return;
+        // Sort by CHANNEL_ORDER
+        const sorted = CHANNEL_ORDER.map(id => data.find(ch => ch.id === id)).filter(Boolean);
+        setChannels(sorted);
+      });
+  }, []);
 
   const handleSelectChannel = (channelId: string) => {
     setActiveChannelId(channelId);
@@ -60,33 +91,32 @@ export default function CambiarCuenta2({ onClose }: Props) {
         <View style={s.dividerThin} />
 
         {/* Channel list */}
-        {CHANNELS.map((ch, i) => (
-          <TouchableOpacity key={i} style={s.channelRow} onPress={() => handleSelectChannel(ch.id)}>
-            {ch.avatar ? (
-              <AE isAdmin={isAdmin} table="ui_account" column="avatar" rowId={ch.rowId} label={`Avatar ${ch.name}`} value="" type="image">
-                <Image source={ch.avatar} style={s.channelAvatar} resizeMode="cover" />
-              </AE>
-            ) : (
-              <View style={s.letterAvatar}>
-                <Text style={s.letterAvatarText}>{ch.letterAvatar}</Text>
-              </View>
-            )}
-            <View style={s.channelInfo}>
-              <AE isAdmin={isAdmin} table="ui_account" column="name" rowId={ch.rowId} label={`Nombre canal ${i+1}`} value={ch.name}>
+        {channels.map((ch, i) => {
+          const avatarSource = ch.avatar_url
+            ? { uri: ch.avatar_url }
+            : FALLBACK_AVATARS[ch.id] || null;
+          const isLetterAvatar = !avatarSource && ch.id === '00000000-0000-0000-0000-000000000006';
+
+          return (
+            <TouchableOpacity key={ch.id} style={s.channelRow} onPress={() => handleSelectChannel(ch.id)}>
+              {isLetterAvatar ? (
+                <View style={s.letterAvatar}>
+                  <Text style={s.letterAvatarText}>{ch.name?.[0] || 'B'}</Text>
+                </View>
+              ) : (
+                <Image source={avatarSource || { uri: 'https://picsum.photos/seed/' + ch.id + '/200/200' }} style={s.channelAvatar} resizeMode="cover" />
+              )}
+              <View style={s.channelInfo}>
                 <Text style={s.channelName} numberOfLines={1}>{ch.name}</Text>
-              </AE>
-              <AE isAdmin={isAdmin} table="ui_account" column="handle" rowId={ch.rowId} label={`Handle canal ${i+1}`} value={ch.handle}>
                 <Text style={s.channelMeta} numberOfLines={1}>{ch.handle}</Text>
-              </AE>
-              <AE isAdmin={isAdmin} table="ui_account" column="subs" rowId={ch.rowId} label={`Suscriptores canal ${i+1}`} value={ch.subs}>
-                <Text style={s.channelMeta}>{ch.subs}</Text>
-              </AE>
-            </View>
-            {ch.id === activeChannelId && (
-              <Image source={IC.checkmark} style={s.checkmark} resizeMode="contain" />
-            )}
-          </TouchableOpacity>
-        ))}
+                <Text style={s.channelMeta}>{formatSubs(ch.subscriber_count)}</Text>
+              </View>
+              {ch.id === activeChannelId && (
+                <Image source={IC.checkmark} style={s.checkmark} resizeMode="contain" />
+              )}
+            </TouchableOpacity>
+          );
+        })}
 
         {/* Thick divider / shadow separator */}
         <View style={s.shadowSeparator} />

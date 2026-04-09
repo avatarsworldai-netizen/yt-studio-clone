@@ -81,15 +81,11 @@ export default function CambiarCuenta({ onClose, onOpenCambiarCuenta2 }: Props) 
           <View style={s.buttonsRow}>
             <TouchableOpacity style={s.pillButton} onPress={onOpenCambiarCuenta2}>
               <Image source={IC.switchAccount} style={s.pillIcon} resizeMode="contain" />
-              <AE isAdmin={isAdmin} table="ui_account" column="label" rowId="cc_switch" label="Botón cambiar cuenta" value="Cambiar de cuenta">
-                <Text style={s.pillText}>Cambiar de cuenta</Text>
-              </AE>
+              <Text style={s.pillText}>Cambiar de cuenta</Text>
             </TouchableOpacity>
             <TouchableOpacity style={s.pillButton}>
               <Image source={IC.google} style={s.pillIcon} resizeMode="contain" />
-              <AE isAdmin={isAdmin} table="ui_account" column="label" rowId="cc_google" label="Botón cuenta Google" value="Cuenta de Google">
-                <Text style={s.pillText}>Cuenta de Google</Text>
-              </AE>
+              <Text style={s.pillText}>Cuenta de Google</Text>
             </TouchableOpacity>
           </View>
         </View>
