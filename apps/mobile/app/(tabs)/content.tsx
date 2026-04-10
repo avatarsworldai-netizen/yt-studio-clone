@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useAdminMode } from '../../hooks/useAdminMode';
 import { AE } from '../../components/AdminEditable';
 import { C } from '../../constants/theme';
+import { useChannel } from '../../contexts/ChannelContext';
 
 const IC = {
   filter: require('../../assets/figma/filter_icon.png'),
@@ -40,6 +41,7 @@ export default function ContentScreen() {
   const router = useRouter();
   const qc = useQueryClient();
   const isAdmin = useAdminMode();
+  const { activeChannelId: CH } = useChannel();
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(async () => { setRefreshing(true); await qc.invalidateQueries(); setRefreshing(false); }, [qc]);
 
@@ -66,7 +68,7 @@ export default function ContentScreen() {
       </ScrollView>
 
       {/* ── Vídeos ── */}
-      <SectionHead title="Vídeos" sectionId="sec_videos" isAdmin={isAdmin} />
+      <SectionHead title="Vídeos" sectionId="sec_videos" isAdmin={isAdmin}  />
       <FlatList
         horizontal showsHorizontalScrollIndicator={false}
         data={VIDEOS} keyExtractor={i => i.id}
@@ -118,7 +120,7 @@ export default function ContentScreen() {
       />
 
       {/* ── Shorts ── */}
-      <SectionHead title="Shorts" sectionId="sec_shorts" isAdmin={isAdmin} />
+      <SectionHead title="Shorts" sectionId="sec_shorts" isAdmin={isAdmin}  />
       <FlatList
         horizontal showsHorizontalScrollIndicator={false}
         data={SHORTS} keyExtractor={i => i.id}

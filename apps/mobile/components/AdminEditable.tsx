@@ -1,7 +1,7 @@
 import React from 'react';
 import { Platform, Text, Image } from 'react-native';
 import { sendEditMessage } from '../hooks/useAdminMode';
-import { getOverride, useFieldOverrides } from '../hooks/useFieldOverrides';
+import { getOverride, useFieldOverrides, getActiveChannelForOverrides } from '../hooks/useFieldOverrides';
 
 type Props = {
   table: string;
@@ -34,9 +34,11 @@ export function AE({ table, column, rowId, label, value, type = 'text', isAdmin,
 
   // Always wrap with click handler in admin mode, even after override
   const currentValue = override !== undefined ? override : value;
+  const ch = getActiveChannelForOverrides();
+  const scopedRowId = ch ? `${ch}_${rowId}` : rowId;
   const handleClick = (e: any) => {
     e.stopPropagation();
-    sendEditMessage({ id: `${table}_${column}_${rowId}`, label, value: currentValue, type, table, column, rowId });
+    sendEditMessage({ id: `${table}_${column}_${scopedRowId}`, label, value: currentValue, type, table, column, rowId: scopedRowId });
   };
 
   return React.createElement('span', {
