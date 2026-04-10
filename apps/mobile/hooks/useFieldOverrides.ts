@@ -59,7 +59,7 @@ export function useFieldOverrides() {
   return overrides;
 }
 
-const REAL_TABLES = ['channel', 'dashboard_stats', 'videos', 'revenue', 'analytics_timeseries', 'comments'];
+const REAL_TABLES = ['channel', 'dashboard_stats'];
 
 export function getOverride(table: string, column: string, rowId: string): string | undefined {
   // Real tables have per-channel records in DB, no prefix needed

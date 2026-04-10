@@ -36,7 +36,7 @@ export function AE({ table, column, rowId, label, value, type = 'text', isAdmin,
   const currentValue = override !== undefined ? override : value;
   const ch = getActiveChannelForOverrides();
   // Tables with real per-channel records don't need prefix (updates go to DB directly)
-  const realTables = ['channel', 'dashboard_stats', 'videos', 'revenue', 'analytics_timeseries', 'comments'];
+  const realTables = ['channel', 'dashboard_stats'];
   const needsPrefix = ch && !realTables.includes(table);
   const scopedRowId = needsPrefix ? `${ch}_${rowId}` : rowId;
   const handleClick = (e: any) => {
