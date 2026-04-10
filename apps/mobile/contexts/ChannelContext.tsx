@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Platform } from 'react-native';
 import { setActiveChannelForOverrides, reloadOverrides } from '../hooks/useFieldOverrides';
 
 export type ChannelInfo = {
@@ -21,8 +22,22 @@ const ChannelContext = createContext<ChannelContextType>({
   setActiveChannelId: () => {},
 });
 
+function getSavedChannel(): string {
+  if (Platform.OS === 'web') {
+    try { return localStorage.getItem('activeChannelId') || DEFAULT_CHANNEL_ID; } catch {}
+  }
+  return DEFAULT_CHANNEL_ID;
+}
+
 export function ChannelProvider({ children }: { children: React.ReactNode }) {
-  const [activeChannelId, setActiveChannelId] = useState(DEFAULT_CHANNEL_ID);
+  const [activeChannelId, setActiveChannelIdState] = useState(getSavedChannel);
+
+  const setActiveChannelId = (id: string) => {
+    setActiveChannelIdState(id);
+    if (Platform.OS === 'web') {
+      try { localStorage.setItem('activeChannelId', id); } catch {}
+    }
+  };
 
   useEffect(() => {
     setActiveChannelForOverrides(activeChannelId);
