@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { getActiveChannelForOverrides } from './useFieldOverrides';
 
 let _isAdmin = false;
 
@@ -20,7 +19,6 @@ export function useAdminMode() {
           setIsAdmin(true);
         }
       } catch (e) {
-        // Cross-origin iframe access blocked — do NOT assume admin mode
         _isAdmin = false;
         setIsAdmin(false);
       }
@@ -41,8 +39,7 @@ export function sendEditMessage(field: {
 }) {
   if (Platform.OS === 'web') {
     try {
-      const channelId = getActiveChannelForOverrides();
-      window.parent.postMessage({ type: 'EDIT_FIELD', field: { ...field, channelId } }, '*');
+      window.parent.postMessage({ type: 'EDIT_FIELD', field }, '*');
     } catch (e) {}
   }
 }

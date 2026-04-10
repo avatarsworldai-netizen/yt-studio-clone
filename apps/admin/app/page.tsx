@@ -75,7 +75,7 @@ export default function AdminEditor() {
       if (e.data?.type === 'EDIT_FIELD' && e.data.field) {
         const f = e.data.field;
         console.log('[Admin] Opening editor for:', f.label);
-        setSelectedField({ id: f.id, label: f.label, value: f.value, type: f.type, table: f.table, column: f.column, rowId: f.rowId, channelId: f.channelId } as any);
+        setSelectedField({ id: f.id, label: f.label, value: f.value, type: f.type, table: f.table, column: f.column, rowId: f.rowId });
         setEditValue(String(f.value ?? ''));
       }
     };
@@ -87,11 +87,10 @@ export default function AdminEditor() {
     setSaving(true);
 
     // Save to Supabase (original table or field_overrides fallback)
-    const channelId = (selectedField as any)?.channelId;
     const res = await fetch("/api/update", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ table, column, value, rowId, channelId }),
+      body: JSON.stringify({ table, column, value, rowId }),
     });
 
     // Always send update to iframe so values update instantly without reload
@@ -99,7 +98,7 @@ export default function AdminEditor() {
       type: 'UPDATE_FIELD',
       id: `${table}_${column}_${rowId}`,
       value,
-      table, column, rowId, channelId,
+      table, column, rowId,
     }, '*');
 
     if (res.ok) {

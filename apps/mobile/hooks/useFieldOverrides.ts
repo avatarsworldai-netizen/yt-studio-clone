@@ -4,26 +4,12 @@ import { Platform } from 'react-native';
 // Global store for field overrides from admin panel
 const overrides: Record<string, string> = {};
 const listeners: Set<() => void> = new Set();
-let loaded = false;
-
-// Active channel ID — updated by ChannelContext
-let _activeChannelId = '00000000-0000-0000-0000-000000000001';
-
-export function setActiveChannelForOverrides(channelId: string) {
-  _activeChannelId = channelId;
-  // Notify all components to re-render with new channel's overrides
-  notify();
-}
-
-export function getActiveChannelForOverrides() {
-  return _activeChannelId;
-}
 
 function notify() {
   listeners.forEach(fn => fn());
 }
 
-// Fetch ALL overrides from Supabase
+// Fetch overrides from Supabase
 async function loadFromSupabase() {
   try {
     const url = process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://dyzwlxhghmkrnuvesxqf.supabase.co';
@@ -41,10 +27,10 @@ async function loadFromSupabase() {
   } catch {}
 }
 
-// Load overrides on module init
+// Load on init
 loadFromSupabase();
 
-// Reload overrides from Supabase (called when switching channels or after save)
+// Reload (called on channel switch to pick up fresh data)
 export function reloadOverrides() {
   loadFromSupabase();
 }
@@ -54,11 +40,6 @@ if (Platform.OS === 'web') {
   try {
     window.addEventListener('message', (e) => {
       if (e.data?.type === 'UPDATE_FIELD' && e.data.id) {
-        const chId = e.data.channelId || _activeChannelId;
-        // Store with channel prefix
-        const channelKey = `${chId}_${e.data.id}`;
-        overrides[channelKey] = String(e.data.value);
-        // Also store without prefix for backward compat
         overrides[e.data.id] = String(e.data.value);
         notify();
       }
@@ -79,10 +60,14 @@ export function useFieldOverrides() {
 }
 
 export function getOverride(table: string, column: string, rowId: string): string | undefined {
-  // First try channel-specific key
-  const channelKey = `${_activeChannelId}_${table}_${column}_${rowId}`;
-  if (overrides[channelKey] !== undefined) return overrides[channelKey];
-  // Fallback to global key (backward compat)
   const id = `${table}_${column}_${rowId}`;
   return overrides[id];
+}
+
+// Keep these exports for backward compat (used by useAdminMode and ChannelContext)
+export function setActiveChannelForOverrides(_channelId: string) {
+  notify(); // Just trigger re-render on channel switch
+}
+export function getActiveChannelForOverrides() {
+  return ''; // No longer needed
 }
