@@ -60,14 +60,11 @@ export function useFieldOverrides() {
 }
 
 export function getOverride(table: string, column: string, rowId: string): string | undefined {
-  // Try channel-scoped key first
   if (_activeChannelId) {
     const channelKey = `${table}_${column}_${_activeChannelId}_${rowId}`;
     if (overrides[channelKey] !== undefined) return overrides[channelKey];
   }
-  // Fallback to global key
-  const id = `${table}_${column}_${rowId}`;
-  return overrides[id];
+  return undefined;
 }
 
 // Active channel ID for scoping overrides

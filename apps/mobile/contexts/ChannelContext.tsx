@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Platform } from 'react-native';
+import { useQueryClient } from '@tanstack/react-query';
 import { setActiveChannelForOverrides, reloadOverrides } from '../hooks/useFieldOverrides';
 
 export type ChannelInfo = {
@@ -30,10 +31,12 @@ function getSavedChannel(): string {
 }
 
 export function ChannelProvider({ children }: { children: React.ReactNode }) {
+  const qc = useQueryClient();
   const [activeChannelId, setActiveChannelIdState] = useState(getSavedChannel);
 
   const setActiveChannelId = (id: string) => {
     setActiveChannelIdState(id);
+    qc.clear(); // Clear all cached data to prevent showing old channel's data
     if (Platform.OS === 'web') {
       try { localStorage.setItem('activeChannelId', id); } catch {}
     }
