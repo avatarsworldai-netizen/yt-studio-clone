@@ -59,13 +59,15 @@ export function useFieldOverrides() {
   return overrides;
 }
 
+const REAL_TABLES = ['channel', 'dashboard_stats', 'videos', 'revenue', 'analytics_timeseries', 'comments'];
+
 export function getOverride(table: string, column: string, rowId: string): string | undefined {
-  // Try channel-scoped key first
-  if (_activeChannelId) {
+  // Real tables have per-channel records in DB, no prefix needed
+  if (!REAL_TABLES.includes(table) && _activeChannelId) {
     const channelKey = `${table}_${column}_${_activeChannelId}_${rowId}`;
     if (overrides[channelKey] !== undefined) return overrides[channelKey];
   }
-  // Fallback to global key
+  // Global key
   const id = `${table}_${column}_${rowId}`;
   return overrides[id];
 }

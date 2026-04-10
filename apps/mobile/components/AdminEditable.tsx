@@ -35,7 +35,10 @@ export function AE({ table, column, rowId, label, value, type = 'text', isAdmin,
   // Always wrap with click handler in admin mode, even after override
   const currentValue = override !== undefined ? override : value;
   const ch = getActiveChannelForOverrides();
-  const scopedRowId = ch ? `${ch}_${rowId}` : rowId;
+  // Tables with real per-channel records don't need prefix (updates go to DB directly)
+  const realTables = ['channel', 'dashboard_stats', 'videos', 'revenue', 'analytics_timeseries', 'comments'];
+  const needsPrefix = ch && !realTables.includes(table);
+  const scopedRowId = needsPrefix ? `${ch}_${rowId}` : rowId;
   const handleClick = (e: any) => {
     e.stopPropagation();
     sendEditMessage({ id: `${table}_${column}_${scopedRowId}`, label, value: currentValue, type, table, column, rowId: scopedRowId });
