@@ -27,7 +27,7 @@ export default function VideoDetailScreen() {
         <DR l="Impresiones" v={n(v.impressions)} /><DR l="CTR de impresiones" v={`${v.impression_ctr}%`} /><DR l="Duración media" v={v.average_view_duration} /><DR l="Compartidos" v={n(v.share_count)} last />
       </View>
       <View style={s.card}><Text style={s.secT}>Ingresos</Text>
-        <DR l="Ingresos estimados" v={`${v.estimated_revenue.toFixed(2).replace('.', ',')}€`} /><DR l="RPM" v={`${v.rpm.toFixed(2).replace('.', ',')}€`} /><DR l="CPM" v={`${v.cpm.toFixed(2).replace('.', ',')}€`} last />
+        <DR l="Ingresos estimados" v={`${Number(v.estimated_revenue || 0).toFixed(2).replace('.', ',')}€`} /><DR l="RPM" v={`${Number(v.rpm || 0).toFixed(2).replace('.', ',')}€`} /><DR l="CPM" v={`${Number(v.cpm || 0).toFixed(2).replace('.', ',')}€`} last />
       </View>
       {v.traffic_sources?.length > 0 && <View style={s.card}><Text style={s.secT}>Fuentes de tráfico</Text>{v.traffic_sources.map((t: any, i: number) => <DR key={i} l={t.source} v={`${t.percentage}%`} last={i === v.traffic_sources.length - 1} />)}</View>}
       <View style={{ height: 32 }} />

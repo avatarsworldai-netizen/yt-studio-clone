@@ -47,6 +47,7 @@ export async function POST(req: NextRequest) {
       });
 
     if (overrideError) {
+      console.error('[update] Override error:', overrideError.message, 'id:', overrideId);
       return NextResponse.json({ error: overrideError.message }, { status: 500 });
     }
 
