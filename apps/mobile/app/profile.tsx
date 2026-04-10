@@ -16,9 +16,9 @@ export default function ProfileScreen() {
 
   return (
     <ScrollView style={s.root} showsVerticalScrollIndicator={false}>
-      <Image source={{ uri: ch.banner_url || 'https://picsum.photos/1280/320' }} style={s.banner} />
+      <Image source={{ uri: ch.banner_url || undefined }} style={s.banner} />
       <View style={s.profile}>
-        <Image source={{ uri: ch.avatar_url || 'https://picsum.photos/200/200' }} style={s.ava} />
+        <Image source={{ uri: ch.avatar_url || undefined }} style={s.ava} />
         <View style={s.nameRow}><Text style={s.name}>{ch.name}</Text>{ch.is_verified && <MaterialIcons name="verified" size={18} color={C.textSec} />}</View>
         <Text style={s.handle}>{ch.handle}</Text>
         <Text style={s.stats}>{n(ch.subscriber_count)} suscriptores · {ch.video_count} vídeos</Text>

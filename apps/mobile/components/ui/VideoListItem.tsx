@@ -55,7 +55,7 @@ export function VideoListItem({
     <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.7}>
       <View style={styles.thumbnailContainer}>
         <Image
-          source={{ uri: thumbnailUrl || 'https://picsum.photos/640/360' }}
+          source={{ uri: thumbnailUrl || undefined }}
           style={styles.thumbnail}
         />
         {duration && duration !== '0:00' && (

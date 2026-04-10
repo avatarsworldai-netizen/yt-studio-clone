@@ -66,7 +66,7 @@ function RightIcons() {
         </AE>
       </TouchableOpacity>
       <TouchableOpacity onPress={openAccountScreen}>
-        <Image source={{ uri: avatarUrl || 'https://picsum.photos/seed/avatar/200/200' }} style={st.avatar} />
+        <Image source={{ uri: avatarUrl || undefined }} style={st.avatar} />
       </TouchableOpacity>
     </View>
   );

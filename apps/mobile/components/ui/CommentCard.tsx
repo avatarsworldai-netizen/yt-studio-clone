@@ -34,7 +34,7 @@ export function CommentCard({
       )}
       <View style={styles.header}>
         <Image
-          source={{ uri: authorAvatarUrl || 'https://picsum.photos/40/40' }}
+          source={{ uri: authorAvatarUrl || undefined }}
           style={styles.avatar}
         />
         <View style={styles.headerInfo}>

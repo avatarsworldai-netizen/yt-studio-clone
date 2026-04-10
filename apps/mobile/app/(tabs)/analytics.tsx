@@ -450,7 +450,7 @@ export default function AnalyticsScreen() {
           </AE>
           <View style={s.shortRow}>
             <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId="feed_short1" label="Thumbnail short feed" value="" type="image">
-              <Image source={{ uri: 'https://picsum.photos/seed/short1/200/280' }} style={s.shortThumb} />
+              <Image source={{ uri: undefined }} style={s.shortThumb} />
             </AE>
             <View style={s.shortInfo}>
               <AE isAdmin={isAdmin} table="videos" column="published_at" rowId="feed_short1" label="Fecha short" value="27 de diciembre de 2024">

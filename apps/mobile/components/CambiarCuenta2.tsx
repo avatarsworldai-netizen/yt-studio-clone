@@ -107,7 +107,7 @@ export default function CambiarCuenta2({ onClose }: Props) {
                   <Text style={s.letterAvatarText}>{ch.name?.[0] || 'B'}</Text>
                 </View>
               ) : (
-                <Image source={avatarSource || { uri: 'https://picsum.photos/seed/' + ch.id + '/200/200' }} style={s.channelAvatar} resizeMode="cover" />
+                <Image source={avatarSource || undefined} style={s.channelAvatar} resizeMode="cover" />
               )}
               <View style={s.channelInfo}>
                 <Text style={s.channelName} numberOfLines={1}>{ch.name}</Text>

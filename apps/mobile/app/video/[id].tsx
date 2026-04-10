@@ -17,7 +17,7 @@ export default function VideoDetailScreen() {
 
   return (
     <ScrollView style={s.root} showsVerticalScrollIndicator={false}>
-      <Image source={{ uri: v.thumbnail_url || 'https://picsum.photos/640/360' }} style={s.thumb} />
+      <Image source={{ uri: v.thumbnail_url || undefined }} style={s.thumb} />
       <View style={s.titleSec}><Text style={s.title}>{v.title}</Text><Text style={s.date}>{v.published_at ? new Date(v.published_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Sin publicar'}</Text></View>
       <View style={s.card}><Text style={s.secT}>Métricas clave</Text><View style={s.grid}>
         <MB l="Visualizaciones" v={n(v.view_count)} /><MB l="Tiempo visualización" v={n(v.watch_time_hours)} />

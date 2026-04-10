@@ -66,7 +66,7 @@ export default function Dashboard() {
       {/* ── Channel row ── */}
       <TouchableOpacity style={s.chRow} activeOpacity={0.7} onPress={() => !isAdmin && r.push('/profile')}>
         <AE isAdmin={isAdmin} table="channel" column="avatar_url" rowId={CID} direct label="Avatar del canal" value={ch?.avatar_url || ''} type="image">
-          <Image source={{ uri: ch?.avatar_url || 'https://picsum.photos/200/200' }} style={s.chAva} />
+          <Image source={{ uri: ch?.avatar_url || undefined }} style={s.chAva} />
         </AE>
         <View style={s.chMeta}>
           <AE isAdmin={isAdmin} table="channel" column="name" rowId={CID} direct label="Nombre del canal" value={ch?.name || ''}>
@@ -111,7 +111,7 @@ export default function Dashboard() {
               {/* Thumbnail + title */}
               <TouchableOpacity style={s.vTop} activeOpacity={0.7} onPress={() => !isAdmin && r.push(`/video/${v.id}`)}>
                 <AE isAdmin={isAdmin} table="videos" direct column="thumbnail_url" rowId={v.id} label="Thumbnail" value={v.thumbnail_url || ''} type="image">
-                  <Image source={{ uri: v.thumbnail_url || 'https://picsum.photos/640/360' }} style={s.vThumb} />
+                  <Image source={{ uri: v.thumbnail_url || undefined }} style={s.vThumb} />
                 </AE>
                 <View style={s.vInfo}>
                   <AE isAdmin={isAdmin} table="videos" direct column="title" rowId={v.id} label="Título del video" value={v.title}>

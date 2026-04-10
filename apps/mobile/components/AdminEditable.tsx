@@ -1,7 +1,7 @@
 import React from 'react';
 import { Platform, Text, Image } from 'react-native';
 import { sendEditMessage } from '../hooks/useAdminMode';
-import { getOverride, useFieldOverrides, getActiveChannelForOverrides } from '../hooks/useFieldOverrides';
+import { getOverride, useFieldOverrides, getActiveChannelForOverrides, areOverridesReady } from '../hooks/useFieldOverrides';
 
 type Props = {
   table: string;

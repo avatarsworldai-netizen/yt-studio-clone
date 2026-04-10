@@ -4,6 +4,11 @@ import { Platform } from 'react-native';
 // Global store for field overrides from admin panel
 const overrides: Record<string, string> = {};
 const listeners: Set<() => void> = new Set();
+let _overridesReady = false;
+let _loadPromise: Promise<void> | null = null;
+
+// Active channel ID for scoping overrides
+let _activeChannelId = '';
 
 function notify() {
   listeners.forEach(fn => fn());
@@ -22,17 +27,24 @@ async function loadFromSupabase() {
       for (const row of rows) {
         overrides[row.id] = row.value;
       }
-      if (rows.length > 0) notify();
     }
   } catch {}
+  _overridesReady = true;
+  notify();
 }
 
 // Load on init
-loadFromSupabase();
+_loadPromise = loadFromSupabase();
 
-// Reload (called on channel switch to pick up fresh data)
-export function reloadOverrides() {
-  loadFromSupabase();
+// Reload (called on channel switch) — returns a promise
+export async function reloadOverrides() {
+  _loadPromise = loadFromSupabase();
+  return _loadPromise;
+}
+
+// Check if overrides have been loaded
+export function areOverridesReady() {
+  return _overridesReady;
 }
 
 // Listen for postMessage from admin panel (iframe mode)
@@ -67,12 +79,9 @@ export function getOverride(table: string, column: string, rowId: string): strin
   return undefined;
 }
 
-// Active channel ID for scoping overrides
-let _activeChannelId = '';
-
 export function setActiveChannelForOverrides(channelId: string) {
   _activeChannelId = channelId;
-  notify(); // Trigger re-render on channel switch
+  notify();
 }
 
 export function getActiveChannelForOverrides() {
