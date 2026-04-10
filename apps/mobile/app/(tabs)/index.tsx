@@ -65,14 +65,14 @@ export default function Dashboard() {
     <ScrollView style={s.root} showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#1db4a5" />}>
       {/* ── Channel row ── */}
       <TouchableOpacity style={s.chRow} activeOpacity={0.7} onPress={() => !isAdmin && r.push('/profile')}>
-        <AE isAdmin={isAdmin} table="channel" column="avatar_url" rowId={CID} label="Avatar del canal" value={ch?.avatar_url || ''} type="image">
+        <AE isAdmin={isAdmin} table="channel" column="avatar_url" rowId={CID} direct label="Avatar del canal" value={ch?.avatar_url || ''} type="image">
           <Image source={{ uri: ch?.avatar_url || 'https://picsum.photos/200/200' }} style={s.chAva} />
         </AE>
         <View style={s.chMeta}>
-          <AE isAdmin={isAdmin} table="channel" column="name" rowId={CID} label="Nombre del canal" value={ch?.name || ''}>
+          <AE isAdmin={isAdmin} table="channel" column="name" rowId={CID} direct label="Nombre del canal" value={ch?.name || ''}>
             <Text style={s.chName} numberOfLines={1}>{ch?.name || ''}</Text>
           </AE>
-          <AE isAdmin={isAdmin} table="channel" column="subscriber_count" rowId={CID} label="Suscriptores" value={ch?.subscriber_count || 0} type="number">
+          <AE isAdmin={isAdmin} table="channel" column="subscriber_count" rowId={CID} direct label="Suscriptores" value={ch?.subscriber_count || 0} type="number">
             <Text style={s.chSubs}>{n(ch?.subscriber_count || 0)}</Text>
           </AE>
           <Text style={s.chLabel}>Suscriptores totales</Text>
@@ -86,16 +86,16 @@ export default function Dashboard() {
           <Text style={s.secRight}>Últimos 28 días</Text>
         </View>
         <View style={s.grid}>
-          <AE isAdmin={isAdmin} table="dashboard_stats" column="views" rowId={st?.id || ''} label="Visualizaciones" value={st?.views || 0} type="number">
+          <AE isAdmin={isAdmin} table="dashboard_stats" direct column="views" rowId={st?.id || ''} label="Visualizaciones" value={st?.views || 0} type="number">
             <MCard label="Visualizaciones" value={n(st?.views || 0)} down={false} />
           </AE>
-          <AE isAdmin={isAdmin} table="dashboard_stats" column="watch_time_hours" rowId={st?.id || ''} label="Tiempo de visualización" value={st?.watch_time_hours || 0} type="number">
+          <AE isAdmin={isAdmin} table="dashboard_stats" direct column="watch_time_hours" rowId={st?.id || ''} label="Tiempo de visualización" value={st?.watch_time_hours || 0} type="number">
             <MCard label="Tiempo de visualización (ho..." value={n(st?.watch_time_hours || 0)} down={false} />
           </AE>
-          <AE isAdmin={isAdmin} table="dashboard_stats" column="subscribers_net" rowId={st?.id || ''} label="Suscriptores neto" value={st?.subscribers_net || 0} type="number">
+          <AE isAdmin={isAdmin} table="dashboard_stats" direct column="subscribers_net" rowId={st?.id || ''} label="Suscriptores neto" value={st?.subscribers_net || 0} type="number">
             <MCard label="Suscriptores" value={n(st?.subscribers_net || 0)} hideArrow />
           </AE>
-          <AE isAdmin={isAdmin} table="dashboard_stats" column="estimated_revenue" rowId={st?.id || ''} label="Ingresos estimados" value={st?.estimated_revenue || 0} type="number">
+          <AE isAdmin={isAdmin} table="dashboard_stats" direct column="estimated_revenue" rowId={st?.id || ''} label="Ingresos estimados" value={st?.estimated_revenue || 0} type="number">
             <MCard label="Ingresos estimados" value={`${st?.estimated_revenue || 0}€`} down={false} />
           </AE>
         </View>
@@ -110,11 +110,11 @@ export default function Dashboard() {
             <View key={v.id} style={s.vCard}>
               {/* Thumbnail + title */}
               <TouchableOpacity style={s.vTop} activeOpacity={0.7} onPress={() => !isAdmin && r.push(`/video/${v.id}`)}>
-                <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId={v.id} label="Thumbnail" value={v.thumbnail_url || ''} type="image">
+                <AE isAdmin={isAdmin} table="videos" direct column="thumbnail_url" rowId={v.id} label="Thumbnail" value={v.thumbnail_url || ''} type="image">
                   <Image source={{ uri: v.thumbnail_url || 'https://picsum.photos/640/360' }} style={s.vThumb} />
                 </AE>
                 <View style={s.vInfo}>
-                  <AE isAdmin={isAdmin} table="videos" column="title" rowId={v.id} label="Título del video" value={v.title}>
+                  <AE isAdmin={isAdmin} table="videos" direct column="title" rowId={v.id} label="Título del video" value={v.title}>
                     <Text style={s.vTitle} numberOfLines={2}>{v.title}</Text>
                   </AE>
                   <Text style={s.vDate}>{since(v.published_at)}</Text>
@@ -128,15 +128,15 @@ export default function Dashboard() {
               <View style={s.vQuick}>
                 {v.estimated_revenue > 0 && <Image source={IC.money} style={s.qIcon} resizeMode="contain" />}
                 <Image source={IC.chart} style={s.qIconSm} resizeMode="contain" />
-                <AE isAdmin={isAdmin} table="videos" column="view_count" rowId={v.id} label="Visualizaciones" value={v.view_count}>
+                <AE isAdmin={isAdmin} table="videos" direct column="view_count" rowId={v.id} label="Visualizaciones" value={v.view_count}>
                   <Text style={s.qText}>{n(v.view_count)}</Text>
                 </AE>
                 <Image source={IC.like} style={s.qIconSm} resizeMode="contain" />
-                <AE isAdmin={isAdmin} table="videos" column="like_count" rowId={v.id} label="Likes" value={v.like_count}>
+                <AE isAdmin={isAdmin} table="videos" direct column="like_count" rowId={v.id} label="Likes" value={v.like_count}>
                   <Text style={[s.qText, { marginRight: 25 }]}>{n(v.like_count)}</Text>
                 </AE>
                 <Image source={IC.comment} style={[s.qIconSm, { marginRight: 5 }]} resizeMode="contain" />
-                <AE isAdmin={isAdmin} table="videos" column="comment_count" rowId={v.id} label="Comentarios" value={v.comment_count}>
+                <AE isAdmin={isAdmin} table="videos" direct column="comment_count" rowId={v.id} label="Comentarios" value={v.comment_count}>
                   <Text style={[s.qText, { marginRight: 0 }]}>{v.comment_count}</Text>
                 </AE>
                 <View style={{ flex: 1 }} />

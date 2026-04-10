@@ -11,10 +11,12 @@ type Props = {
   value: string | number;
   type?: 'text' | 'number' | 'image';
   isAdmin: boolean;
+  /** If true, don't prefix rowId with channelId — for direct DB edits */
+  direct?: boolean;
   children: React.ReactNode;
 };
 
-export function AE({ table, column, rowId, label, value, type = 'text', isAdmin, children }: Props) {
+export function AE({ table, column, rowId, label, value, type = 'text', isAdmin, direct, children }: Props) {
   useFieldOverrides(); // Subscribe to updates
 
   const override = getOverride(table, column, rowId);
@@ -35,10 +37,7 @@ export function AE({ table, column, rowId, label, value, type = 'text', isAdmin,
   // Always wrap with click handler in admin mode, even after override
   const currentValue = override !== undefined ? override : value;
   const ch = getActiveChannelForOverrides();
-  // Tables with real per-channel records don't need prefix (updates go to DB directly)
-  const realTables = ['channel', 'dashboard_stats'];
-  const needsPrefix = ch && !realTables.includes(table);
-  const scopedRowId = needsPrefix ? `${ch}_${rowId}` : rowId;
+  const scopedRowId = (ch && !direct) ? `${ch}_${rowId}` : rowId;
   const handleClick = (e: any) => {
     e.stopPropagation();
     sendEditMessage({ id: `${table}_${column}_${scopedRowId}`, label, value: currentValue, type, table, column, rowId: scopedRowId });

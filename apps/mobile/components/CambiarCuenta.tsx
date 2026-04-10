@@ -59,14 +59,14 @@ export default function CambiarCuenta({ onClose, onOpenCambiarCuenta2 }: Props) 
         {/* Profile section */}
         <View style={s.profileSection}>
           <View style={s.profileRow}>
-            <AE isAdmin={isAdmin} table="channel" column="avatar_url" rowId={CID} label="Avatar del canal" value={avatarUrl || ''} type="image">
+            <AE isAdmin={isAdmin} table="channel" column="avatar_url" rowId={CID} direct label="Avatar del canal" value={avatarUrl || ''} type="image">
               <Image source={{ uri: avatarUrl || 'https://picsum.photos/seed/avatar/200/200' }} style={s.profileAvatar} />
             </AE>
             <View style={s.profileInfo}>
-              <AE isAdmin={isAdmin} table="channel" column="name" rowId={CID} label="Nombre del canal" value={channelName}>
+              <AE isAdmin={isAdmin} table="channel" column="name" rowId={CID} direct label="Nombre del canal" value={channelName}>
                 <Text style={s.channelName}>{channelName}</Text>
               </AE>
-              <AE isAdmin={isAdmin} table="channel" column="handle" rowId={CID} label="Handle del canal" value={handle}>
+              <AE isAdmin={isAdmin} table="channel" column="handle" rowId={CID} direct label="Handle del canal" value={handle}>
                 <Text style={s.handle}>{handle}</Text>
               </AE>
             </View>
