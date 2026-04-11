@@ -102,9 +102,57 @@ function RippleTabButton({ children, onPress, ...rest }: any) {
   );
 }
 
+function ChannelToast({ channelName, visible }: { channelName: string; visible: boolean }) {
+  const opacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (visible) {
+      Animated.sequence([
+        Animated.timing(opacity, { toValue: 1, duration: 300, useNativeDriver: true }),
+        Animated.delay(2500),
+        Animated.timing(opacity, { toValue: 0, duration: 300, useNativeDriver: true }),
+      ]).start();
+    }
+  }, [visible, channelName]);
+
+  if (!visible) return null;
+
+  return (
+    <Animated.View style={{
+      position: 'absolute', bottom: 110, left: 16, right: 16, zIndex: 2000,
+      backgroundColor: '#1E1E1E', borderRadius: 8, paddingHorizontal: 20, paddingVertical: 16,
+      opacity,
+    }}>
+      <Text style={{ color: '#DEDEDE', fontSize: 13, fontWeight: '400', lineHeight: 18 }}>
+        Has iniciado sesión como{'\n'}{channelName}
+      </Text>
+    </Animated.View>
+  );
+}
+
 export default function TabLayout() {
   const [showAccount, setShowAccount] = useState(false);
   const [showAccount2, setShowAccount2] = useState(false);
+  const [toastChannel, setToastChannel] = useState('');
+  const [toastVisible, setToastVisible] = useState(false);
+  const { activeChannelId } = useChannel();
+
+  // Show toast when channel changes (skip initial)
+  const prevChannelRef = useRef(activeChannelId);
+  useEffect(() => {
+    if (prevChannelRef.current !== activeChannelId) {
+      prevChannelRef.current = activeChannelId;
+      // Fetch channel name for toast
+      supabase.from('channel').select('name').eq('id', activeChannelId).single()
+        .then(({ data }) => {
+          if (data?.name) {
+            setToastChannel(data.name);
+            setToastVisible(false);
+            setTimeout(() => setToastVisible(true), 50);
+          }
+        });
+    }
+  }, [activeChannelId]);
 
   return (
     <AccountScreenContext.Provider value={{ open: () => setShowAccount(true) }}>
@@ -118,6 +166,7 @@ export default function TabLayout() {
         <CambiarCuenta onClose={() => setShowAccount(false)} onOpenCambiarCuenta2={() => setShowAccount2(true)} />
       </View>
     )}
+    <ChannelToast channelName={toastChannel} visible={toastVisible} />
     <Tabs screenListeners={{ tabPress: () => { setShowAccount(false); setShowAccount2(false); } }} screenOptions={{
       headerStyle: { backgroundColor: C.white, elevation: 0, shadowOpacity: 0, borderBottomWidth: 0 },
       headerShadowVisible: false,
