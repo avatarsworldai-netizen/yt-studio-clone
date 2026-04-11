@@ -123,7 +123,7 @@ function ChannelToast({ channelName, visible }: { channelName: string; visible: 
       backgroundColor: '#1E1E1E', borderRadius: 8, paddingHorizontal: 20, paddingVertical: 16,
       opacity,
     }}>
-      <Text style={{ color: '#DEDEDE', fontSize: 13, fontWeight: '400', lineHeight: 18 }}>
+      <Text style={{ color: '#F5F5F5', fontSize: 15, fontWeight: '400', lineHeight: 21 }}>
         Has iniciado sesión como{'\n'}{channelName}
       </Text>
     </Animated.View>
