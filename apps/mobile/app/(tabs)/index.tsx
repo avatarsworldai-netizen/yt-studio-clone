@@ -4,10 +4,12 @@ import { useRouter } from 'expo-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useRealtimeSubscription } from '../../hooks/useRealtimeSubscription';
-import { useAdminMode } from '../../hooks/useAdminMode';
+import { useAdminMode, sendEditMessage } from '../../hooks/useAdminMode';
 import { AE } from '../../components/AdminEditable';
+import { getActiveChannelForOverrides } from '../../hooks/useFieldOverrides';
 import { C, F } from '../../constants/theme';
 import { useChannel } from '../../contexts/ChannelContext';
+import { getOverride } from '../../hooks/useFieldOverrides';
 
 // Figma icon assets
 const IC = {
@@ -87,16 +89,16 @@ export default function Dashboard() {
         </View>
         <View style={s.grid}>
           <AE isAdmin={isAdmin} table="dashboard_stats" direct column="views" rowId={st?.id || ''} label="Visualizaciones" value={st?.views || 0} type="number">
-            <MCard label="Visualizaciones" value={n(st?.views || 0)} down={false} />
+            <MCard label="Visualizaciones" value={n(st?.views || 0)} down={Number(st?.views_change_percent || 0) < 0} arrowId="arrow_views" isAdmin={isAdmin} />
           </AE>
           <AE isAdmin={isAdmin} table="dashboard_stats" direct column="watch_time_hours" rowId={st?.id || ''} label="Tiempo de visualización" value={st?.watch_time_hours || 0} type="number">
-            <MCard label="Tiempo de visualización (ho..." value={n(st?.watch_time_hours || 0)} down={false} />
+            <MCard label="Tiempo de visualización (ho..." value={n(st?.watch_time_hours || 0)} down={Number(st?.watch_time_change_percent || 0) < 0} arrowId="arrow_watch" isAdmin={isAdmin} />
           </AE>
           <AE isAdmin={isAdmin} table="dashboard_stats" direct column="subscribers_net" rowId={st?.id || ''} label="Suscriptores neto" value={st?.subscribers_net || 0} type="number">
-            <MCard label="Suscriptores" value={n(st?.subscribers_net || 0)} hideArrow />
+            <MCard label="Suscriptores" value={n(st?.subscribers_net || 0)} down={Number(st?.subscribers_net || 0) < 0} arrowId="arrow_subs" isAdmin={isAdmin} />
           </AE>
           <AE isAdmin={isAdmin} table="dashboard_stats" direct column="estimated_revenue" rowId={st?.id || ''} label="Ingresos estimados" value={st?.estimated_revenue || 0} type="number">
-            <MCard label="Ingresos estimados" value={`${st?.estimated_revenue || 0}€`} down={false} />
+            <MCard label="Ingresos estimados" value={`${st?.estimated_revenue || 0}€`} down={Number(st?.revenue_change_percent || 0) < 0} arrowId="arrow_revenue" isAdmin={isAdmin} />
           </AE>
         </View>
       </View>
@@ -156,7 +158,7 @@ export default function Dashboard() {
                   <View style={s.eRow}>
                     <Text style={s.eLabel}>Visualizaciones</Text>
                     <Text style={s.eVal}>{n(v.view_count)}</Text>
-                    <Image source={IC.greenUp} style={s.eCircleIcon} resizeMode="contain" />
+                    <EditableArrow id={`desp_views_${v.id}`} label="Flecha Visualizaciones desp." defaultDown={false} isAdmin={isAdmin} style={s.eCircleIcon} />
                   </View>
                   <View style={s.eRow}>
                     <View style={s.eLabelWrap}>
@@ -164,12 +166,12 @@ export default function Dashboard() {
                       <Image source={IC.infoCircle} style={s.eInfoIcon} resizeMode="contain" />
                     </View>
                     <Text style={s.eVal}>{v.impression_ctr}%</Text>
-                    <Image source={Number(v.impression_ctr) >= 10 ? IC.checkGreen : IC.greenUp} style={s.eCircleIcon} resizeMode="contain" />
+                    <EditableArrow id={`desp_ctr_${v.id}`} label="Flecha CTR desp." defaultDown={Number(v.impression_ctr) < 10} isAdmin={isAdmin} style={s.eCircleIcon} />
                   </View>
                   <View style={s.eRow}>
                     <Text style={s.eLabel}>Duracion media de las visualizaciones</Text>
                     <Text style={s.eVal}>{v.average_view_duration}</Text>
-                    <Image source={Number(v.average_view_duration?.split(':')[0]) >= 5 ? IC.greenUp : IC.blueDown} style={s.eCircleIcon} resizeMode="contain" />
+                    <EditableArrow id={`desp_dur_${v.id}`} label="Flecha Duración desp." defaultDown={Number(v.average_view_duration?.split(':')[0]) < 5} isAdmin={isAdmin} style={s.eCircleIcon} />
                   </View>
                   <View style={{ height: 12 }} />
                   <View style={s.eRow}>
@@ -191,14 +193,46 @@ export default function Dashboard() {
 
 /* ── Components ── */
 
-function MCard({ label, value, down, hideArrow }: { label: string; value: string; down?: boolean; hideArrow?: boolean }) {
+function EditableArrow({ id, label, defaultDown, isAdmin, style }: { id: string; label: string; defaultDown: boolean; isAdmin: boolean; style?: any }) {
+  const override = getOverride('ui_panel', 'arrow', id);
+  const isDown = override ? override === 'down' : defaultDown;
+
+  return (
+    <TouchableOpacity
+      activeOpacity={0.7}
+      onPress={() => {
+        if (!isAdmin) return;
+        const ch = getActiveChannelForOverrides();
+        const scopedId = ch ? `${ch}_${id}` : id;
+        sendEditMessage({ id: `ui_panel_arrow_${scopedId}`, label: `${label} (escribe: up o down)`, value: isDown ? 'down' : 'up', type: 'text', table: 'ui_panel', column: 'arrow', rowId: scopedId });
+      }}
+    >
+      <Image source={isDown ? IC.arrowDown : IC.greenUp} style={style || s.arrowIcon} resizeMode="contain" />
+    </TouchableOpacity>
+  );
+}
+
+function MCard({ label, value, down, arrowId, isAdmin }: { label: string; value: string; down?: boolean; arrowId?: string; isAdmin?: boolean }) {
+  const override = arrowId ? getOverride('ui_panel', 'arrow', arrowId) : undefined;
+  const isDown = override ? override === 'down' : down;
+
   return (
     <View style={s.mBox}>
       <Text style={s.mLabel} numberOfLines={1}>{label}</Text>
       <View style={s.mValRow}>
         <Text style={s.mValue}>{value}</Text>
-        {!hideArrow && (
-          <Image source={IC.arrowDown} style={[s.arrowIcon, !down && { transform: [{ rotate: '180deg' }] }]} resizeMode="contain" />
+        {arrowId && (
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => {
+              if (!isAdmin) return;
+              const ch = getActiveChannelForOverrides();
+              const scopedId = ch ? `${ch}_${arrowId}` : arrowId;
+              sendEditMessage({ id: `ui_panel_arrow_${scopedId}`, label: `Flecha ${label} (escribe: up o down)`, value: isDown ? 'down' : 'up', type: 'text', table: 'ui_panel', column: 'arrow', rowId: scopedId });
+            }}
+          >
+            <Image source={isDown ? IC.arrowDown : IC.greenUp} style={s.arrowIcon} resizeMode="contain" />
+          </TouchableOpacity>
         )}
       </View>
     </View>

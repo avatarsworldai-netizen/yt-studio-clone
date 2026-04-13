@@ -10,7 +10,7 @@ import { useRealtimeSubscription } from '../../hooks/useRealtimeSubscription';
 import { C, F } from '../../constants/theme';
 import Svg, { Polyline } from 'react-native-svg';
 import { DynamicLineChart, DynamicBarChart, parseValue, niceStep, formatYLabel, PATTERN_LIST, BAR_PATTERN_LIST, generateBarData } from '../../components/DynamicChart';
-import { getOverride, useFieldOverrides } from '../../hooks/useFieldOverrides';
+import { getOverride, useFieldOverrides, getActiveChannelForOverrides } from '../../hooks/useFieldOverrides';
 import { useChannel } from '../../contexts/ChannelContext';
 
 function fmt(v: any) {
@@ -557,7 +557,21 @@ export default function AnalyticsScreen() {
                     <AE isAdmin={isAdmin} table="dashboard_stats" column="views" rowId={`vgchart_${idx}`} label={`${item.label}`} value={displayVal}>
                       <Text style={s.vgChartVal}>{displayVal}</Text>
                     </AE>
-                    {item.arrow && <Image source={item.arrow} style={s.vgArrow} resizeMode="contain" />}
+                    {item.arrow && (() => {
+                      const cvId = `cv_arrow_${idx}`;
+                      const cvOverride = getOverride('ui_panel', 'arrow', cvId);
+                      const cvDown = cvOverride ? cvOverride === 'down' : !String(item.arrow).includes('green');
+                      return (
+                        <TouchableOpacity activeOpacity={0.7} onPress={() => {
+                          if (!isAdmin) return;
+                          const ch = getActiveChannelForOverrides();
+                          const scopedId = ch ? `${ch}_${cvId}` : cvId;
+                          sendEditMessage({ id: `ui_panel_arrow_${scopedId}`, label: `Flecha CV ${idx+1} (up o down)`, value: cvDown ? 'down' : 'up', type: 'text', table: 'ui_panel', column: 'arrow', rowId: scopedId });
+                        }}>
+                          <Image source={cvDown ? require('../../assets/figma/vg_arrow_down_sm.png') : require('../../assets/figma/arrow_green_up.png')} style={s.vgArrow} resizeMode="contain" />
+                        </TouchableOpacity>
+                      );
+                    })()}
                   </View>
                   {item.sub ? <AE isAdmin={isAdmin} table="dashboard_stats" column="views_change_percent" rowId={`vgchartsub_${idx}`} label={`${item.label} - subtexto`} value={item.sub}>
                     <Text style={s.vgChartSub}>{item.sub}</Text>
@@ -632,9 +646,21 @@ export default function AnalyticsScreen() {
                     <AE isAdmin={isAdmin} table="dashboard_stats" column="views" rowId={`cvchart_${idx}`} label={`${item.label}`} value={displayVal}>
                       <Text style={s.vgChartVal}>{displayVal}</Text>
                     </AE>
-                    {item.arrow && <AE isAdmin={isAdmin} table="ui_analytics" column="arrow_icon" rowId={`vg_arrow_${idx}`} label={`Flecha gráfica VG ${idx+1}`} value="" type="image">
-                      <Image source={item.arrow} style={s.vgArrow} resizeMode="contain" />
-                    </AE>}
+                    {item.arrow && (() => {
+                      const aId = `vg_arrow_${idx}`;
+                      const aOverride = getOverride('ui_panel', 'arrow', aId);
+                      const aDown = aOverride ? aOverride === 'down' : !String(item.arrow).includes('green');
+                      return (
+                        <TouchableOpacity activeOpacity={0.7} onPress={() => {
+                          if (!isAdmin) return;
+                          const ch = getActiveChannelForOverrides();
+                          const scopedId = ch ? `${ch}_${aId}` : aId;
+                          sendEditMessage({ id: `ui_panel_arrow_${scopedId}`, label: `Flecha VG ${idx+1} (up o down)`, value: aDown ? 'down' : 'up', type: 'text', table: 'ui_panel', column: 'arrow', rowId: scopedId });
+                        }}>
+                          <Image source={aDown ? require('../../assets/figma/vg_arrow_down_sm.png') : require('../../assets/figma/arrow_green_up.png')} style={s.vgArrow} resizeMode="contain" />
+                        </TouchableOpacity>
+                      );
+                    })()}
                   </View>
                   {item.sub ? <AE isAdmin={isAdmin} table="dashboard_stats" column="views_change_percent" rowId={`vgchartsub_${idx}`} label={`${item.label} - subtexto`} value={item.sub}>
                     <Text style={[s.vgChartSub, item.subGreen && { color: '#508650' }]}>{item.sub}</Text>
