@@ -1,0 +1,377 @@
+{
+  "communities": {
+    "0": [
+      "dynamicchart_fn",
+      "dynamicchart_formatylabel",
+      "dynamicchart_generatebardata",
+      "dynamicchart_generatepoints",
+      "dynamicchart_getdatelabel",
+      "dynamicchart_handler",
+      "dynamicchart_iscurrencyvalue",
+      "dynamicchart_makepattern",
+      "dynamicchart_nicestep",
+      "dynamicchart_parsevalue",
+      "dynamicchart_seededrand",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx"
+    ],
+    "1": [
+      "usefieldoverrides_areoverridesready",
+      "usefieldoverrides_getactivechannelforoverrides",
+      "usefieldoverrides_getoverride",
+      "usefieldoverrides_loadfromsupabase",
+      "usefieldoverrides_notify",
+      "usefieldoverrides_reloadoverrides",
+      "usefieldoverrides_setactivechannelforoverrides",
+      "usefieldoverrides_usefieldoverrides",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_usefieldoverrides_ts"
+    ],
+    "2": [
+      "page_deletecomment",
+      "page_loadcomments",
+      "page_loadrevenues",
+      "page_savecomment",
+      "page_saverevenue",
+      "page_startedit",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_comments_page_tsx",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_revenue_page_tsx"
+    ],
+    "3": [
+      "page_handler",
+      "page_handlesave",
+      "page_loadchannel",
+      "page_selectfield",
+      "page_updatefield",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_channel_page_tsx",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_page_tsx"
+    ],
+    "4": [
+      "page_loadrealtimestats",
+      "page_loadstats",
+      "page_saverealtimestats",
+      "page_savestat",
+      "page_updatestat",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_stats_page_tsx"
+    ],
+    "5": [
+      "index_formatcurrency",
+      "index_formatnumber",
+      "index_formatpercent",
+      "index_formatwatchtime",
+      "users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_constants_index_ts"
+    ],
+    "6": [
+      "page_deletevideo",
+      "page_formatnumber",
+      "page_loadvideos",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_videos_page_tsx"
+    ],
+    "7": [
+      "channelcontext_channelprovider",
+      "channelcontext_getsavedchannel",
+      "channelcontext_usechannel",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_contexts_channelcontext_tsx"
+    ],
+    "8": [
+      "admineditable_ae",
+      "admineditable_replaceimagechild",
+      "admineditable_replacetextchild",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_admineditable_tsx"
+    ],
+    "9": [
+      "route_post",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_api_update_route_ts",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_api_upload_route_ts"
+    ],
+    "10": [
+      "route_get",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_api_migrate_overrides_route_ts",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_api_migrate_route_ts"
+    ],
+    "11": [
+      "index_n",
+      "index_since",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_index_tsx"
+    ],
+    "12": [
+      "analytics_buildpoints",
+      "analytics_fmt",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_analytics_tsx"
+    ],
+    "13": [
+      "cambiarcuenta2_formatsubs",
+      "cambiarcuenta2_handleselectchannel",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_cambiarcuenta2_tsx"
+    ],
+    "14": [
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_ui_videolistitem_tsx",
+      "videolistitem_formattimeago",
+      "videolistitem_formatviews"
+    ],
+    "15": [
+      "useadminmode_sendeditmessage",
+      "useadminmode_useadminmode",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_useadminmode_ts"
+    ],
+    "16": [
+      "page_videoeditpage",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_videos_id_page_tsx"
+    ],
+    "17": [
+      "editorpanel_handlesubmit",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_editorpanel_tsx"
+    ],
+    "18": [
+      "sectioneditors_statseditor",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_sectioneditors_tsx"
+    ],
+    "19": [
+      "estadisticasscreen_fmt",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_screens_estadisticasscreen_tsx"
+    ],
+    "20": [
+      "contenidoscreen_fmt",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_screens_contenidoscreen_tsx"
+    ],
+    "21": [
+      "profile_n",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_profile_tsx"
+    ],
+    "22": [
+      "id_n",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_video_id_tsx"
+    ],
+    "23": [
+      "layout_logo",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_layout_tsx"
+    ],
+    "24": [
+      "sectionheader_sectionheader",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_ui_sectionheader_tsx"
+    ],
+    "25": [
+      "carousel_carousel",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_ui_carousel_tsx"
+    ],
+    "26": [
+      "userealtimesubscription_userealtimesubscription",
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_userealtimesubscription_ts"
+    ],
+    "27": [
+      "users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_index_ts"
+    ],
+    "28": [
+      "users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_types_video_ts"
+    ],
+    "29": [
+      "users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_types_revenue_ts"
+    ],
+    "30": [
+      "users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_types_analytics_ts"
+    ],
+    "31": [
+      "users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_types_channel_ts"
+    ],
+    "32": [
+      "users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_types_notification_ts"
+    ],
+    "33": [
+      "users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_types_index_ts"
+    ],
+    "34": [
+      "users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_types_comment_ts"
+    ],
+    "35": [
+      "users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_validators_video_ts"
+    ],
+    "36": [
+      "users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_validators_revenue_ts"
+    ],
+    "37": [
+      "users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_validators_channel_ts"
+    ],
+    "38": [
+      "users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_validators_index_ts"
+    ],
+    "39": [
+      "users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_validators_comment_ts"
+    ],
+    "40": [
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_next_env_d_ts"
+    ],
+    "41": [
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_next_config_ts"
+    ],
+    "42": [
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_layout_tsx"
+    ],
+    "43": [
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_layout_sidebar_tsx"
+    ],
+    "44": [
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_phonepreview_tsx"
+    ],
+    "45": [
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_tabbar_tsx"
+    ],
+    "46": [
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_screens_panelscreen_tsx"
+    ],
+    "47": [
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_screens_comunidadscreen_tsx"
+    ],
+    "48": [
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_screens_ingresosscreen_tsx"
+    ],
+    "49": [
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_admin_lib_supabase_ts"
+    ],
+    "50": [
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_layout_tsx"
+    ],
+    "51": [
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_content_tsx"
+    ],
+    "52": [
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_comments_tsx"
+    ],
+    "53": [
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_revenue_tsx"
+    ],
+    "54": [
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_constants_theme_ts"
+    ],
+    "55": [
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_cambiarcuenta_tsx"
+    ],
+    "56": [
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_ui_statcard_tsx"
+    ],
+    "57": [
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_ui_commentcard_tsx"
+    ],
+    "58": [
+      "users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_lib_supabase_ts"
+    ]
+  },
+  "cohesion": {
+    "0": 0.21,
+    "1": 0.31,
+    "2": 0.36,
+    "3": 0.29,
+    "4": 0.33,
+    "5": 0.4,
+    "6": 0.67,
+    "7": 0.5,
+    "8": 0.83,
+    "9": 0.67,
+    "10": 0.67,
+    "11": 0.67,
+    "12": 0.67,
+    "13": 0.67,
+    "14": 1.0,
+    "15": 0.67,
+    "16": 1.0,
+    "17": 1.0,
+    "18": 1.0,
+    "19": 1.0,
+    "20": 1.0,
+    "21": 1.0,
+    "22": 1.0,
+    "23": 1.0,
+    "24": 1.0,
+    "25": 1.0,
+    "26": 1.0,
+    "27": 1.0,
+    "28": 1.0,
+    "29": 1.0,
+    "30": 1.0,
+    "31": 1.0,
+    "32": 1.0,
+    "33": 1.0,
+    "34": 1.0,
+    "35": 1.0,
+    "36": 1.0,
+    "37": 1.0,
+    "38": 1.0,
+    "39": 1.0,
+    "40": 1.0,
+    "41": 1.0,
+    "42": 1.0,
+    "43": 1.0,
+    "44": 1.0,
+    "45": 1.0,
+    "46": 1.0,
+    "47": 1.0,
+    "48": 1.0,
+    "49": 1.0,
+    "50": 1.0,
+    "51": 1.0,
+    "52": 1.0,
+    "53": 1.0,
+    "54": 1.0,
+    "55": 1.0,
+    "56": 1.0,
+    "57": 1.0,
+    "58": 1.0
+  },
+  "gods": [
+    {
+      "id": "page_loadcomments",
+      "label": "loadComments()",
+      "edges": 3
+    },
+    {
+      "id": "admineditable_ae",
+      "label": "AE()",
+      "edges": 3
+    },
+    {
+      "id": "dynamicchart_handler",
+      "label": "handler()",
+      "edges": 3
+    },
+    {
+      "id": "usefieldoverrides_notify",
+      "label": "notify()",
+      "edges": 3
+    },
+    {
+      "id": "usefieldoverrides_loadfromsupabase",
+      "label": "loadFromSupabase()",
+      "edges": 3
+    },
+    {
+      "id": "page_handlesave",
+      "label": "handleSave()",
+      "edges": 2
+    },
+    {
+      "id": "page_deletecomment",
+      "label": "deleteComment()",
+      "edges": 2
+    },
+    {
+      "id": "page_savecomment",
+      "label": "saveComment()",
+      "edges": 2
+    },
+    {
+      "id": "page_startedit",
+      "label": "startEdit()",
+      "edges": 2
+    },
+    {
+      "id": "page_loadvideos",
+      "label": "loadVideos()",
+      "edges": 2
+    }
+  ],
+  "surprises": [],
+  "questions": [
+    {
+      "type": "no_signal",
+      "question": null,
+      "why": "Not enough signal to generate questions. This usually means the corpus has no AMBIGUOUS edges, no bridge nodes, no INFERRED relationships, and all communities are tightly cohesive. Add more files or run with --mode deep to extract richer edges."
+    }
+  ]
+}

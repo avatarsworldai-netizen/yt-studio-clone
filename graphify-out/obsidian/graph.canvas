@@ -1,0 +1,2330 @@
+{
+  "nodes": [
+    {
+      "id": "g0",
+      "type": "group",
+      "label": "generateBarData()",
+      "x": 0,
+      "y": 0,
+      "width": 880,
+      "height": 520,
+      "color": "1"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/DynamicChart.tsx.md",
+      "x": 20,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_dynamicchart_fn",
+      "type": "file",
+      "file": "graphify/obsidian/fn().md",
+      "x": 220,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_dynamicchart_formatylabel",
+      "type": "file",
+      "file": "graphify/obsidian/formatYLabel().md",
+      "x": 420,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_dynamicchart_generatebardata",
+      "type": "file",
+      "file": "graphify/obsidian/generateBarData().md",
+      "x": 20,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_dynamicchart_generatepoints",
+      "type": "file",
+      "file": "graphify/obsidian/generatePoints().md",
+      "x": 220,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_dynamicchart_getdatelabel",
+      "type": "file",
+      "file": "graphify/obsidian/getDateLabel().md",
+      "x": 420,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_dynamicchart_handler",
+      "type": "file",
+      "file": "graphify/obsidian/handler()_1.md",
+      "x": 20,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_dynamicchart_iscurrencyvalue",
+      "type": "file",
+      "file": "graphify/obsidian/isCurrencyValue().md",
+      "x": 220,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_dynamicchart_makepattern",
+      "type": "file",
+      "file": "graphify/obsidian/makePattern().md",
+      "x": 420,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_dynamicchart_nicestep",
+      "type": "file",
+      "file": "graphify/obsidian/niceStep().md",
+      "x": 20,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_dynamicchart_parsevalue",
+      "type": "file",
+      "file": "graphify/obsidian/parseValue().md",
+      "x": 220,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_dynamicchart_seededrand",
+      "type": "file",
+      "file": "graphify/obsidian/seededRand().md",
+      "x": 420,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g1",
+      "type": "group",
+      "label": "getActiveChannelForOverrides()",
+      "x": 960,
+      "y": 0,
+      "width": 660,
+      "height": 420,
+      "color": "2"
+    },
+    {
+      "id": "n_usefieldoverrides_areoverridesready",
+      "type": "file",
+      "file": "graphify/obsidian/areOverridesReady().md",
+      "x": 980,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_usefieldoverrides_getactivechannelforoverrides",
+      "type": "file",
+      "file": "graphify/obsidian/getActiveChannelForOverrides().md",
+      "x": 1180,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_usefieldoverrides_getoverride",
+      "type": "file",
+      "file": "graphify/obsidian/getOverride().md",
+      "x": 1380,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_usefieldoverrides_loadfromsupabase",
+      "type": "file",
+      "file": "graphify/obsidian/loadFromSupabase().md",
+      "x": 980,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_usefieldoverrides_notify",
+      "type": "file",
+      "file": "graphify/obsidian/notify().md",
+      "x": 1180,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_usefieldoverrides_reloadoverrides",
+      "type": "file",
+      "file": "graphify/obsidian/reloadOverrides().md",
+      "x": 1380,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_usefieldoverrides_setactivechannelforoverrides",
+      "type": "file",
+      "file": "graphify/obsidian/setActiveChannelForOverrides().md",
+      "x": 980,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_usefieldoverrides_usefieldoverrides",
+      "type": "file",
+      "file": "graphify/obsidian/useFieldOverrides().md",
+      "x": 1180,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_usefieldoverrides_ts",
+      "type": "file",
+      "file": "graphify/obsidian/useFieldOverrides.ts.md",
+      "x": 1380,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g2",
+      "type": "group",
+      "label": "deleteComment()",
+      "x": 1700,
+      "y": 0,
+      "width": 660,
+      "height": 420,
+      "color": "3"
+    },
+    {
+      "id": "n_page_deletecomment",
+      "type": "file",
+      "file": "graphify/obsidian/deleteComment().md",
+      "x": 1720,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_page_loadcomments",
+      "type": "file",
+      "file": "graphify/obsidian/loadComments().md",
+      "x": 1920,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_page_loadrevenues",
+      "type": "file",
+      "file": "graphify/obsidian/loadRevenues().md",
+      "x": 2120,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_comments_page_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/page.tsx_1.md",
+      "x": 1720,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_revenue_page_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/page.tsx_5.md",
+      "x": 1920,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_page_savecomment",
+      "type": "file",
+      "file": "graphify/obsidian/saveComment().md",
+      "x": 2120,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_page_saverevenue",
+      "type": "file",
+      "file": "graphify/obsidian/saveRevenue().md",
+      "x": 1720,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_page_startedit",
+      "type": "file",
+      "file": "graphify/obsidian/startEdit().md",
+      "x": 1920,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g3",
+      "type": "group",
+      "label": "loadChannel()",
+      "x": 2440,
+      "y": 0,
+      "width": 660,
+      "height": 420,
+      "color": "4"
+    },
+    {
+      "id": "n_page_handlesave",
+      "type": "file",
+      "file": "graphify/obsidian/handleSave().md",
+      "x": 2460,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_page_handler",
+      "type": "file",
+      "file": "graphify/obsidian/handler().md",
+      "x": 2660,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_page_loadchannel",
+      "type": "file",
+      "file": "graphify/obsidian/loadChannel().md",
+      "x": 2860,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_channel_page_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/page.tsx_2.md",
+      "x": 2460,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_page_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/page.tsx.md",
+      "x": 2660,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_page_selectfield",
+      "type": "file",
+      "file": "graphify/obsidian/selectField().md",
+      "x": 2860,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_page_updatefield",
+      "type": "file",
+      "file": "graphify/obsidian/updateField().md",
+      "x": 2460,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g4",
+      "type": "group",
+      "label": "loadRealtimeStats()",
+      "x": 3180,
+      "y": 0,
+      "width": 660,
+      "height": 400,
+      "color": "5"
+    },
+    {
+      "id": "n_page_loadrealtimestats",
+      "type": "file",
+      "file": "graphify/obsidian/loadRealtimeStats().md",
+      "x": 3200,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_page_loadstats",
+      "type": "file",
+      "file": "graphify/obsidian/loadStats().md",
+      "x": 3400,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_stats_page_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/page.tsx_6.md",
+      "x": 3600,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_page_saverealtimestats",
+      "type": "file",
+      "file": "graphify/obsidian/saveRealtimeStats().md",
+      "x": 3200,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_page_savestat",
+      "type": "file",
+      "file": "graphify/obsidian/saveStat().md",
+      "x": 3400,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_page_updatestat",
+      "type": "file",
+      "file": "graphify/obsidian/updateStat().md",
+      "x": 3600,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g5",
+      "type": "group",
+      "label": "formatWatchTime()",
+      "x": 3920,
+      "y": 0,
+      "width": 660,
+      "height": 400,
+      "color": "6"
+    },
+    {
+      "id": "n_index_formatcurrency",
+      "type": "file",
+      "file": "graphify/obsidian/formatCurrency().md",
+      "x": 3940,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_index_formatnumber",
+      "type": "file",
+      "file": "graphify/obsidian/formatNumber().md",
+      "x": 4140,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_index_formatpercent",
+      "type": "file",
+      "file": "graphify/obsidian/formatPercent().md",
+      "x": 4340,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_index_formatwatchtime",
+      "type": "file",
+      "file": "graphify/obsidian/formatWatchTime().md",
+      "x": 3940,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_constants_index_ts",
+      "type": "file",
+      "file": "graphify/obsidian/index.ts_2.md",
+      "x": 4140,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g6",
+      "type": "group",
+      "label": "formatNumber()",
+      "x": 4660,
+      "y": 0,
+      "width": 600,
+      "height": 400,
+      "color": "1"
+    },
+    {
+      "id": "n_page_deletevideo",
+      "type": "file",
+      "file": "graphify/obsidian/deleteVideo().md",
+      "x": 4680,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_page_formatnumber",
+      "type": "file",
+      "file": "graphify/obsidian/formatNumber()_1.md",
+      "x": 4880,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_page_loadvideos",
+      "type": "file",
+      "file": "graphify/obsidian/loadVideos().md",
+      "x": 5080,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_videos_page_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/page.tsx_3.md",
+      "x": 4680,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g7",
+      "type": "group",
+      "label": "ChannelProvider()",
+      "x": 5340,
+      "y": 0,
+      "width": 600,
+      "height": 400,
+      "color": "2"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_contexts_channelcontext_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/ChannelContext.tsx.md",
+      "x": 5360,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_channelcontext_channelprovider",
+      "type": "file",
+      "file": "graphify/obsidian/ChannelProvider().md",
+      "x": 5560,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_channelcontext_getsavedchannel",
+      "type": "file",
+      "file": "graphify/obsidian/getSavedChannel().md",
+      "x": 5760,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_channelcontext_usechannel",
+      "type": "file",
+      "file": "graphify/obsidian/useChannel().md",
+      "x": 5360,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g8",
+      "type": "group",
+      "label": "replaceImageChild()",
+      "x": 0,
+      "y": 600,
+      "width": 600,
+      "height": 400,
+      "color": "3"
+    },
+    {
+      "id": "n_admineditable_ae",
+      "type": "file",
+      "file": "graphify/obsidian/AE().md",
+      "x": 20,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_admineditable_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/AdminEditable.tsx.md",
+      "x": 220,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_admineditable_replaceimagechild",
+      "type": "file",
+      "file": "graphify/obsidian/replaceImageChild().md",
+      "x": 420,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_admineditable_replacetextchild",
+      "type": "file",
+      "file": "graphify/obsidian/replaceTextChild().md",
+      "x": 20,
+      "y": 760,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g9",
+      "type": "group",
+      "label": "POST()",
+      "x": 960,
+      "y": 600,
+      "width": 600,
+      "height": 400,
+      "color": "4"
+    },
+    {
+      "id": "n_route_post",
+      "type": "file",
+      "file": "graphify/obsidian/POST().md",
+      "x": 980,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_api_update_route_ts",
+      "type": "file",
+      "file": "graphify/obsidian/route.ts.md",
+      "x": 1180,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_api_upload_route_ts",
+      "type": "file",
+      "file": "graphify/obsidian/route.ts_3.md",
+      "x": 1380,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g10",
+      "type": "group",
+      "label": "route/GET()",
+      "x": 1700,
+      "y": 600,
+      "width": 600,
+      "height": 400,
+      "color": "5"
+    },
+    {
+      "id": "n_route_get",
+      "type": "file",
+      "file": "graphify/obsidian/GET().md",
+      "x": 1720,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_api_migrate_overrides_route_ts",
+      "type": "file",
+      "file": "graphify/obsidian/route.ts_2.md",
+      "x": 1920,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_api_migrate_route_ts",
+      "type": "file",
+      "file": "graphify/obsidian/route.ts_1.md",
+      "x": 2120,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g11",
+      "type": "group",
+      "label": "since()",
+      "x": 2440,
+      "y": 600,
+      "width": 600,
+      "height": 400,
+      "color": "6"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_index_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/index.tsx.md",
+      "x": 2460,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_index_n",
+      "type": "file",
+      "file": "graphify/obsidian/n()_2.md",
+      "x": 2660,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_index_since",
+      "type": "file",
+      "file": "graphify/obsidian/since().md",
+      "x": 2860,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g12",
+      "type": "group",
+      "label": "buildPoints()",
+      "x": 3180,
+      "y": 600,
+      "width": 600,
+      "height": 400,
+      "color": "1"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_analytics_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/analytics.tsx.md",
+      "x": 3200,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_analytics_buildpoints",
+      "type": "file",
+      "file": "graphify/obsidian/buildPoints().md",
+      "x": 3400,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_analytics_fmt",
+      "type": "file",
+      "file": "graphify/obsidian/fmt()_2.md",
+      "x": 3600,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g13",
+      "type": "group",
+      "label": "handleSelectChannel()",
+      "x": 3920,
+      "y": 600,
+      "width": 600,
+      "height": 400,
+      "color": "2"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_cambiarcuenta2_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/CambiarCuenta2.tsx.md",
+      "x": 3940,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_cambiarcuenta2_formatsubs",
+      "type": "file",
+      "file": "graphify/obsidian/formatSubs().md",
+      "x": 4140,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_cambiarcuenta2_handleselectchannel",
+      "type": "file",
+      "file": "graphify/obsidian/handleSelectChannel().md",
+      "x": 4340,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g14",
+      "type": "group",
+      "label": "formatTimeAgo()",
+      "x": 4660,
+      "y": 600,
+      "width": 600,
+      "height": 400,
+      "color": "3"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_ui_videolistitem_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/VideoListItem.tsx.md",
+      "x": 4680,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_videolistitem_formattimeago",
+      "type": "file",
+      "file": "graphify/obsidian/formatTimeAgo().md",
+      "x": 4880,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_videolistitem_formatviews",
+      "type": "file",
+      "file": "graphify/obsidian/formatViews().md",
+      "x": 5080,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g15",
+      "type": "group",
+      "label": "sendEditMessage()",
+      "x": 5340,
+      "y": 600,
+      "width": 600,
+      "height": 400,
+      "color": "4"
+    },
+    {
+      "id": "n_useadminmode_sendeditmessage",
+      "type": "file",
+      "file": "graphify/obsidian/sendEditMessage().md",
+      "x": 5360,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_useadminmode_useadminmode",
+      "type": "file",
+      "file": "graphify/obsidian/useAdminMode().md",
+      "x": 5560,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_useadminmode_ts",
+      "type": "file",
+      "file": "graphify/obsidian/useAdminMode.ts.md",
+      "x": 5760,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g16",
+      "type": "group",
+      "label": "VideoEditPage()",
+      "x": 0,
+      "y": 1080,
+      "width": 600,
+      "height": 400,
+      "color": "5"
+    },
+    {
+      "id": "n_page_videoeditpage",
+      "type": "file",
+      "file": "graphify/obsidian/VideoEditPage().md",
+      "x": 20,
+      "y": 1160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_videos_id_page_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/page.tsx_4.md",
+      "x": 220,
+      "y": 1160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g17",
+      "type": "group",
+      "label": "handleSubmit()",
+      "x": 960,
+      "y": 1080,
+      "width": 600,
+      "height": 400,
+      "color": "6"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_editorpanel_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/EditorPanel.tsx.md",
+      "x": 980,
+      "y": 1160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_editorpanel_handlesubmit",
+      "type": "file",
+      "file": "graphify/obsidian/handleSubmit().md",
+      "x": 1180,
+      "y": 1160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g18",
+      "type": "group",
+      "label": "StatsEditor()",
+      "x": 1700,
+      "y": 1080,
+      "width": 600,
+      "height": 400,
+      "color": "1"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_sectioneditors_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/SectionEditors.tsx.md",
+      "x": 1720,
+      "y": 1160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_sectioneditors_statseditor",
+      "type": "file",
+      "file": "graphify/obsidian/StatsEditor().md",
+      "x": 1920,
+      "y": 1160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g19",
+      "type": "group",
+      "label": "fmt() (EstadisticasScreen)",
+      "x": 2440,
+      "y": 1080,
+      "width": 600,
+      "height": 400,
+      "color": "2"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_screens_estadisticasscreen_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/EstadisticasScreen.tsx.md",
+      "x": 2460,
+      "y": 1160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_estadisticasscreen_fmt",
+      "type": "file",
+      "file": "graphify/obsidian/fmt().md",
+      "x": 2660,
+      "y": 1160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g20",
+      "type": "group",
+      "label": "fmt() (ContenidoScreen)",
+      "x": 3180,
+      "y": 1080,
+      "width": 600,
+      "height": 400,
+      "color": "3"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_screens_contenidoscreen_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/ContenidoScreen.tsx.md",
+      "x": 3200,
+      "y": 1160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_contenidoscreen_fmt",
+      "type": "file",
+      "file": "graphify/obsidian/fmt()_1.md",
+      "x": 3400,
+      "y": 1160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g21",
+      "type": "group",
+      "label": "n() (profile)",
+      "x": 3920,
+      "y": 1080,
+      "width": 600,
+      "height": 400,
+      "color": "4"
+    },
+    {
+      "id": "n_profile_n",
+      "type": "file",
+      "file": "graphify/obsidian/n().md",
+      "x": 3940,
+      "y": 1160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_profile_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/profile.tsx.md",
+      "x": 4140,
+      "y": 1160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g22",
+      "type": "group",
+      "label": "n() ([id])",
+      "x": 4660,
+      "y": 1080,
+      "width": 600,
+      "height": 400,
+      "color": "5"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_video_id_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/id.tsx.md",
+      "x": 4680,
+      "y": 1160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_id_n",
+      "type": "file",
+      "file": "graphify/obsidian/n()_1.md",
+      "x": 4880,
+      "y": 1160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g23",
+      "type": "group",
+      "label": "Logo()",
+      "x": 5340,
+      "y": 1080,
+      "width": 600,
+      "height": 400,
+      "color": "6"
+    },
+    {
+      "id": "n_layout_logo",
+      "type": "file",
+      "file": "graphify/obsidian/Logo().md",
+      "x": 5360,
+      "y": 1160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_layout_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/_layout.tsx_1.md",
+      "x": 5560,
+      "y": 1160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g24",
+      "type": "group",
+      "label": "SectionHeader()",
+      "x": 0,
+      "y": 1560,
+      "width": 600,
+      "height": 400,
+      "color": "1"
+    },
+    {
+      "id": "n_sectionheader_sectionheader",
+      "type": "file",
+      "file": "graphify/obsidian/SectionHeader().md",
+      "x": 20,
+      "y": 1640,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_ui_sectionheader_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/SectionHeader.tsx.md",
+      "x": 220,
+      "y": 1640,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g25",
+      "type": "group",
+      "label": "Carousel()",
+      "x": 960,
+      "y": 1560,
+      "width": 600,
+      "height": 400,
+      "color": "2"
+    },
+    {
+      "id": "n_carousel_carousel",
+      "type": "file",
+      "file": "graphify/obsidian/Carousel().md",
+      "x": 980,
+      "y": 1640,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_ui_carousel_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/Carousel.tsx.md",
+      "x": 1180,
+      "y": 1640,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g26",
+      "type": "group",
+      "label": "useRealtimeSubscription()",
+      "x": 1700,
+      "y": 1560,
+      "width": 600,
+      "height": 400,
+      "color": "3"
+    },
+    {
+      "id": "n_userealtimesubscription_userealtimesubscription",
+      "type": "file",
+      "file": "graphify/obsidian/useRealtimeSubscription().md",
+      "x": 1720,
+      "y": 1640,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_userealtimesubscription_ts",
+      "type": "file",
+      "file": "graphify/obsidian/useRealtimeSubscription.ts.md",
+      "x": 1920,
+      "y": 1640,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g27",
+      "type": "group",
+      "label": "index (index)",
+      "x": 2440,
+      "y": 1560,
+      "width": 600,
+      "height": 400,
+      "color": "4"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_index_ts",
+      "type": "file",
+      "file": "graphify/obsidian/index.ts.md",
+      "x": 2460,
+      "y": 1640,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g28",
+      "type": "group",
+      "label": "video (video)",
+      "x": 3180,
+      "y": 1560,
+      "width": 600,
+      "height": 400,
+      "color": "5"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_types_video_ts",
+      "type": "file",
+      "file": "graphify/obsidian/video.ts.md",
+      "x": 3200,
+      "y": 1640,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g29",
+      "type": "group",
+      "label": "revenue (revenue)",
+      "x": 3920,
+      "y": 1560,
+      "width": 600,
+      "height": 400,
+      "color": "6"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_types_revenue_ts",
+      "type": "file",
+      "file": "graphify/obsidian/revenue.ts.md",
+      "x": 3940,
+      "y": 1640,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g30",
+      "type": "group",
+      "label": "analytics",
+      "x": 4660,
+      "y": 1560,
+      "width": 600,
+      "height": 400,
+      "color": "1"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_types_analytics_ts",
+      "type": "file",
+      "file": "graphify/obsidian/analytics.ts.md",
+      "x": 4680,
+      "y": 1640,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g31",
+      "type": "group",
+      "label": "channel (channel)",
+      "x": 5340,
+      "y": 1560,
+      "width": 600,
+      "height": 400,
+      "color": "2"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_types_channel_ts",
+      "type": "file",
+      "file": "graphify/obsidian/channel.ts.md",
+      "x": 5360,
+      "y": 1640,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g32",
+      "type": "group",
+      "label": "notification",
+      "x": 0,
+      "y": 2040,
+      "width": 600,
+      "height": 400,
+      "color": "3"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_types_notification_ts",
+      "type": "file",
+      "file": "graphify/obsidian/notification.ts.md",
+      "x": 20,
+      "y": 2120,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g33",
+      "type": "group",
+      "label": "index (33)",
+      "x": 960,
+      "y": 2040,
+      "width": 600,
+      "height": 400,
+      "color": "4"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_types_index_ts",
+      "type": "file",
+      "file": "graphify/obsidian/index.ts_1.md",
+      "x": 980,
+      "y": 2120,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g34",
+      "type": "group",
+      "label": "comment (comment)",
+      "x": 1700,
+      "y": 2040,
+      "width": 600,
+      "height": 400,
+      "color": "5"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_types_comment_ts",
+      "type": "file",
+      "file": "graphify/obsidian/comment.ts.md",
+      "x": 1720,
+      "y": 2120,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g35",
+      "type": "group",
+      "label": "video (35)",
+      "x": 2440,
+      "y": 2040,
+      "width": 600,
+      "height": 400,
+      "color": "6"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_validators_video_ts",
+      "type": "file",
+      "file": "graphify/obsidian/video.ts_1.md",
+      "x": 2460,
+      "y": 2120,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g36",
+      "type": "group",
+      "label": "revenue (36)",
+      "x": 3180,
+      "y": 2040,
+      "width": 600,
+      "height": 400,
+      "color": "1"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_validators_revenue_ts",
+      "type": "file",
+      "file": "graphify/obsidian/revenue.ts_1.md",
+      "x": 3200,
+      "y": 2120,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g37",
+      "type": "group",
+      "label": "channel (37)",
+      "x": 3920,
+      "y": 2040,
+      "width": 600,
+      "height": 400,
+      "color": "2"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_validators_channel_ts",
+      "type": "file",
+      "file": "graphify/obsidian/channel.ts_1.md",
+      "x": 3940,
+      "y": 2120,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g38",
+      "type": "group",
+      "label": "index (38)",
+      "x": 4660,
+      "y": 2040,
+      "width": 600,
+      "height": 400,
+      "color": "3"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_validators_index_ts",
+      "type": "file",
+      "file": "graphify/obsidian/index.ts_3.md",
+      "x": 4680,
+      "y": 2120,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g39",
+      "type": "group",
+      "label": "comment (39)",
+      "x": 5340,
+      "y": 2040,
+      "width": 600,
+      "height": 400,
+      "color": "4"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_validators_comment_ts",
+      "type": "file",
+      "file": "graphify/obsidian/comment.ts_1.md",
+      "x": 5360,
+      "y": 2120,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g40",
+      "type": "group",
+      "label": "next-env.d",
+      "x": 0,
+      "y": 2520,
+      "width": 600,
+      "height": 400,
+      "color": "5"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_next_env_d_ts",
+      "type": "file",
+      "file": "graphify/obsidian/next-env.d.ts.md",
+      "x": 20,
+      "y": 2600,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g41",
+      "type": "group",
+      "label": "next.config",
+      "x": 960,
+      "y": 2520,
+      "width": 600,
+      "height": 400,
+      "color": "6"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_next_config_ts",
+      "type": "file",
+      "file": "graphify/obsidian/next.config.ts.md",
+      "x": 980,
+      "y": 2600,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g42",
+      "type": "group",
+      "label": "layout",
+      "x": 1700,
+      "y": 2520,
+      "width": 600,
+      "height": 400,
+      "color": "1"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_layout_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/layout.tsx.md",
+      "x": 1720,
+      "y": 2600,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g43",
+      "type": "group",
+      "label": "Sidebar",
+      "x": 2440,
+      "y": 2520,
+      "width": 600,
+      "height": 400,
+      "color": "2"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_layout_sidebar_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/Sidebar.tsx.md",
+      "x": 2460,
+      "y": 2600,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g44",
+      "type": "group",
+      "label": "PhonePreview",
+      "x": 3180,
+      "y": 2520,
+      "width": 600,
+      "height": 400,
+      "color": "3"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_phonepreview_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/PhonePreview.tsx.md",
+      "x": 3200,
+      "y": 2600,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g45",
+      "type": "group",
+      "label": "TabBar",
+      "x": 3920,
+      "y": 2520,
+      "width": 600,
+      "height": 400,
+      "color": "4"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_tabbar_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/TabBar.tsx.md",
+      "x": 3940,
+      "y": 2600,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g46",
+      "type": "group",
+      "label": "PanelScreen",
+      "x": 4660,
+      "y": 2520,
+      "width": 600,
+      "height": 400,
+      "color": "5"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_screens_panelscreen_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/PanelScreen.tsx.md",
+      "x": 4680,
+      "y": 2600,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g47",
+      "type": "group",
+      "label": "ComunidadScreen",
+      "x": 5340,
+      "y": 2520,
+      "width": 600,
+      "height": 400,
+      "color": "6"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_screens_comunidadscreen_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/ComunidadScreen.tsx.md",
+      "x": 5360,
+      "y": 2600,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g48",
+      "type": "group",
+      "label": "IngresosScreen",
+      "x": 0,
+      "y": 3000,
+      "width": 600,
+      "height": 400,
+      "color": "1"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_screens_ingresosscreen_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/IngresosScreen.tsx.md",
+      "x": 20,
+      "y": 3080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g49",
+      "type": "group",
+      "label": "supabase (supabase)",
+      "x": 960,
+      "y": 3000,
+      "width": 600,
+      "height": 400,
+      "color": "2"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_lib_supabase_ts",
+      "type": "file",
+      "file": "graphify/obsidian/supabase.ts.md",
+      "x": 980,
+      "y": 3080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g50",
+      "type": "group",
+      "label": "_layout",
+      "x": 1700,
+      "y": 3000,
+      "width": 600,
+      "height": 400,
+      "color": "3"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_layout_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/_layout.tsx.md",
+      "x": 1720,
+      "y": 3080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g51",
+      "type": "group",
+      "label": "content",
+      "x": 2440,
+      "y": 3000,
+      "width": 600,
+      "height": 400,
+      "color": "4"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_content_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/content.tsx.md",
+      "x": 2460,
+      "y": 3080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g52",
+      "type": "group",
+      "label": "comments",
+      "x": 3180,
+      "y": 3000,
+      "width": 600,
+      "height": 400,
+      "color": "5"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_comments_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/comments.tsx.md",
+      "x": 3200,
+      "y": 3080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g53",
+      "type": "group",
+      "label": "revenue (53)",
+      "x": 3920,
+      "y": 3000,
+      "width": 600,
+      "height": 400,
+      "color": "6"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_revenue_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/revenue.tsx.md",
+      "x": 3940,
+      "y": 3080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g54",
+      "type": "group",
+      "label": "theme",
+      "x": 4660,
+      "y": 3000,
+      "width": 600,
+      "height": 400,
+      "color": "1"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_constants_theme_ts",
+      "type": "file",
+      "file": "graphify/obsidian/theme.ts.md",
+      "x": 4680,
+      "y": 3080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g55",
+      "type": "group",
+      "label": "CambiarCuenta",
+      "x": 5340,
+      "y": 3000,
+      "width": 600,
+      "height": 400,
+      "color": "2"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_cambiarcuenta_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/CambiarCuenta.tsx.md",
+      "x": 5360,
+      "y": 3080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g56",
+      "type": "group",
+      "label": "StatCard",
+      "x": 0,
+      "y": 3480,
+      "width": 600,
+      "height": 400,
+      "color": "3"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_ui_statcard_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/StatCard.tsx.md",
+      "x": 20,
+      "y": 3560,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g57",
+      "type": "group",
+      "label": "CommentCard",
+      "x": 960,
+      "y": 3480,
+      "width": 600,
+      "height": 400,
+      "color": "4"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_ui_commentcard_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/CommentCard.tsx.md",
+      "x": 980,
+      "y": 3560,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g58",
+      "type": "group",
+      "label": "supabase (58)",
+      "x": 1700,
+      "y": 3480,
+      "width": 600,
+      "height": 400,
+      "color": "5"
+    },
+    {
+      "id": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_lib_supabase_ts",
+      "type": "file",
+      "file": "graphify/obsidian/supabase.ts_1.md",
+      "x": 1720,
+      "y": 3560,
+      "width": 180,
+      "height": 60
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_constants_index_ts_index_formatnumber",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_constants_index_ts",
+      "toNode": "n_index_formatnumber",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_constants_index_ts_index_formatcurrency",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_constants_index_ts",
+      "toNode": "n_index_formatcurrency",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_constants_index_ts_index_formatpercent",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_constants_index_ts",
+      "toNode": "n_index_formatpercent",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_constants_index_ts_index_formatwatchtime",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_packages_shared_src_constants_index_ts",
+      "toNode": "n_index_formatwatchtime",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_page_tsx_page_selectfield",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_page_tsx",
+      "toNode": "n_page_selectfield",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_page_tsx_page_handler",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_page_tsx",
+      "toNode": "n_page_handler",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_page_tsx_page_handlesave",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_page_tsx",
+      "toNode": "n_page_handlesave",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_page_handlesave_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_channel_page_tsx",
+      "fromNode": "n_page_handlesave",
+      "toNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_channel_page_tsx",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_comments_page_tsx_page_loadcomments",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_comments_page_tsx",
+      "toNode": "n_page_loadcomments",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_comments_page_tsx_page_deletecomment",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_comments_page_tsx",
+      "toNode": "n_page_deletecomment",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_comments_page_tsx_page_savecomment",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_comments_page_tsx",
+      "toNode": "n_page_savecomment",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_comments_page_tsx_page_startedit",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_comments_page_tsx",
+      "toNode": "n_page_startedit",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_page_loadcomments_page_deletecomment",
+      "fromNode": "n_page_loadcomments",
+      "toNode": "n_page_deletecomment",
+      "label": "calls [EXTRACTED]"
+    },
+    {
+      "id": "e_page_loadcomments_page_savecomment",
+      "fromNode": "n_page_loadcomments",
+      "toNode": "n_page_savecomment",
+      "label": "calls [EXTRACTED]"
+    },
+    {
+      "id": "e_page_startedit_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_revenue_page_tsx",
+      "fromNode": "n_page_startedit",
+      "toNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_revenue_page_tsx",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_channel_page_tsx_page_loadchannel",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_channel_page_tsx",
+      "toNode": "n_page_loadchannel",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_channel_page_tsx_page_updatefield",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_channel_page_tsx",
+      "toNode": "n_page_updatefield",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_videos_page_tsx_page_loadvideos",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_videos_page_tsx",
+      "toNode": "n_page_loadvideos",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_videos_page_tsx_page_deletevideo",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_videos_page_tsx",
+      "toNode": "n_page_deletevideo",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_videos_page_tsx_page_formatnumber",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_videos_page_tsx",
+      "toNode": "n_page_formatnumber",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_page_loadvideos_page_deletevideo",
+      "fromNode": "n_page_loadvideos",
+      "toNode": "n_page_deletevideo",
+      "label": "calls [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_videos_id_page_tsx_page_videoeditpage",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_videos_id_page_tsx",
+      "toNode": "n_page_videoeditpage",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_api_update_route_ts_route_post",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_api_update_route_ts",
+      "toNode": "n_route_post",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_route_post_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_api_upload_route_ts",
+      "fromNode": "n_route_post",
+      "toNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_api_upload_route_ts",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_api_migrate_route_ts_route_get",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_api_migrate_route_ts",
+      "toNode": "n_route_get",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_route_get_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_api_migrate_overrides_route_ts",
+      "fromNode": "n_route_get",
+      "toNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_api_migrate_overrides_route_ts",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_revenue_page_tsx_page_loadrevenues",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_revenue_page_tsx",
+      "toNode": "n_page_loadrevenues",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_revenue_page_tsx_page_saverevenue",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_revenue_page_tsx",
+      "toNode": "n_page_saverevenue",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_page_loadrevenues_page_saverevenue",
+      "fromNode": "n_page_loadrevenues",
+      "toNode": "n_page_saverevenue",
+      "label": "calls [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_stats_page_tsx_page_loadstats",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_stats_page_tsx",
+      "toNode": "n_page_loadstats",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_stats_page_tsx_page_loadrealtimestats",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_stats_page_tsx",
+      "toNode": "n_page_loadrealtimestats",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_stats_page_tsx_page_savestat",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_stats_page_tsx",
+      "toNode": "n_page_savestat",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_stats_page_tsx_page_saverealtimestats",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_stats_page_tsx",
+      "toNode": "n_page_saverealtimestats",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_stats_page_tsx_page_updatestat",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_app_stats_page_tsx",
+      "toNode": "n_page_updatestat",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_editorpanel_tsx_editorpanel_handlesubmit",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_editorpanel_tsx",
+      "toNode": "n_editorpanel_handlesubmit",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_sectioneditors_tsx_sectioneditors_statseditor",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_sectioneditors_tsx",
+      "toNode": "n_sectioneditors_statseditor",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_screens_estadisticasscreen_tsx_estadisticasscreen_fmt",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_screens_estadisticasscreen_tsx",
+      "toNode": "n_estadisticasscreen_fmt",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_screens_contenidoscreen_tsx_contenidoscreen_fmt",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_admin_components_editor_screens_contenidoscreen_tsx",
+      "toNode": "n_contenidoscreen_fmt",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_contexts_channelcontext_tsx_channelcontext_getsavedchannel",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_contexts_channelcontext_tsx",
+      "toNode": "n_channelcontext_getsavedchannel",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_contexts_channelcontext_tsx_channelcontext_channelprovider",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_contexts_channelcontext_tsx",
+      "toNode": "n_channelcontext_channelprovider",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_contexts_channelcontext_tsx_channelcontext_usechannel",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_contexts_channelcontext_tsx",
+      "toNode": "n_channelcontext_usechannel",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_profile_tsx_profile_n",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_profile_tsx",
+      "toNode": "n_profile_n",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_video_id_tsx_id_n",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_video_id_tsx",
+      "toNode": "n_id_n",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_index_tsx_index_n",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_index_tsx",
+      "toNode": "n_index_n",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_index_tsx_index_since",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_index_tsx",
+      "toNode": "n_index_since",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_analytics_tsx_analytics_fmt",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_analytics_tsx",
+      "toNode": "n_analytics_fmt",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_analytics_tsx_analytics_buildpoints",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_analytics_tsx",
+      "toNode": "n_analytics_buildpoints",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_layout_tsx_layout_logo",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_app_tabs_layout_tsx",
+      "toNode": "n_layout_logo",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_admineditable_tsx_admineditable_ae",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_admineditable_tsx",
+      "toNode": "n_admineditable_ae",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_admineditable_tsx_admineditable_replacetextchild",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_admineditable_tsx",
+      "toNode": "n_admineditable_replacetextchild",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_admineditable_tsx_admineditable_replaceimagechild",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_admineditable_tsx",
+      "toNode": "n_admineditable_replaceimagechild",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_admineditable_ae_admineditable_replaceimagechild",
+      "fromNode": "n_admineditable_ae",
+      "toNode": "n_admineditable_replaceimagechild",
+      "label": "calls [EXTRACTED]"
+    },
+    {
+      "id": "e_admineditable_ae_admineditable_replacetextchild",
+      "fromNode": "n_admineditable_ae",
+      "toNode": "n_admineditable_replacetextchild",
+      "label": "calls [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx_dynamicchart_parsevalue",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx",
+      "toNode": "n_dynamicchart_parsevalue",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx_dynamicchart_iscurrencyvalue",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx",
+      "toNode": "n_dynamicchart_iscurrencyvalue",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx_dynamicchart_nicestep",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx",
+      "toNode": "n_dynamicchart_nicestep",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx_dynamicchart_formatylabel",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx",
+      "toNode": "n_dynamicchart_formatylabel",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx_dynamicchart_seededrand",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx",
+      "toNode": "n_dynamicchart_seededrand",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx_dynamicchart_makepattern",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx",
+      "toNode": "n_dynamicchart_makepattern",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx_dynamicchart_generatebardata",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx",
+      "toNode": "n_dynamicchart_generatebardata",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx_dynamicchart_generatepoints",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx",
+      "toNode": "n_dynamicchart_generatepoints",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx_dynamicchart_handler",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx",
+      "toNode": "n_dynamicchart_handler",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx_dynamicchart_getdatelabel",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx",
+      "toNode": "n_dynamicchart_getdatelabel",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx_dynamicchart_fn",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_dynamicchart_tsx",
+      "toNode": "n_dynamicchart_fn",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_dynamicchart_formatylabel_dynamicchart_handler",
+      "fromNode": "n_dynamicchart_formatylabel",
+      "toNode": "n_dynamicchart_handler",
+      "label": "calls [EXTRACTED]"
+    },
+    {
+      "id": "e_dynamicchart_generatepoints_dynamicchart_fn",
+      "fromNode": "n_dynamicchart_generatepoints",
+      "toNode": "n_dynamicchart_fn",
+      "label": "calls [EXTRACTED]"
+    },
+    {
+      "id": "e_dynamicchart_handler_dynamicchart_getdatelabel",
+      "fromNode": "n_dynamicchart_handler",
+      "toNode": "n_dynamicchart_getdatelabel",
+      "label": "calls [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_cambiarcuenta2_tsx_cambiarcuenta2_formatsubs",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_cambiarcuenta2_tsx",
+      "toNode": "n_cambiarcuenta2_formatsubs",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_cambiarcuenta2_tsx_cambiarcuenta2_handleselectchannel",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_cambiarcuenta2_tsx",
+      "toNode": "n_cambiarcuenta2_handleselectchannel",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_ui_videolistitem_tsx_videolistitem_formatviews",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_ui_videolistitem_tsx",
+      "toNode": "n_videolistitem_formatviews",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_ui_videolistitem_tsx_videolistitem_formattimeago",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_ui_videolistitem_tsx",
+      "toNode": "n_videolistitem_formattimeago",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_videolistitem_formatviews_videolistitem_formattimeago",
+      "fromNode": "n_videolistitem_formatviews",
+      "toNode": "n_videolistitem_formattimeago",
+      "label": "calls [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_ui_sectionheader_tsx_sectionheader_sectionheader",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_ui_sectionheader_tsx",
+      "toNode": "n_sectionheader_sectionheader",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_ui_carousel_tsx_carousel_carousel",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_components_ui_carousel_tsx",
+      "toNode": "n_carousel_carousel",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_userealtimesubscription_ts_userealtimesubscription_userealtimesubscription",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_userealtimesubscription_ts",
+      "toNode": "n_userealtimesubscription_userealtimesubscription",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_usefieldoverrides_ts_usefieldoverrides_notify",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_usefieldoverrides_ts",
+      "toNode": "n_usefieldoverrides_notify",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_usefieldoverrides_ts_usefieldoverrides_loadfromsupabase",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_usefieldoverrides_ts",
+      "toNode": "n_usefieldoverrides_loadfromsupabase",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_usefieldoverrides_ts_usefieldoverrides_reloadoverrides",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_usefieldoverrides_ts",
+      "toNode": "n_usefieldoverrides_reloadoverrides",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_usefieldoverrides_ts_usefieldoverrides_areoverridesready",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_usefieldoverrides_ts",
+      "toNode": "n_usefieldoverrides_areoverridesready",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_usefieldoverrides_ts_usefieldoverrides_usefieldoverrides",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_usefieldoverrides_ts",
+      "toNode": "n_usefieldoverrides_usefieldoverrides",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_usefieldoverrides_ts_usefieldoverrides_getoverride",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_usefieldoverrides_ts",
+      "toNode": "n_usefieldoverrides_getoverride",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_usefieldoverrides_ts_usefieldoverrides_setactivechannelforoverrides",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_usefieldoverrides_ts",
+      "toNode": "n_usefieldoverrides_setactivechannelforoverrides",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_usefieldoverrides_ts_usefieldoverrides_getactivechannelforoverrides",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_usefieldoverrides_ts",
+      "toNode": "n_usefieldoverrides_getactivechannelforoverrides",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_usefieldoverrides_notify_usefieldoverrides_loadfromsupabase",
+      "fromNode": "n_usefieldoverrides_notify",
+      "toNode": "n_usefieldoverrides_loadfromsupabase",
+      "label": "calls [EXTRACTED]"
+    },
+    {
+      "id": "e_usefieldoverrides_notify_usefieldoverrides_setactivechannelforoverrides",
+      "fromNode": "n_usefieldoverrides_notify",
+      "toNode": "n_usefieldoverrides_setactivechannelforoverrides",
+      "label": "calls [EXTRACTED]"
+    },
+    {
+      "id": "e_usefieldoverrides_loadfromsupabase_usefieldoverrides_reloadoverrides",
+      "fromNode": "n_usefieldoverrides_loadfromsupabase",
+      "toNode": "n_usefieldoverrides_reloadoverrides",
+      "label": "calls [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_useadminmode_ts_useadminmode_useadminmode",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_useadminmode_ts",
+      "toNode": "n_useadminmode_useadminmode",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_useadminmode_ts_useadminmode_sendeditmessage",
+      "fromNode": "n_users_joelpedroche_documents_github_yt_studio_clone_apps_mobile_hooks_useadminmode_ts",
+      "toNode": "n_useadminmode_sendeditmessage",
+      "label": "contains [EXTRACTED]"
+    }
+  ]
+}
