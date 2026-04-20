@@ -862,7 +862,7 @@ export default function AnalyticsScreen() {
                     <Image source={require('../../assets/figma/popv2_chart_views.png')} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
                   </View>
                 </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 28, marginTop: 1 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 28, marginTop: -4 }}>
                   <Text style={{ fontSize: 10, fontWeight: '400', color: '#767676' }}>0</Text>
                   <Text style={{ fontSize: 10, fontWeight: '400', color: '#7c7c7c' }}>31 dias</Text>
                 </View>
@@ -888,7 +888,7 @@ export default function AnalyticsScreen() {
                     <Image source={require('../../assets/figma/popv2_chart_time.png')} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
                   </View>
                 </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 28, marginTop: 1 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 28, marginTop: -4 }}>
                   <Text style={{ fontSize: 10, fontWeight: '400', color: '#767676' }}>0</Text>
                 </View>
               </View>
@@ -913,7 +913,7 @@ export default function AnalyticsScreen() {
                 <Image source={require('../../assets/figma/popv2_chart_users.png')} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
               </View>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 22, marginTop: 1 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 22, marginTop: -4 }}>
               <Text style={{ fontSize: 10, fontWeight: '400', color: '#6e6e6e' }}>0:00</Text>
               <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>19:00</Text>
             </View>
