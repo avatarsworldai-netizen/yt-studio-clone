@@ -126,13 +126,15 @@ export default function AnalyticsScreen() {
   const [activeChip, setActiveChip] = useState(0);
   const [showIngresosDetail, setShowIngresosDetail] = useState(false);
   const [showPopularContent, setShowPopularContent] = useState(false);
+  const [showVideoDetail, setShowVideoDetail] = useState<number | null>(null); // index into POP_VIDEOS
+  const [videoDetailTab, setVideoDetailTab] = useState(0);
   const [popPeriod, setPopPeriod] = useState(1);
   const [iePeriod, setIePeriod] = useState(1);
   const [selectedBar, setSelectedBar] = useState<number | null>(null);
 
   useEffect(() => {
-    navigation.setOptions({ headerShown: !showIngresosDetail && !showPopularContent });
-  }, [showIngresosDetail, showPopularContent, navigation]);
+    navigation.setOptions({ headerShown: !showIngresosDetail && !showPopularContent && showVideoDetail === null });
+  }, [showIngresosDetail, showPopularContent, showVideoDetail, navigation]);
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(async () => { setRefreshing(true); await qc.invalidateQueries(); setRefreshing(false); }, [qc]);
 
@@ -804,6 +806,101 @@ export default function AnalyticsScreen() {
     );
   }
 
+  /* ── Video detail view (from popular content) ── */
+  const VIDEO_DETAIL_TABS = ['Vista General', 'Cobertura', 'Interaccion', 'Audiencia'];
+
+  if (showVideoDetail !== null) {
+    const vid = POP_VIDEOS[showVideoDetail];
+    return (
+      <View style={{ flex: 1, backgroundColor: C.bg }}>
+        {/* Header with thumbnail + title */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 16, paddingBottom: 12, gap: 10 }}>
+          <TouchableOpacity onPress={() => setShowVideoDetail(null)} hitSlop={12}>
+            <Image source={require('../../assets/figma/popv2_back_arrow.png')} style={s.ieBackArrow} resizeMode="contain" />
+          </TouchableOpacity>
+          <Image source={vid.thumb} style={{ width: 50, height: 28, borderRadius: 4 }} resizeMode="cover" />
+          <Text style={{ flex: 1, fontSize: 19, fontWeight: '700', color: '#272727' }} numberOfLines={1}>{vid.title}</Text>
+        </View>
+
+        {/* Sub-tabs */}
+        <View style={{ flexDirection: 'row', paddingHorizontal: 12, borderBottomWidth: 1, borderBottomColor: '#dcdcdc' }}>
+          {VIDEO_DETAIL_TABS.map((tab, i) => (
+            <TouchableOpacity key={tab} onPress={() => setVideoDetailTab(i)} style={{ paddingHorizontal: 10, paddingTop: 12, paddingBottom: 10, position: 'relative' }}>
+              <Text style={{ fontSize: 15, fontWeight: videoDetailTab === i ? '500' : '400', color: videoDetailTab === i ? '#232323' : '#6d6d6d' }}>{tab}</Text>
+              {videoDetailTab === i && <View style={{ position: 'absolute', bottom: 0, left: 10, right: 10, height: 3, backgroundColor: '#232323', borderRadius: 1.5 }} />}
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <ScrollView style={s.root} showsVerticalScrollIndicator={false}>
+          {/* Summary text */}
+          <View style={{ paddingHorizontal: 16, paddingTop: 20, paddingBottom: 16 }}>
+            <Text style={{ fontSize: 19, fontWeight: '700', color: '#232323', lineHeight: 26 }}>
+              Este vídeo ha recibido 2.149{'\n'}visualizaciones desde que se publico
+            </Text>
+          </View>
+
+          {/* Charts carousel */}
+          <Carousel itemWidth={Math.round(screenW * 0.75)}>
+            {/* Views chart card */}
+            <View style={{ paddingLeft: 14, paddingRight: 6, paddingTop: 8, paddingBottom: 8 }}>
+              <View style={{ backgroundColor: C.cardBg, borderRadius: 12, padding: 16, height: 253, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3, overflow: 'hidden' }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#727272' }}>Visualizaciones</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                  <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>2,1K</Text>
+                  <Image source={require('../../assets/figma/popv2_arrow_up.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
+                </View>
+                <Text style={{ fontSize: 12, fontWeight: '400', color: '#488248', marginTop: 2 }}>449 mas de lo habitual</Text>
+                <View style={{ marginTop: 12, flex: 1 }}>
+                  <Image source={require('../../assets/figma/popv2_chart_views.png')} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                </View>
+              </View>
+            </View>
+            {/* Watch time chart card */}
+            <View style={{ paddingLeft: 14, paddingRight: 6, paddingTop: 8, paddingBottom: 8 }}>
+              <View style={{ backgroundColor: C.cardBg, borderRadius: 12, padding: 16, height: 253, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3, overflow: 'hidden' }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6e6e6e' }}>Tiempo de vis</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                  <Text style={{ fontSize: 23, fontWeight: '700', color: '#171717' }}>215</Text>
+                  <Image source={require('../../assets/figma/popv2_arrow_up2.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
+                </View>
+                <Text style={{ fontSize: 12, fontWeight: '400', color: '#478147', marginTop: 2 }}>45,1 mas de lo h</Text>
+                <View style={{ marginTop: 12, flex: 1 }}>
+                  <Image source={require('../../assets/figma/popv2_chart_time.png')} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                </View>
+              </View>
+            </View>
+          </Carousel>
+
+          {/* Usuarios simultaneos */}
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 20, padding: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Usuarios simultaneos</Text>
+              <Text style={{ fontSize: 18, fontWeight: '700', color: '#1b1b1b' }}>80</Text>
+            </View>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 4 }}>Pico • Durante la emisión en directo</Text>
+            <View style={{ marginTop: 16, height: 140 }}>
+              <Image source={require('../../assets/figma/popv2_chart_users.png')} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+            </View>
+          </View>
+
+          {/* Retención de la audiencia */}
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text style={{ fontSize: 17, fontWeight: '700', color: '#1f1f1f' }}>Retención de la audiencia</Text>
+              <Text style={{ fontSize: 16, fontWeight: '400', color: '#262626' }}>6:01(34,0 %)</Text>
+            </View>
+            <Text style={{ fontSize: 14, fontWeight: '400', color: '#747474', marginTop: 4 }}>Duracion media de las visualizaciones · Total</Text>
+            <View style={{ height: 1, backgroundColor: '#e4e4e4', marginTop: 16 }} />
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#303030', marginTop: 14 }}>Momentos clave de retencion de la audiencia</Text>
+          </View>
+
+          <View style={{ height: 40 }} />
+        </ScrollView>
+      </View>
+    );
+  }
+
   /* ── Popular content detail view ── */
   if (showPopularContent) {
     return (
@@ -839,7 +936,7 @@ export default function AnalyticsScreen() {
           {POP_VIDEOS.map((vid, i) => {
             const barPct = (vid.views / POP_MAX_VIEWS) * 100;
             return (
-              <View key={i} style={{ paddingHorizontal: 16, paddingVertical: 10 }}>
+              <TouchableOpacity key={i} activeOpacity={0.7} onPress={() => !isAdmin && setShowVideoDetail(i)} style={{ paddingHorizontal: 16, paddingVertical: 10 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                   <Image source={vid.thumb} style={vid.isShort ? { width: 32, height: 44, borderRadius: 4, backgroundColor: '#f0f0f0' } : s.vgPopThumb} resizeMode="cover" />
                   <View style={{ flex: 1 }}>
@@ -856,7 +953,7 @@ export default function AnalyticsScreen() {
                     </View>
                   </View>
                 </View>
-              </View>
+              </TouchableOpacity>
             );
           })}
           <View style={{ height: 40 }} />
