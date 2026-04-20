@@ -98,6 +98,22 @@ const IE_PERIODS = ['7D', '28 D', '90 D', '365 D', 'Mar', 'Feb', 'Ene', '2026', 
 const IE_Y_LABELS = ['4,20€', '2,80€', '1,40€', '0€'];
 const IE_X_LABELS = ['1mar', '14 mar', '28 mar'];
 
+// Popular content detail data
+const POP_PERIODS = ['7D', '28 D', '90 D', '365 D', 'Abr', 'Mar', 'Feb'];
+const POP_VIDEOS = [
+  { thumb: require('../../assets/figma/pop_thumb_1.png'), title: 'Tutorial BRIDGE FLORK a DUMP (Paso a...', views: 464, isShort: false },
+  { thumb: require('../../assets/figma/pop_thumb_2.png'), title: 'CALCULA TU TIER & RELLENA el FORM...', views: 109, isShort: false },
+  { thumb: require('../../assets/figma/pop_thumb_3.png'), title: 'Bridge de FLORK a DUMP + PROYECTO...', views: 61, isShort: false },
+  { thumb: require('../../assets/figma/pop_thumb_4.png'), title: 'TODO SOBRE FLORK Y DUMPFUN', views: 45, isShort: false },
+  { thumb: require('../../assets/figma/pop_thumb_5.png'), title: 'Así fue el lanzamiento de $Awl I Como c...', views: 33, isShort: false },
+  { thumb: require('../../assets/figma/pop_thumb_6.png'), title: 'FECHA DEL BRIDGE de FLORK a DUMP...', views: 20, isShort: false },
+  { thumb: require('../../assets/figma/pop_thumb_7.png'), title: '27 de diciembre de 2024', views: 17, isShort: true },
+  { thumb: require('../../assets/figma/pop_thumb_8.png'), title: 'El cerebro detras de DumpFun... y n...', views: 14, isShort: false },
+  { thumb: require('../../assets/figma/pop_thumb_9.png'), title: 'ASÍ GANÉ 200.000$ en 30 DIAS TRADE...', views: 14, isShort: false },
+  { thumb: require('../../assets/figma/pop_thumb_10.png'), title: '¿Que Esta Pasando con $MOG?', views: 13, isShort: false },
+];
+const POP_MAX_VIEWS = Math.max(...POP_VIDEOS.map(v => v.views));
+
 export default function AnalyticsScreen() {
   const router = useRouter();
   const navigation = useNavigation();
@@ -109,10 +125,14 @@ export default function AnalyticsScreen() {
   const [activeTab, setActiveTab] = useState(0);
   const [activeChip, setActiveChip] = useState(0);
   const [showIngresosDetail, setShowIngresosDetail] = useState(false);
+  const [showPopularContent, setShowPopularContent] = useState(false);
+  const [popPeriod, setPopPeriod] = useState(1);
+  const [iePeriod, setIePeriod] = useState(1);
+  const [selectedBar, setSelectedBar] = useState<number | null>(null);
 
   useEffect(() => {
-    navigation.setOptions({ headerShown: !showIngresosDetail });
-  }, [showIngresosDetail, navigation]);
+    navigation.setOptions({ headerShown: !showIngresosDetail && !showPopularContent });
+  }, [showIngresosDetail, showPopularContent, navigation]);
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(async () => { setRefreshing(true); await qc.invalidateQueries(); setRefreshing(false); }, [qc]);
 
@@ -696,7 +716,7 @@ export default function AnalyticsScreen() {
         </Carousel>
 
         {/* Contenido más popular — inside shadow card */}
-        <TouchableOpacity activeOpacity={0.7} onPress={() => !isAdmin && router.push('/popular-content')}>
+        <TouchableOpacity activeOpacity={0.7} onPress={() => !isAdmin && setShowPopularContent(true)}>
         <View style={s.vgPopCard}>
           <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="vg_popular" label="Título contenido más popular" value="Contenido mas popular">
             <Text style={s.vgPopTitle}>Contenido mas popular</Text>
@@ -784,9 +804,68 @@ export default function AnalyticsScreen() {
     );
   }
 
+  /* ── Popular content detail view ── */
+  if (showPopularContent) {
+    return (
+      <View style={{ flex: 1, backgroundColor: C.bg }}>
+        <View style={s.ieHeaderOverlay}>
+          <TouchableOpacity onPress={() => setShowPopularContent(false)} hitSlop={12}>
+            <Image source={require('../../assets/figma/pop_back_arrow.png')} style={s.ieBackArrow} resizeMode="contain" />
+          </TouchableOpacity>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="pop_header" label="Título contenido más popular" value="Contenido mas popular">
+            <Text style={s.ieHeaderTitle}>Contenido mas popular</Text>
+          </AE>
+        </View>
+        <ScrollView style={s.root} showsVerticalScrollIndicator={false}>
+          {/* Period chips */}
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chipsRow}>
+            {POP_PERIODS.map((p, i) => (
+              <React.Fragment key={p}>
+                {i === 4 && <View style={s.chipSeparator} />}
+                <TouchableOpacity style={[s.chip, popPeriod === i && s.chipActive]} onPress={() => setPopPeriod(i)}>
+                  <Text style={[s.chipText, popPeriod === i && s.chipTextActive]}>{p}</Text>
+                </TouchableOpacity>
+              </React.Fragment>
+            ))}
+          </ScrollView>
+          {/* Date range */}
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 8, paddingBottom: 14 }}>
+            <AE isAdmin={isAdmin} table="ui_analytics" column="text" rowId="pop_date_range" label="Rango de fechas" value="23 mar-19 abr 2026">
+              <Text style={{ fontSize: 12, fontWeight: '400', color: '#757575' }}>23 mar-19 abr 2026</Text>
+            </AE>
+            <Text style={{ fontSize: 12, fontWeight: '400', color: '#707070' }}>Visualizaciones</Text>
+          </View>
+          {/* Video list */}
+          {POP_VIDEOS.map((vid, i) => {
+            const barPct = (vid.views / POP_MAX_VIEWS) * 100;
+            return (
+              <View key={i} style={{ paddingHorizontal: 16, paddingVertical: 10 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                  <Image source={vid.thumb} style={vid.isShort ? { width: 32, height: 44, borderRadius: 4, backgroundColor: '#f0f0f0' } : s.vgPopThumb} resizeMode="cover" />
+                  <View style={{ flex: 1 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                      <AE isAdmin={isAdmin} table="videos" column="title" rowId={`pop_vid_${i}`} label={`Título popular ${i+1}`} value={vid.title}>
+                        <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2e2e2e' }} numberOfLines={1}>{vid.title}</Text>
+                      </AE>
+                      <AE isAdmin={isAdmin} table="videos" column="view_count" rowId={`pop_vid_${i}`} label={`Views popular ${i+1}`} value={String(vid.views)}>
+                        <Text style={{ fontSize: 14, fontWeight: '600', color: '#1f1f1f' }}>{vid.views}</Text>
+                      </AE>
+                    </View>
+                    <View style={{ height: 5, backgroundColor: '#f2f2f2', borderRadius: 3, marginTop: 6, overflow: 'hidden' }}>
+                      <View style={{ height: '100%', width: `${barPct}%`, backgroundColor: '#00a7d3', borderRadius: 3 }} />
+                    </View>
+                  </View>
+                </View>
+              </View>
+            );
+          })}
+          <View style={{ height: 40 }} />
+        </ScrollView>
+      </View>
+    );
+  }
+
   /* ── Ingresos estimados detail view ── */
-  const [iePeriod, setIePeriod] = useState(1);
-  const [selectedBar, setSelectedBar] = useState<number | null>(null);
 
   const BAR_LABELS = ['Oct', 'Nov', 'Dic', 'Ene', 'Feb', 'Mar'];
 
