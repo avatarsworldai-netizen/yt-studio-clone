@@ -873,7 +873,7 @@ export default function AnalyticsScreen() {
               <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Tiempo de visualizacion (horas)</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                  <Text style={{ fontSize: 23, fontWeight: '400', color: '#191919' }}>138</Text>
+                  <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>138</Text>
                   <Image source={require('../../assets/figma/popv7_arrow_green.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
                 </View>
                 <Text style={{ fontSize: 12, fontWeight: '400', color: '#9d9d9d', marginTop: 1 }}>Casi igual que siempre</Text>
