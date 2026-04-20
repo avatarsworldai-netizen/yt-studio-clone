@@ -844,52 +844,52 @@ export default function AnalyticsScreen() {
           <Carousel itemWidth={Math.round(screenW * 0.75)}>
             {/* Views chart card */}
             <View style={{ paddingLeft: 14, paddingRight: 6, paddingTop: 8, paddingBottom: 8 }}>
-              <View style={{ backgroundColor: C.cardBg, borderRadius: 12, padding: 14, height: 253, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3, overflow: 'hidden' }}>
+              <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 253, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#727272' }}>Visualizaciones</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
                   <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>2,1K</Text>
                   <Image source={require('../../assets/figma/popv2_arrow_up.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
                 </View>
                 <Text style={{ fontSize: 12, fontWeight: '400', color: '#488248', marginTop: 1 }}>449 mas de lo habitual</Text>
-                <View style={{ marginTop: 8, flexDirection: 'row', height: 130 }}>
-                  <View style={{ width: 28, justifyContent: 'space-between', paddingRight: 2 }}>
+                <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
+                  <View style={{ width: 30, justifyContent: 'space-between', paddingRight: 3, marginBottom: 14 }}>
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>2,1K</Text>
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>1,4K</Text>
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>720</Text>
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Image source={require('../../assets/figma/popv2_chart_views.png')} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                    <Image source={require('../../assets/figma/popv2_chart_views.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
+                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#767676' }}>0</Text>
+                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#7c7c7c' }}>31 dias</Text>
+                    </View>
                   </View>
-                </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 28, marginTop: -4 }}>
-                  <Text style={{ fontSize: 10, fontWeight: '400', color: '#767676' }}>0</Text>
-                  <Text style={{ fontSize: 10, fontWeight: '400', color: '#7c7c7c' }}>31 dias</Text>
                 </View>
               </View>
             </View>
             {/* Watch time chart card */}
             <View style={{ paddingLeft: 14, paddingRight: 6, paddingTop: 8, paddingBottom: 8 }}>
-              <View style={{ backgroundColor: C.cardBg, borderRadius: 12, padding: 14, height: 253, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3, overflow: 'hidden' }}>
+              <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 253, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#6e6e6e' }}>Tiempo de vis</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
                   <Text style={{ fontSize: 23, fontWeight: '700', color: '#171717' }}>215</Text>
                   <Image source={require('../../assets/figma/popv2_arrow_up2.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
                 </View>
                 <Text style={{ fontSize: 12, fontWeight: '400', color: '#478147', marginTop: 1 }}>45,1 mas de lo h</Text>
-                <View style={{ marginTop: 8, flexDirection: 'row', height: 130 }}>
-                  <View style={{ width: 28, justifyContent: 'space-between', paddingRight: 2 }}>
+                <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
+                  <View style={{ width: 30, justifyContent: 'space-between', paddingRight: 3, marginBottom: 14 }}>
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>216</Text>
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>144</Text>
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#737373' }}>72,2</Text>
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#737373' }}>0,0</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Image source={require('../../assets/figma/popv2_chart_time.png')} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                    <Image source={require('../../assets/figma/popv2_chart_time.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
+                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#767676' }}>0</Text>
+                    </View>
                   </View>
-                </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 28, marginTop: -4 }}>
-                  <Text style={{ fontSize: 10, fontWeight: '400', color: '#767676' }}>0</Text>
                 </View>
               </View>
             </View>
