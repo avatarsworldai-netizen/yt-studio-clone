@@ -851,7 +851,7 @@ export default function AnalyticsScreen() {
                   <Image source={require('../../assets/figma/popv2_arrow_up.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
                 </View>
                 <Text style={{ fontSize: 12, fontWeight: '400', color: '#488248', marginTop: 1 }}>449 mas de lo habitual</Text>
-                <View style={{ marginTop: 8, flexDirection: 'row', flex: 1 }}>
+                <View style={{ marginTop: 8, flexDirection: 'row', height: 130 }}>
                   <View style={{ width: 28, justifyContent: 'space-between', paddingRight: 2 }}>
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>2,1K</Text>
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>1,4K</Text>
@@ -859,12 +859,12 @@ export default function AnalyticsScreen() {
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Image source={require('../../assets/figma/popv2_chart_views.png')} style={{ width: '100%', flex: 1 }} resizeMode="contain" />
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
-                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#767676' }}>0</Text>
-                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#7c7c7c' }}>31 dias</Text>
-                    </View>
+                    <Image source={require('../../assets/figma/popv2_chart_views.png')} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
                   </View>
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 28, marginTop: 1 }}>
+                  <Text style={{ fontSize: 10, fontWeight: '400', color: '#767676' }}>0</Text>
+                  <Text style={{ fontSize: 10, fontWeight: '400', color: '#7c7c7c' }}>31 dias</Text>
                 </View>
               </View>
             </View>
@@ -877,7 +877,7 @@ export default function AnalyticsScreen() {
                   <Image source={require('../../assets/figma/popv2_arrow_up2.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
                 </View>
                 <Text style={{ fontSize: 12, fontWeight: '400', color: '#478147', marginTop: 1 }}>45,1 mas de lo h</Text>
-                <View style={{ marginTop: 8, flexDirection: 'row', flex: 1 }}>
+                <View style={{ marginTop: 8, flexDirection: 'row', height: 130 }}>
                   <View style={{ width: 28, justifyContent: 'space-between', paddingRight: 2 }}>
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>216</Text>
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>144</Text>
@@ -885,11 +885,11 @@ export default function AnalyticsScreen() {
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#737373' }}>0,0</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Image source={require('../../assets/figma/popv2_chart_time.png')} style={{ width: '100%', flex: 1 }} resizeMode="contain" />
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
-                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#767676' }}>0</Text>
-                    </View>
+                    <Image source={require('../../assets/figma/popv2_chart_time.png')} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
                   </View>
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 28, marginTop: 1 }}>
+                  <Text style={{ fontSize: 10, fontWeight: '400', color: '#767676' }}>0</Text>
                 </View>
               </View>
             </View>
@@ -902,18 +902,18 @@ export default function AnalyticsScreen() {
               <Text style={{ fontSize: 18, fontWeight: '700', color: '#1b1b1b' }}>80</Text>
             </View>
             <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Pico • Durante la emisión en directo</Text>
-            <View style={{ marginTop: 10, flexDirection: 'row' }}>
-              <View style={{ width: 22, justifyContent: 'space-between', paddingRight: 2, height: 120 }}>
+            <View style={{ marginTop: 10, flexDirection: 'row', height: 120 }}>
+              <View style={{ width: 22, justifyContent: 'space-between', paddingRight: 2 }}>
                 <Text style={{ fontSize: 10, fontWeight: '400', color: '#727272' }}>90</Text>
                 <Text style={{ fontSize: 10, fontWeight: '400', color: '#7a7a7a' }}>60</Text>
                 <Text style={{ fontSize: 10, fontWeight: '400', color: '#747474' }}>30</Text>
                 <Text style={{ fontSize: 10, fontWeight: '400', color: '#747474' }}>0</Text>
               </View>
-              <View style={{ flex: 1, height: 120 }}>
+              <View style={{ flex: 1 }}>
                 <Image source={require('../../assets/figma/popv2_chart_users.png')} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
               </View>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 22, marginTop: 2 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 22, marginTop: 1 }}>
               <Text style={{ fontSize: 10, fontWeight: '400', color: '#6e6e6e' }}>0:00</Text>
               <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>19:00</Text>
             </View>
