@@ -920,14 +920,46 @@ export default function AnalyticsScreen() {
           </View>
 
           {/* Retención de la audiencia */}
-          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Text style={{ fontSize: 17, fontWeight: '700', color: '#1f1f1f' }}>Retención de la audiencia</Text>
-              <Text style={{ fontSize: 16, fontWeight: '400', color: '#262626' }}>6:01(34,0 %)</Text>
+              <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Retención de la audiencia</Text>
+              <Text style={{ fontSize: 16, fontWeight: '400', color: '#282828' }}>6:01(34,0 %)</Text>
             </View>
-            <Text style={{ fontSize: 14, fontWeight: '400', color: '#747474', marginTop: 4 }}>Duracion media de las visualizaciones · Total</Text>
-            <View style={{ height: 1, backgroundColor: '#e4e4e4', marginTop: 16 }} />
-            <Text style={{ fontSize: 13, fontWeight: '400', color: '#303030', marginTop: 14 }}>Momentos clave de retencion de la audiencia</Text>
+            <Text style={{ fontSize: 14, fontWeight: '400', color: '#737373', marginTop: 4 }}>Duracion media de las visualizaciones · Total</Text>
+            <View style={{ height: 1, backgroundColor: '#e4e4e4', marginTop: 12 }} />
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#313131', marginTop: 12 }}>Momentos clave de retencion de la audiencia</Text>
+            {/* Chips */}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }} contentContainerStyle={{ gap: 6 }}>
+              <View style={{ paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, backgroundColor: '#0e0e0e' }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#e6e6e6' }}>Introducción</Text>
+              </View>
+              <View style={{ paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, backgroundColor: '#f1f2f2' }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#2a2a2a' }}>2 momentos destacados</Text>
+              </View>
+              <View style={{ paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, backgroundColor: '#f1f2f2' }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#1e1e1e' }}>Pico</Text>
+              </View>
+            </ScrollView>
+            {/* Chart */}
+            <View style={{ marginTop: 10, flexDirection: 'row', height: 110 }}>
+              <View style={{ width: 30, justifyContent: 'space-between', paddingRight: 3 }}>
+                <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>100%</Text>
+                <Text style={{ fontSize: 10, fontWeight: '400', color: '#737373' }}>66 %</Text>
+                <Text style={{ fontSize: 10, fontWeight: '400', color: '#767676' }}>33 %</Text>
+                <Text style={{ fontSize: 10, fontWeight: '400', color: '#717171' }}>0%</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Image source={require('../../assets/figma/popv3_chart_retention.png')} style={{ width: '100%', height: '100%' }} resizeMode="stretch" />
+              </View>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 30, marginTop: 2 }}>
+              <Text style={{ fontSize: 10, fontWeight: '400', color: '#727272' }}>0:00</Text>
+              <Text style={{ fontSize: 10, fontWeight: '400', color: '#707070' }}>17:42</Text>
+            </View>
+            {/* Info box */}
+            <View style={{ backgroundColor: '#f2f2f2', borderRadius: 10, padding: 14, marginTop: 14 }}>
+              <Text style={{ fontSize: 14, fontWeight: '400', color: '#2f2f2f', lineHeight: 20 }}>El 49 % de los usuarios ha seguido viendo el video despues de llegar a la marca de tiempo 0:30, lo cual esta por debajo de la media</Text>
+            </View>
           </View>
 
           <View style={{ height: 40 }} />
