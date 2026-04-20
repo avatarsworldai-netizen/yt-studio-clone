@@ -871,23 +871,24 @@ export default function AnalyticsScreen() {
             {/* Watch time chart card */}
             <View style={{ paddingLeft: 14, paddingRight: 6, paddingTop: 8, paddingBottom: 8 }}>
               <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
-                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6e6e6e' }}>Tiempo de vis</Text>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Tiempo de visualizacion (horas)</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                  <Text style={{ fontSize: 23, fontWeight: '700', color: '#171717' }}>215</Text>
-                  <Image source={require('../../assets/figma/popv2_arrow_up2.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
+                  <Text style={{ fontSize: 23, fontWeight: '400', color: '#191919' }}>138</Text>
+                  <Image source={require('../../assets/figma/popv7_arrow_green.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
                 </View>
-                <Text style={{ fontSize: 12, fontWeight: '400', color: '#478147', marginTop: 1 }}>45,1 mas de lo h</Text>
+                <Text style={{ fontSize: 12, fontWeight: '400', color: '#9d9d9d', marginTop: 1 }}>Casi igual que siempre</Text>
                 <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
-                  <View style={{ width: 30, justifyContent: 'space-between', paddingRight: 3, marginBottom: 14 }}>
-                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>216</Text>
-                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>144</Text>
-                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#737373' }}>72,2</Text>
-                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#737373' }}>0,0</Text>
+                  <View style={{ width: 28, justifyContent: 'space-between', paddingRight: 3, marginBottom: 14 }}>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#737373' }}>200</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#737373' }}>133</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>66,6</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#797979' }}>0,0</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Image source={require('../../assets/figma/popv2_chart_time.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <Image source={require('../../assets/figma/popv7_chart_watchtime.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
-                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#767676' }}>0</Text>
+                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>0</Text>
+                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#7b7b7b' }}>61 dias</Text>
                     </View>
                   </View>
                 </View>
