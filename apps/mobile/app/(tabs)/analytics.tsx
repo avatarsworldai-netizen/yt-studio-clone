@@ -835,7 +835,7 @@ export default function AnalyticsScreen() {
         <ScrollView style={s.root} showsVerticalScrollIndicator={false}>
           {/* Summary text */}
           <View style={{ paddingHorizontal: 16, paddingTop: 20, paddingBottom: 16 }}>
-            <Text style={{ fontSize: 19, fontWeight: '700', color: '#232323', lineHeight: 26 }}>
+            <Text style={{ fontSize: 19, fontWeight: '700', color: '#232323', lineHeight: 26, textAlign: 'center' }}>
               Este vídeo ha recibido 2.149{'\n'}visualizaciones desde que se publico
             </Text>
           </View>
