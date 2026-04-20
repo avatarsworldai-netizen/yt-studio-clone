@@ -29,6 +29,7 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="video/[id]" options={{ headerShown: true, headerStyle: { backgroundColor: C.white }, headerTintColor: C.text, headerTitle: 'Detalles del vídeo', headerShadowVisible: false }} />
             <Stack.Screen name="profile" options={{ headerShown: true, headerStyle: { backgroundColor: C.white }, headerTintColor: C.text, headerTitle: 'Canal', headerShadowVisible: false }} />
+            <Stack.Screen name="popular-content" options={{ headerShown: false }} />
           </Stack>
         </View>
         </WaitForOverrides>

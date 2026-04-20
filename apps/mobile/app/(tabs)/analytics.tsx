@@ -696,6 +696,7 @@ export default function AnalyticsScreen() {
         </Carousel>
 
         {/* Contenido más popular — inside shadow card */}
+        <TouchableOpacity activeOpacity={0.7} onPress={() => !isAdmin && router.push('/popular-content')}>
         <View style={s.vgPopCard}>
           <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="vg_popular" label="Título contenido más popular" value="Contenido mas popular">
             <Text style={s.vgPopTitle}>Contenido mas popular</Text>
@@ -719,6 +720,7 @@ export default function AnalyticsScreen() {
               </View>
           ))}
         </View>
+        </TouchableOpacity>
       </>
     );
   }
