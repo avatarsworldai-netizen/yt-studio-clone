@@ -1192,6 +1192,35 @@ export default function AnalyticsScreen() {
             ))}
           </View>
 
+          {/* Contenido donde se sugiere este vídeo */}
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Contenido donde se sugiere este vídeo</Text>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Visualizaciones · Desde la publicacion</Text>
+            {[
+              { thumb: require('../../assets/figma/cob_v6_thumb1.png'), title: 'Blender 5.0 Masterclass - de CERO...', pct: '11,4%' },
+              { thumb: require('../../assets/figma/cob_v6_thumb2.png'), title: 'Organice un Concurso Entre Youtub...', pct: '5.7 %' },
+              { thumb: require('../../assets/figma/cob_v6_thumb3.png'), title: 'Vole en el asiento de $15,000 con d...', pct: '5.7 %' },
+              { thumb: require('../../assets/figma/cob_v6_thumb4.png'), title: 'FINAL RESIDENT EVIL 4 Remake #6...', pct: '5.7 %' },
+              { thumb: require('../../assets/figma/cob_v6_thumb5.png'), title: '10 CLONAZOS ARABES MUY PAREC...', pct: '2.9 %' },
+            ].map((item, i) => (
+              <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 14, paddingBottom: i < 4 ? 14 : 0, borderBottomWidth: i < 4 ? 1 : 0, borderBottomColor: '#ebebeb' }}>
+                <Image source={item.thumb} style={{ width: 56, height: 32, borderRadius: 4, marginRight: 10 }} resizeMode="cover" />
+                <Text style={{ flex: 1, fontSize: 13, fontWeight: '400', color: '#2a2a2a' }} numberOfLines={1}>{item.title}</Text>
+                <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a', marginLeft: 8 }}>{item.pct}</Text>
+              </View>
+            ))}
+          </View>
+
+          {/* Listas de reproducción que incluyen este vídeo */}
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Listas de reproduccion que incluyen este{'\n'}vídeo</Text>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Visualizaciones · Desde la publicacion</Text>
+            <View style={{ backgroundColor: '#f2f2f2', borderRadius: 10, padding: 14, marginTop: 16, flexDirection: 'row', alignItems: 'center' }}>
+              <Image source={require('../../assets/figma/cob_v6_info_icon.png')} style={{ width: 22, height: 22, marginRight: 10 }} resizeMode="contain" />
+              <Text style={{ flex: 1, fontSize: 13, fontWeight: '400', color: '#2f2f2f', lineHeight: 18 }}>No hay suficientes datos sobre el trafico para mostrar este informe</Text>
+            </View>
+          </View>
+
           <View style={{ height: 40 }} />
           </>}
         </ScrollView>
