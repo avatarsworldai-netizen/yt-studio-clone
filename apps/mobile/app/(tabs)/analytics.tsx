@@ -823,14 +823,14 @@ export default function AnalyticsScreen() {
         </View>
 
         {/* Sub-tabs */}
-        <View style={{ flexDirection: 'row', paddingHorizontal: 12, borderBottomWidth: 1, borderBottomColor: '#dcdcdc' }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ borderBottomWidth: 1, borderBottomColor: '#dcdcdc' }} contentContainerStyle={{ paddingHorizontal: 12 }}>
           {VIDEO_DETAIL_TABS.map((tab, i) => (
             <TouchableOpacity key={tab} onPress={() => setVideoDetailTab(i)} style={{ paddingHorizontal: 10, paddingTop: 12, paddingBottom: 10, position: 'relative' }}>
               <Text style={{ fontSize: 15, fontWeight: videoDetailTab === i ? '500' : '400', color: videoDetailTab === i ? '#232323' : '#6d6d6d' }}>{tab}</Text>
               {videoDetailTab === i && <View style={{ position: 'absolute', bottom: 0, left: 10, right: 10, height: 3, backgroundColor: '#232323', borderRadius: 1.5 }} />}
             </TouchableOpacity>
           ))}
-        </View>
+        </ScrollView>
 
         <ScrollView style={s.root} showsVerticalScrollIndicator={false}>
           {videoDetailTab === 0 && <>
