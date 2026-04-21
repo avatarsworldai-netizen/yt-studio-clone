@@ -1706,7 +1706,6 @@ export default function AnalyticsScreen() {
                 <View style={{ height: 6, backgroundColor: '#e8e8e8', borderRadius: 3, marginTop: 8 }}>
                   <View style={{ height: 6, backgroundColor: '#0d9488', borderRadius: 3, width: `${item.bar * 100}%` }} />
                 </View>
-                {i < 4 && <View style={{ height: 1, backgroundColor: '#ebebeb', marginTop: 16 }} />}
               </View>
             ))}
           </View>
