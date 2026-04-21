@@ -718,7 +718,7 @@ export default function AnalyticsScreen() {
         </Carousel>
 
         {/* Contenido más popular — inside shadow card */}
-        <TouchableOpacity activeOpacity={0.7} onPress={() => !isAdmin && setShowPopularContent(true)}>
+        <TouchableOpacity activeOpacity={0.7} onPress={() => setShowPopularContent(true)}>
         <View style={s.vgPopCard}>
           <AE isAdmin={isAdmin} table="ui_analytics" column="title" rowId="vg_popular" label="Título contenido más popular" value="Contenido mas popular">
             <Text style={s.vgPopTitle}>Contenido mas popular</Text>
@@ -1749,7 +1749,7 @@ export default function AnalyticsScreen() {
           {POP_VIDEOS.map((vid, i) => {
             const barPct = (vid.views / POP_MAX_VIEWS) * 100;
             return (
-              <TouchableOpacity key={i} activeOpacity={0.7} onPress={() => !isAdmin && setShowVideoDetail(i)} style={{ paddingHorizontal: 16, paddingVertical: 10 }}>
+              <TouchableOpacity key={i} activeOpacity={0.7} onPress={() => setShowVideoDetail(i)} style={{ paddingHorizontal: 16, paddingVertical: 10 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                   <Image source={vid.thumb} style={vid.isShort ? { width: 32, height: 44, borderRadius: 4, backgroundColor: '#f0f0f0' } : s.vgPopThumb} resizeMode="cover" />
                   <View style={{ flex: 1 }}>
