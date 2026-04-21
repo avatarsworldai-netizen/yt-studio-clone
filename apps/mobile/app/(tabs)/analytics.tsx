@@ -1067,6 +1067,32 @@ export default function AnalyticsScreen() {
                 </View>
               </View>
             </View>
+            {/* Visualizaciones card */}
+            <View style={{ paddingLeft: 14, paddingRight: 6, paddingTop: 8, paddingBottom: 8 }}>
+              <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Visualizaciones</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                  <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>2,1K</Text>
+                  <Image source={require('../../assets/figma/cob_v3_arrow.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
+                </View>
+                <Text style={{ fontSize: 12, fontWeight: '400', color: '#488248', marginTop: 1 }}>451 mas de lo habitual</Text>
+                <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
+                  <View style={{ width: 28, justifyContent: 'space-between', paddingRight: 3, marginBottom: 14 }}>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>2,1K</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>1,4K</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>720</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Image source={require('../../assets/figma/cob_v3_chart_views.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
+                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>0</Text>
+                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#7b7b7b' }}>32 dias</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
           </Carousel>
 
           {/* Como encuentran este vídeo los usuarios */}
