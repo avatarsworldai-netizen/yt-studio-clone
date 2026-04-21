@@ -1253,13 +1253,13 @@ export default function AnalyticsScreen() {
                 </View>
               </View>
             </View>
-            {/* Duración media card */}
+            {/* Duración media de las visualizaciones card */}
             <View style={{ paddingLeft: 14, paddingRight: 6, paddingTop: 8, paddingBottom: 8 }}>
               <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
-                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Duracion media</Text>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Duracion media de las visualizaciones</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
                   <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>6:00</Text>
-                  <Image source={require('../../assets/figma/int_v1_arrow_duration.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
+                  <Image source={require('../../assets/figma/int_v3_arrow_duration.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
                 </View>
                 <Text style={{ fontSize: 12, fontWeight: '400', color: '#9d9d9d', marginTop: 1 }}>Casi igual que siempre</Text>
                 <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
@@ -1270,9 +1270,10 @@ export default function AnalyticsScreen() {
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0:00</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Image source={require('../../assets/figma/int_v1_chart_duration.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <Image source={require('../../assets/figma/int_v3_chart_duration.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>0</Text>
+                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#7b7b7b' }}>32 dias</Text>
                     </View>
                   </View>
                 </View>
