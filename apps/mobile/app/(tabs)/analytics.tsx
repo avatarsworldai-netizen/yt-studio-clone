@@ -1338,6 +1338,27 @@ export default function AnalyticsScreen() {
             </View>
           </View>
 
+          {/* Me gusta (vs. No me gusta) */}
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Me gusta (vs. No me gusta)</Text>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Desde la publicacion</Text>
+            {[
+              { label: 'Tutorial BRIDGE FLORK a DUMP (Paso a paso)', pct: '92.4%', bar: 1.0 },
+              { label: 'Media del canal', pct: '90.4 %', bar: 0.98 },
+            ].map((item, i) => (
+              <View key={i} style={{ marginTop: 18 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }} numberOfLines={1}>{item.label}</Text>
+                  <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a', marginLeft: 8 }}>{item.pct}</Text>
+                </View>
+                <View style={{ height: 8, backgroundColor: '#e8e8e8', borderRadius: 4, marginTop: 8 }}>
+                  <View style={{ height: 8, backgroundColor: '#e84393', borderRadius: 4, width: `${item.bar * 100}%` }} />
+                </View>
+                {i === 0 && <View style={{ height: 1, backgroundColor: '#ebebeb', marginTop: 18 }} />}
+              </View>
+            ))}
+          </View>
+
           <View style={{ height: 40 }} />
           </>}
         </ScrollView>
