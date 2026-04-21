@@ -2236,7 +2236,7 @@ export default function AnalyticsScreen() {
 
           // Compute Y labels for editable rendering
           const numVal = parseValue(ieSumVal);
-          const numPts = iePeriod === 9 ? 60 : 28;
+          const numPts = [7, 28, 90, 365, 31, 28, 31, 365, 365, 365][iePeriod] || 28;
           const dailyMax = numVal / numPts;
           const ieStep = niceStep(dailyMax);
           const ieYMax = Math.ceil(dailyMax / ieStep) * ieStep;
@@ -2307,7 +2307,7 @@ export default function AnalyticsScreen() {
                 <View style={{ flexDirection: 'row' }}>
                   <EditableYLabels />
                   <View style={{ flex: 1 }}>
-                    <DynamicLineChart value={ieSumVal} height={170} numPoints={60} color="#1db4a5" hideYLabels hideXLabels pattern={iePattern} tooltipId={`ie_${periodKey}`} />
+                    <DynamicLineChart value={ieSumVal} height={170} numPoints={numPts} color="#1db4a5" hideYLabels hideXLabels pattern={iePattern} tooltipId={`ie_${periodKey}`} />
                   </View>
                 </View>
                 <EditableXLabels />
@@ -2320,7 +2320,7 @@ export default function AnalyticsScreen() {
                 <View style={{ flexDirection: 'row' }}>
                   <EditableYLabels />
                   <View style={{ flex: 1 }}>
-                    <DynamicLineChart value={ieSumVal} height={170} color="#1db4a5" hideYLabels hideXLabels pattern={iePattern} tooltipId={`ie_${periodKey}`} />
+                    <DynamicLineChart value={ieSumVal} height={170} numPoints={numPts} color="#1db4a5" hideYLabels hideXLabels pattern={iePattern} tooltipId={`ie_${periodKey}`} />
                   </View>
                 </View>
                 <EditableXLabels />
@@ -2333,7 +2333,7 @@ export default function AnalyticsScreen() {
                 <View style={{ flexDirection: 'row' }}>
                   <EditableYLabels />
                   <View style={{ flex: 1 }}>
-                    <DynamicLineChart value={ieSumVal} height={140} color="#1db4a5" hideYLabels hideXLabels pattern={iePattern} tooltipId={`ie_${periodKey}`} />
+                    <DynamicLineChart value={ieSumVal} height={140} numPoints={numPts} color="#1db4a5" hideYLabels hideXLabels pattern={iePattern} tooltipId={`ie_${periodKey}`} />
                   </View>
                 </View>
                 <EditableXLabels />
