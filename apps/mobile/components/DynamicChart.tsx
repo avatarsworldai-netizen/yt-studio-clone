@@ -111,19 +111,17 @@ function seededRand(seed: number): number {
 function makePattern(shape: (t: number) => number, seed: number = 0) {
   return (t: number, i: number, count: number): number => {
     const trend = shape(t);
-    // Each day: random value that mostly stays low but can spike high
     const r = seededRand(i * 13.37 + seed);
-    // ~70% of days stay low (0.02-0.15), ~20% moderate (0.15-0.4), ~10% spike (0.4-1.0)
+    // ~75% near zero, ~15% small bump, ~10% spike
     let daily: number;
-    if (r < 0.70) {
-      daily = 0.02 + seededRand(i * 7.91 + seed * 3.1) * 0.13;
+    if (r < 0.75) {
+      daily = seededRand(i * 7.91 + seed * 3.1) * 0.06;
     } else if (r < 0.90) {
-      daily = 0.15 + seededRand(i * 19.3 + seed * 2.3) * 0.25;
+      daily = 0.05 + seededRand(i * 19.3 + seed * 2.3) * 0.15;
     } else {
-      daily = 0.4 + seededRand(i * 41.1 + seed * 5.7) * 0.6;
+      daily = 0.3 + seededRand(i * 41.1 + seed * 5.7) * 0.7;
     }
-    // Blend with trend shape so different patterns produce different distributions
-    return Math.max(0, daily * 0.6 + trend * 0.4);
+    return Math.max(0, daily * 0.5 + trend * 0.5 * daily * 3);
   };
 }
 
