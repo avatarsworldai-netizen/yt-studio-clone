@@ -1677,6 +1677,40 @@ export default function AnalyticsScreen() {
             </View>
           </View>
 
+          {/* Cuanto pagan los anunciantes */}
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Cuanto pagan los anunciantes</Text>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Desde la publicacion</Text>
+            <View style={{ marginTop: 16 }}>
+              <Text style={{ fontSize: 22, fontWeight: '700', color: '#161616' }}>7,32€</Text>
+              <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Coste por cada 1000 reproducciones (CPM basado en{'\n'}reproducciones)</Text>
+            </View>
+          </View>
+
+          {/* Earnings by ad type */}
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Earnings by ad type</Text>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Ingresos publicitarios de YouTube · Desde la publicacion</Text>
+            {[
+              { label: 'Anuncios de video saltables (subasta)', pct: '67,3 %', bar: 1.0 },
+              { label: 'Anuncios de display (subasta)', pct: '19,3 %', bar: 0.287 },
+              { label: 'Anuncios de bumper (subasta)', pct: '8,3 %', bar: 0.123 },
+              { label: 'Anuncios de video no saltables (subasta)', pct: '4,5 %', bar: 0.067 },
+              { label: 'Anuncios de video no saltables (reservado)', pct: '0.4%', bar: 0.006 },
+            ].map((item, i) => (
+              <View key={i} style={{ marginTop: 16 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{item.label}</Text>
+                  <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a', marginLeft: 8 }}>{item.pct}</Text>
+                </View>
+                <View style={{ height: 6, backgroundColor: '#e8e8e8', borderRadius: 3, marginTop: 8 }}>
+                  <View style={{ height: 6, backgroundColor: '#0d9488', borderRadius: 3, width: `${item.bar * 100}%` }} />
+                </View>
+                {i < 4 && <View style={{ height: 1, backgroundColor: '#ebebeb', marginTop: 16 }} />}
+              </View>
+            ))}
+          </View>
+
           <View style={{ height: 40 }} />
           </>}
         </ScrollView>
