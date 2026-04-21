@@ -1537,6 +1537,71 @@ export default function AnalyticsScreen() {
             ))}
           </View>
 
+          {/* Regiones geográficas principales */}
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Regiones geograficas principales</Text>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Visualizaciones · Desde la publicacion</Text>
+            {[
+              { label: 'Espana', pct: '25.7%', bar: 1.0 },
+              { label: 'Argentina', pct: '11,1%', bar: 0.43 },
+              { label: 'México', pct: '8.4%', bar: 0.33 },
+            ].map((item, i) => (
+              <View key={i} style={{ marginTop: 16 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{item.label}</Text>
+                  <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>{item.pct}</Text>
+                </View>
+                <View style={{ height: 6, backgroundColor: '#e8e8e8', borderRadius: 3, marginTop: 8 }}>
+                  <View style={{ height: 6, backgroundColor: '#7b2d8e', borderRadius: 3, width: `${item.bar * 100}%` }} />
+                </View>
+                {i < 2 && <View style={{ height: 1, backgroundColor: '#ebebeb', marginTop: 16 }} />}
+              </View>
+            ))}
+          </View>
+
+          {/* Idiomas de subtítulos principales */}
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Idiomas de subtítulos principales</Text>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Visualizaciones · Desde la publicacion</Text>
+            {[
+              { label: 'Sin subtítulos', pct: '89.0 %', bar: 1.0 },
+              { label: 'espanol', pct: '10.9%', bar: 0.12 },
+              { label: 'ingles (traduccion automatica)', pct: '0,0%', bar: 0.005 },
+            ].map((item, i) => (
+              <View key={i} style={{ marginTop: 16 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{item.label}</Text>
+                  <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>{item.pct}</Text>
+                </View>
+                <View style={{ height: 6, backgroundColor: '#e8e8e8', borderRadius: 3, marginTop: 8 }}>
+                  <View style={{ height: 6, backgroundColor: '#7b2d8e', borderRadius: 3, width: `${item.bar * 100}%` }} />
+                </View>
+                {i < 2 && <View style={{ height: 1, backgroundColor: '#ebebeb', marginTop: 16 }} />}
+              </View>
+            ))}
+          </View>
+
+          {/* Tiempo de visualización de los suscriptores */}
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Tiempo de visualización de los suscriptores</Text>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Tiempo de visualizacion (horas) · Desde la publicacion</Text>
+            {[
+              { label: 'Suscritos', pct: '87.3 %', bar: 1.0 },
+              { label: 'No suscrito', pct: '12.7%', bar: 0.145 },
+            ].map((item, i) => (
+              <View key={i} style={{ marginTop: 16 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{item.label}</Text>
+                  <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>{item.pct}</Text>
+                </View>
+                <View style={{ height: 6, backgroundColor: '#e8e8e8', borderRadius: 3, marginTop: 8 }}>
+                  <View style={{ height: 6, backgroundColor: '#7b2d8e', borderRadius: 3, width: `${item.bar * 100}%` }} />
+                </View>
+                {i < 1 && <View style={{ height: 1, backgroundColor: '#ebebeb', marginTop: 16 }} />}
+              </View>
+            ))}
+          </View>
+
           <View style={{ height: 40 }} />
           </>}
         </ScrollView>
