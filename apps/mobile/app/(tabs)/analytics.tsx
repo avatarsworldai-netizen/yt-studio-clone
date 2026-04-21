@@ -1318,14 +1318,23 @@ export default function AnalyticsScreen() {
                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#1e1e1e' }}>Pico</Text>
               </View>
             </ScrollView>
-            <View style={{ marginTop: 10, flexDirection: 'row', height: 110 }}>
+            <View style={{ marginTop: 10, flexDirection: 'row', height: 140 }}>
               <View style={{ width: 30, justifyContent: 'space-between', paddingRight: 3 }}>
                 <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>100%</Text>
                 <Text style={{ fontSize: 10, fontWeight: '400', color: '#737373' }}>66 %</Text>
+                <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>33 %</Text>
+                <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0 %</Text>
               </View>
               <View style={{ flex: 1 }}>
-                <Image source={require('../../assets/figma/int_v1_chart_retention.png')} style={{ width: '100%', height: '100%' }} resizeMode="stretch" />
+                <Image source={require('../../assets/figma/int_v2_chart_retention.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
+                  <Text style={{ fontSize: 10, fontWeight: '400', color: '#727272' }}>0:00</Text>
+                  <Text style={{ fontSize: 10, fontWeight: '400', color: '#707070' }}>17:42</Text>
+                </View>
               </View>
+            </View>
+            <View style={{ backgroundColor: '#f2f2f2', borderRadius: 10, padding: 14, marginTop: 14 }}>
+              <Text style={{ fontSize: 14, fontWeight: '400', color: '#2f2f2f', lineHeight: 20 }}>El 49 % de los usuarios ha seguido viendo el video despues de llegar a la marca de tiempo 0:30, lo cual esta por debajo de la media</Text>
             </View>
           </View>
 
