@@ -1489,6 +1489,54 @@ export default function AnalyticsScreen() {
             ))}
           </View>
 
+          {/* Edad */}
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Edad</Text>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Desde la publicacion ·Visualizaciones</Text>
+            {[
+              { label: 'Entre 13 y 17 anos', pct: '0,0%', bar: 0 },
+              { label: 'Entre 18 y 24 anos', pct: '5,6 %', bar: 0.056 },
+              { label: 'Entre 25 y 34 anos', pct: '38.7%', bar: 0.387 },
+              { label: 'Entre 35 y 44 anos', pct: '37.7 %', bar: 0.377 },
+              { label: 'Entre 45 y 54 anos', pct: '13.8 %', bar: 0.138 },
+              { label: 'Entre 55 y 64 anos', pct: '4.2%', bar: 0.042 },
+              { label: 'Mas de 65 anos', pct: '0,0%', bar: 0 },
+            ].map((item, i) => (
+              <View key={i} style={{ marginTop: 16 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{item.label}</Text>
+                  <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>{item.pct}</Text>
+                </View>
+                <View style={{ height: 6, backgroundColor: '#e8e8e8', borderRadius: 3, marginTop: 8 }}>
+                  {item.bar > 0 && <View style={{ height: 6, backgroundColor: '#7b2d8e', borderRadius: 3, width: `${item.bar * 100}%` }} />}
+                </View>
+                {i < 6 && <View style={{ height: 1, backgroundColor: '#ebebeb', marginTop: 16 }} />}
+              </View>
+            ))}
+          </View>
+
+          {/* Sexo */}
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Sexo</Text>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Desde la publicacion ·Visualizaciones</Text>
+            {[
+              { label: 'Hombre', pct: '100,0%', bar: 1.0 },
+              { label: 'Mujer', pct: '0,0%', bar: 0 },
+              { label: 'Especificado por el usuario', pct: '0,0%', bar: 0 },
+            ].map((item, i) => (
+              <View key={i} style={{ marginTop: 16 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{item.label}</Text>
+                  <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>{item.pct}</Text>
+                </View>
+                <View style={{ height: 6, backgroundColor: '#e8e8e8', borderRadius: 3, marginTop: 8 }}>
+                  {item.bar > 0 && <View style={{ height: 6, backgroundColor: '#7b2d8e', borderRadius: 3, width: `${item.bar * 100}%` }} />}
+                </View>
+                {i < 2 && <View style={{ height: 1, backgroundColor: '#ebebeb', marginTop: 16 }} />}
+              </View>
+            ))}
+          </View>
+
           <View style={{ height: 40 }} />
           </>}
         </ScrollView>
