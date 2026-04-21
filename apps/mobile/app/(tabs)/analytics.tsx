@@ -1405,9 +1405,10 @@ export default function AnalyticsScreen() {
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>-2</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Image source={require('../../assets/figma/aud_v1_chart_subs.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <Image source={require('../../assets/figma/aud_v2_chart_subs.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>0</Text>
+                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#7b7b7b' }}>32 dias</Text>
                     </View>
                   </View>
                 </View>
