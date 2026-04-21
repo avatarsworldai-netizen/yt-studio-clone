@@ -129,6 +129,7 @@ export default function AnalyticsScreen() {
   const [showVideoDetail, setShowVideoDetail] = useState<number | null>(null); // index into POP_VIDEOS
   const [videoDetailTab, setVideoDetailTab] = useState(0);
   const [popPeriod, setPopPeriod] = useState(1);
+  const [vdPeriod, setVdPeriod] = useState(1);
   const [iePeriod, setIePeriod] = useState(1);
   const [selectedBar, setSelectedBar] = useState<number | null>(null);
 
@@ -808,6 +809,10 @@ export default function AnalyticsScreen() {
 
   /* ── Video detail view (from popular content) ── */
   const VIDEO_DETAIL_TABS = ['Vista General', 'Cobertura', 'Interaccion', 'Audiencia', 'Ingresos'];
+  const VD_PERIODS = ['7D', '28 D', '90 D', '365 D', 'Abr', 'Mar', 'Feb'];
+  const VD_PERIOD_KEYS = ['7d', '28d', '90d', '365d', 'abr', 'mar', 'feb'];
+  const vdPK = VD_PERIOD_KEYS[vdPeriod] || '28d';
+  const vdVid = showVideoDetail ?? 0;
 
   if (showVideoDetail !== null) {
     const vid = POP_VIDEOS[showVideoDetail];
@@ -835,12 +840,26 @@ export default function AnalyticsScreen() {
         </View>
 
         <ScrollView style={s.root} showsVerticalScrollIndicator={false}>
+          {/* Period chips */}
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chipsRow}>
+            {VD_PERIODS.map((p, i) => (
+              <React.Fragment key={p}>
+                {i === 4 && <View style={s.chipSeparator} />}
+                <TouchableOpacity style={[s.chip, vdPeriod === i && s.chipActive]} onPress={() => setVdPeriod(i)}>
+                  <Text style={[s.chipText, vdPeriod === i && s.chipTextActive]}>{p}</Text>
+                </TouchableOpacity>
+              </React.Fragment>
+            ))}
+          </ScrollView>
+
           {videoDetailTab === 0 && <>
           {/* Summary text */}
           <View style={{ paddingHorizontal: 16, paddingTop: 20, paddingBottom: 16 }}>
-            <Text style={{ fontSize: 19, fontWeight: '700', color: '#232323', lineHeight: 26, textAlign: 'center' }}>
-              Este vídeo ha recibido 2.149{'\n'}visualizaciones desde que se publico
-            </Text>
+            <AE isAdmin={isAdmin} table="vd_stats" column="summary" rowId={`vd${vdVid}_summary_${vdPK}`} label="Resumen vista general" value="Este vídeo ha recibido 2.149 visualizaciones desde que se publico">
+              <Text style={{ fontSize: 19, fontWeight: '700', color: '#232323', lineHeight: 26, textAlign: 'center' }}>
+                Este vídeo ha recibido 2.149{'\n'}visualizaciones desde que se publico
+              </Text>
+            </AE>
           </View>
 
           {/* Charts carousel */}
@@ -850,10 +869,14 @@ export default function AnalyticsScreen() {
               <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#727272' }}>Visualizaciones</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                  <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>2,1K</Text>
+                  <AE isAdmin={isAdmin} table="vd_stats" column="views" rowId={`vd${vdVid}_views_${vdPK}`} label="Visualizaciones" value="2,1K">
+                    <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>2,1K</Text>
+                  </AE>
                   <Image source={require('../../assets/figma/popv2_arrow_up.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
                 </View>
-                <Text style={{ fontSize: 12, fontWeight: '400', color: '#488248', marginTop: 1 }}>449 mas de lo habitual</Text>
+                <AE isAdmin={isAdmin} table="vd_stats" column="views_sub" rowId={`vd${vdVid}_views_sub_${vdPK}`} label="Sub visualizaciones" value="449 mas de lo habitual">
+                  <Text style={{ fontSize: 12, fontWeight: '400', color: '#488248', marginTop: 1 }}>449 mas de lo habitual</Text>
+                </AE>
                 <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
                   <View style={{ width: 30, justifyContent: 'space-between', paddingRight: 3, marginBottom: 14 }}>
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>2,1K</Text>
@@ -862,7 +885,9 @@ export default function AnalyticsScreen() {
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Image source={require('../../assets/figma/popv2_chart_views.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <AE isAdmin={isAdmin} table="vd_stats" column="chart" rowId={`vd${vdVid}_views_chart_${vdPK}`} label="Gráfica visualizaciones" value="" type="image">
+                      <Image source={require('../../assets/figma/popv2_chart_views.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    </AE>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#767676' }}>0</Text>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#7c7c7c' }}>31 dias</Text>
@@ -876,10 +901,14 @@ export default function AnalyticsScreen() {
               <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Tiempo de visualizacion (horas)</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                  <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>138</Text>
+                  <AE isAdmin={isAdmin} table="vd_stats" column="watchtime" rowId={`vd${vdVid}_watchtime_${vdPK}`} label="Tiempo visualización" value="138">
+                    <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>138</Text>
+                  </AE>
                   <Image source={require('../../assets/figma/popv7_arrow_green.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
                 </View>
-                <Text style={{ fontSize: 12, fontWeight: '400', color: '#9d9d9d', marginTop: 1 }}>Casi igual que siempre</Text>
+                <AE isAdmin={isAdmin} table="vd_stats" column="watchtime_sub" rowId={`vd${vdVid}_watchtime_sub_${vdPK}`} label="Sub tiempo visualización" value="Casi igual que siempre">
+                  <Text style={{ fontSize: 12, fontWeight: '400', color: '#9d9d9d', marginTop: 1 }}>Casi igual que siempre</Text>
+                </AE>
                 <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
                   <View style={{ width: 28, justifyContent: 'space-between', paddingRight: 3, marginBottom: 14 }}>
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#737373' }}>200</Text>
@@ -888,7 +917,9 @@ export default function AnalyticsScreen() {
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#797979' }}>0,0</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Image source={require('../../assets/figma/popv7_chart_watchtime.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <AE isAdmin={isAdmin} table="vd_stats" column="chart" rowId={`vd${vdVid}_watchtime_chart_${vdPK}`} label="Gráfica tiempo visualización" value="" type="image">
+                      <Image source={require('../../assets/figma/popv7_chart_watchtime.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    </AE>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>0</Text>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#7b7b7b' }}>61 dias</Text>
@@ -902,7 +933,9 @@ export default function AnalyticsScreen() {
               <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Suscriptores</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                  <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>-3</Text>
+                  <AE isAdmin={isAdmin} table="vd_stats" column="subs" rowId={`vd${vdVid}_subs_${vdPK}`} label="Suscriptores" value="-3">
+                    <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>-3</Text>
+                  </AE>
                 </View>
                 <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
                   <View style={{ width: 22, justifyContent: 'space-between', paddingRight: 3, marginBottom: 14 }}>
@@ -912,7 +945,9 @@ export default function AnalyticsScreen() {
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>-6</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Image source={require('../../assets/figma/popv6_chart_subs.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <AE isAdmin={isAdmin} table="vd_stats" column="chart" rowId={`vd${vdVid}_subs_chart_${vdPK}`} label="Gráfica suscriptores" value="" type="image">
+                      <Image source={require('../../assets/figma/popv6_chart_subs.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    </AE>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>0</Text>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#7b7b7b' }}>61 dias</Text>
@@ -926,7 +961,9 @@ export default function AnalyticsScreen() {
               <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Ingresos estimados</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                  <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>9,31€</Text>
+                  <AE isAdmin={isAdmin} table="vd_stats" column="revenue" rowId={`vd${vdVid}_revenue_${vdPK}`} label="Ingresos estimados" value="9,31€">
+                    <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>9,31€</Text>
+                  </AE>
                   <Image source={require('../../assets/figma/popv5_arrow_ingresos.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
                 </View>
                 <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
@@ -937,7 +974,9 @@ export default function AnalyticsScreen() {
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0€</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Image source={require('../../assets/figma/popv5_chart_ingresos.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <AE isAdmin={isAdmin} table="vd_stats" column="chart" rowId={`vd${vdVid}_revenue_chart_${vdPK}`} label="Gráfica ingresos" value="" type="image">
+                      <Image source={require('../../assets/figma/popv5_chart_ingresos.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    </AE>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>18mar</Text>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#7b7b7b' }}>19 abr</Text>
@@ -952,7 +991,9 @@ export default function AnalyticsScreen() {
           <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Usuarios simultaneos</Text>
-              <Text style={{ fontSize: 18, fontWeight: '700', color: '#1b1b1b' }}>80</Text>
+              <AE isAdmin={isAdmin} table="vd_stats" column="concurrent" rowId={`vd${vdVid}_concurrent_${vdPK}`} label="Usuarios simultáneos" value="80">
+                <Text style={{ fontSize: 18, fontWeight: '700', color: '#1b1b1b' }}>80</Text>
+              </AE>
             </View>
             <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Pico • Durante la emisión en directo</Text>
             <View style={{ marginTop: 10, flexDirection: 'row', height: 120 }}>
@@ -963,7 +1004,9 @@ export default function AnalyticsScreen() {
                 <Text style={{ fontSize: 10, fontWeight: '400', color: '#747474' }}>0</Text>
               </View>
               <View style={{ flex: 1 }}>
-                <Image source={require('../../assets/figma/popv2_chart_users.png')} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                <AE isAdmin={isAdmin} table="vd_stats" column="chart" rowId={`vd${vdVid}_concurrent_chart_${vdPK}`} label="Gráfica usuarios simultáneos" value="" type="image">
+                  <Image source={require('../../assets/figma/popv2_chart_users.png')} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+                </AE>
               </View>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 22, marginTop: -4 }}>
@@ -976,11 +1019,15 @@ export default function AnalyticsScreen() {
           <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Retención de la audiencia</Text>
-              <Text style={{ fontSize: 16, fontWeight: '400', color: '#282828' }}>6:01(34,0 %)</Text>
+              <AE isAdmin={isAdmin} table="vd_stats" column="retention_val" rowId={`vd${vdVid}_retention_val_${vdPK}`} label="Retención valor" value="6:01(34,0 %)">
+                <Text style={{ fontSize: 16, fontWeight: '400', color: '#282828' }}>6:01(34,0 %)</Text>
+              </AE>
             </View>
             <Text style={{ fontSize: 14, fontWeight: '400', color: '#737373', marginTop: 4 }}>Duracion media de las visualizaciones · Total</Text>
             <View style={{ height: 1, backgroundColor: '#e4e4e4', marginTop: 12 }} />
-            <Text style={{ fontSize: 13, fontWeight: '400', color: '#313131', marginTop: 12 }}>Momentos clave de retencion de la audiencia</Text>
+            <AE isAdmin={isAdmin} table="vd_stats" column="retention_text" rowId={`vd${vdVid}_retention_text_${vdPK}`} label="Texto retención" value="Momentos clave de retencion de la audiencia">
+              <Text style={{ fontSize: 13, fontWeight: '400', color: '#313131', marginTop: 12 }}>Momentos clave de retencion de la audiencia</Text>
+            </AE>
             {/* Chips */}
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }} contentContainerStyle={{ gap: 6 }}>
               <View style={{ paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, backgroundColor: '#0e0e0e' }}>
@@ -1002,7 +1049,9 @@ export default function AnalyticsScreen() {
                 <Text style={{ fontSize: 10, fontWeight: '400', color: '#717171' }}>0%</Text>
               </View>
               <View style={{ flex: 1 }}>
-                <Image source={require('../../assets/figma/popv3_chart_retention.png')} style={{ width: '100%', height: '100%' }} resizeMode="stretch" />
+                <AE isAdmin={isAdmin} table="vd_stats" column="chart" rowId={`vd${vdVid}_retention_chart_${vdPK}`} label="Gráfica retención" value="" type="image">
+                  <Image source={require('../../assets/figma/popv3_chart_retention.png')} style={{ width: '100%', height: '100%' }} resizeMode="stretch" />
+                </AE>
               </View>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 30, marginTop: 2 }}>
@@ -1026,7 +1075,9 @@ export default function AnalyticsScreen() {
               <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Impresiones</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                  <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>10,4K</Text>
+                  <AE isAdmin={isAdmin} table="vd_cob" column="impressions" rowId={`vd${vdVid}_impressions_${vdPK}`} label="Impresiones" value="10,4K">
+                    <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>10,4K</Text>
+                  </AE>
                 </View>
                 <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
                   <View style={{ width: 36, justifyContent: 'space-between', paddingRight: 3, marginBottom: 14 }}>
@@ -1036,7 +1087,9 @@ export default function AnalyticsScreen() {
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Image source={require('../../assets/figma/cob_chart_impresiones.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <AE isAdmin={isAdmin} table="vd_cob" column="chart" rowId={`vd${vdVid}_impressions_chart_${vdPK}`} label="Gráfica impresiones" value="" type="image">
+                      <Image source={require('../../assets/figma/cob_chart_impresiones.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    </AE>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>0</Text>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#7b7b7b' }}>31 dias</Text>
@@ -1050,7 +1103,9 @@ export default function AnalyticsScreen() {
               <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Porcentaje de clics de las impresiones</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                  <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>13.0 %</Text>
+                  <AE isAdmin={isAdmin} table="vd_cob" column="ctr" rowId={`vd${vdVid}_ctr_${vdPK}`} label="CTR impresiones" value="13.0 %">
+                    <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>13.0 %</Text>
+                  </AE>
                 </View>
                 <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
                   <View style={{ width: 36, justifyContent: 'space-between', paddingRight: 3, marginBottom: 14 }}>
@@ -1060,7 +1115,9 @@ export default function AnalyticsScreen() {
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0,0 %</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Image source={require('../../assets/figma/cob_v2_chart_ctr.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <AE isAdmin={isAdmin} table="vd_cob" column="chart" rowId={`vd${vdVid}_ctr_chart_${vdPK}`} label="Gráfica CTR" value="" type="image">
+                      <Image source={require('../../assets/figma/cob_v2_chart_ctr.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    </AE>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>0</Text>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#7b7b7b' }}>32 dias</Text>
@@ -1074,10 +1131,14 @@ export default function AnalyticsScreen() {
               <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Visualizaciones</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                  <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>2,1K</Text>
+                  <AE isAdmin={isAdmin} table="vd_cob" column="cob_views" rowId={`vd${vdVid}_cob_views_${vdPK}`} label="Visualizaciones cobertura" value="2,1K">
+                    <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>2,1K</Text>
+                  </AE>
                   <Image source={require('../../assets/figma/cob_v3_arrow.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
                 </View>
-                <Text style={{ fontSize: 12, fontWeight: '400', color: '#488248', marginTop: 1 }}>451 mas de lo habitual</Text>
+                <AE isAdmin={isAdmin} table="vd_cob" column="cob_views_sub" rowId={`vd${vdVid}_cob_views_sub_${vdPK}`} label="Sub visualizaciones cobertura" value="451 mas de lo habitual">
+                  <Text style={{ fontSize: 12, fontWeight: '400', color: '#488248', marginTop: 1 }}>451 mas de lo habitual</Text>
+                </AE>
                 <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
                   <View style={{ width: 28, justifyContent: 'space-between', paddingRight: 3, marginBottom: 14 }}>
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>2,1K</Text>
@@ -1086,7 +1147,9 @@ export default function AnalyticsScreen() {
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Image source={require('../../assets/figma/cob_v3_chart_views.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <AE isAdmin={isAdmin} table="vd_cob" column="chart" rowId={`vd${vdVid}_cob_views_chart_${vdPK}`} label="Gráfica visualizaciones cobertura" value="" type="image">
+                      <Image source={require('../../assets/figma/cob_v3_chart_views.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    </AE>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>0</Text>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#7b7b7b' }}>32 dias</Text>
@@ -1100,7 +1163,9 @@ export default function AnalyticsScreen() {
               <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Usuarios unicos</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                  <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>1,2K</Text>
+                  <AE isAdmin={isAdmin} table="vd_cob" column="unique_users" rowId={`vd${vdVid}_unique_users_${vdPK}`} label="Usuarios únicos" value="1,2K">
+                    <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>1,2K</Text>
+                  </AE>
                   <Image source={require('../../assets/figma/cob_v4_arrow.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
                 </View>
                 <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
@@ -1111,7 +1176,9 @@ export default function AnalyticsScreen() {
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Image source={require('../../assets/figma/cob_v4_chart_users.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <AE isAdmin={isAdmin} table="vd_cob" column="chart" rowId={`vd${vdVid}_unique_users_chart_${vdPK}`} label="Gráfica usuarios únicos" value="" type="image">
+                      <Image source={require('../../assets/figma/cob_v4_chart_users.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    </AE>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>18 mar</Text>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#7b7b7b' }}>20 abr</Text>
@@ -1144,8 +1211,12 @@ export default function AnalyticsScreen() {
             ].map((src, i) => (
               <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16 }}>
                 <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: src.color, marginRight: 10 }} />
-                <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{src.label}</Text>
-                <Text style={{ fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{src.pct}</Text>
+                <AE isAdmin={isAdmin} table="vd_cob" column="source_label" rowId={`vd${vdVid}_source_${i}_label_${vdPK}`} label={`Fuente ${src.label}`} value={src.label}>
+                  <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{src.label}</Text>
+                </AE>
+                <AE isAdmin={isAdmin} table="vd_cob" column="source_pct" rowId={`vd${vdVid}_source_${i}_pct_${vdPK}`} label={`% ${src.label}`} value={src.pct}>
+                  <Text style={{ fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{src.pct}</Text>
+                </AE>
               </View>
             ))}
           </View>
@@ -1161,8 +1232,12 @@ export default function AnalyticsScreen() {
             ].map((item, i) => (
               <View key={i} style={{ marginTop: 16 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{item.label}</Text>
-                  <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>{item.pct}</Text>
+                  <AE isAdmin={isAdmin} table="vd_cob" column="site_label" rowId={`vd${vdVid}_site_${i}_label_${vdPK}`} label={`Sitio ${item.label}`} value={item.label}>
+                    <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{item.label}</Text>
+                  </AE>
+                  <AE isAdmin={isAdmin} table="vd_cob" column="site_pct" rowId={`vd${vdVid}_site_${i}_pct_${vdPK}`} label={`% ${item.label}`} value={item.pct}>
+                    <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>{item.pct}</Text>
+                  </AE>
                 </View>
                 <View style={{ height: 6, backgroundColor: '#e8e8e8', borderRadius: 3, marginTop: 8 }}>
                   <View style={{ height: 6, backgroundColor: '#4a4ab5', borderRadius: 3, width: `${item.bar * 100}%` }} />
@@ -1183,8 +1258,12 @@ export default function AnalyticsScreen() {
             ].map((item, i) => (
               <View key={i} style={{ marginTop: 16 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{item.label}</Text>
-                  <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>{item.pct}</Text>
+                  <AE isAdmin={isAdmin} table="vd_cob" column="term_label" rowId={`vd${vdVid}_term_${i}_label_${vdPK}`} label={`Término ${item.label}`} value={item.label}>
+                    <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{item.label}</Text>
+                  </AE>
+                  <AE isAdmin={isAdmin} table="vd_cob" column="term_pct" rowId={`vd${vdVid}_term_${i}_pct_${vdPK}`} label={`% ${item.label}`} value={item.pct}>
+                    <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>{item.pct}</Text>
+                  </AE>
                 </View>
                 <View style={{ height: 6, backgroundColor: '#e8e8e8', borderRadius: 3, marginTop: 8 }}>
                   <View style={{ height: 6, backgroundColor: '#4a4ab5', borderRadius: 3, width: `${item.bar * 100}%` }} />
@@ -1234,7 +1313,9 @@ export default function AnalyticsScreen() {
               <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Tiempo de visualizacion (horas)</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                  <AE isAdmin={isAdmin} table="vd_int" column="watchtime" rowId={`vd${vdVid}_int_watchtime_${vdPK}`} label="Tiempo de visualizacion" value="215">
                   <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>215</Text>
+                  </AE>
                   <Image source={require('../../assets/figma/int_v1_arrow_watchtime.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
                 </View>
                 <Text style={{ fontSize: 12, fontWeight: '400', color: '#488248', marginTop: 1 }}>45,1 mas de lo habitual</Text>
@@ -1246,7 +1327,9 @@ export default function AnalyticsScreen() {
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0,0</Text>
                   </View>
                   <View style={{ flex: 1 }}>
+                    <AE isAdmin={isAdmin} table="vd_int" column="chart" rowId={`vd${vdVid}_int_watchtime_chart_${vdPK}`} label="Chart tiempo visualizacion" value="" type="image">
                     <Image source={require('../../assets/figma/int_v1_chart_watchtime.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    </AE>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>0</Text>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#7b7b7b' }}>32 dias</Text>
@@ -1260,7 +1343,9 @@ export default function AnalyticsScreen() {
               <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Duracion media de las visualizaciones</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                  <AE isAdmin={isAdmin} table="vd_int" column="duration" rowId={`vd${vdVid}_int_duration_${vdPK}`} label="Duracion media visualizaciones" value="6:00">
                   <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>6:00</Text>
+                  </AE>
                   <Image source={require('../../assets/figma/int_v3_arrow_duration.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
                 </View>
                 <Text style={{ fontSize: 12, fontWeight: '400', color: '#9d9d9d', marginTop: 1 }}>Casi igual que siempre</Text>
@@ -1272,7 +1357,9 @@ export default function AnalyticsScreen() {
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0:00</Text>
                   </View>
                   <View style={{ flex: 1 }}>
+                    <AE isAdmin={isAdmin} table="vd_int" column="chart" rowId={`vd${vdVid}_int_duration_chart_${vdPK}`} label="Chart duracion media" value="" type="image">
                     <Image source={require('../../assets/figma/int_v3_chart_duration.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    </AE>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>0</Text>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#7b7b7b' }}>32 dias</Text>
@@ -1289,12 +1376,16 @@ export default function AnalyticsScreen() {
             <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Primeros 7 dias</Text>
             <View style={{ flexDirection: 'row', marginTop: 16, gap: 30 }}>
               <View>
+                <AE isAdmin={isAdmin} table="vd_int" column="hype_points" rowId={`vd${vdVid}_int_hype_${vdPK}`} label="Puntos hype" value="0">
                 <Text style={{ fontSize: 22, fontWeight: '700', color: '#161616' }}>0</Text>
+                </AE>
                 <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Puntos hype</Text>
               </View>
               <View style={{ width: 1, backgroundColor: '#e4e4e4' }} />
               <View>
+                <AE isAdmin={isAdmin} table="vd_int" column="hypes" rowId={`vd${vdVid}_int_hype_${vdPK}`} label="Hypes" value="0">
                 <Text style={{ fontSize: 22, fontWeight: '700', color: '#161616' }}>0</Text>
+                </AE>
                 <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Hypes</Text>
               </View>
             </View>
@@ -1304,7 +1395,9 @@ export default function AnalyticsScreen() {
           <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Retención de la audiencia</Text>
+              <AE isAdmin={isAdmin} table="vd_int" column="retention_val" rowId={`vd${vdVid}_int_retention_val_${vdPK}`} label="Retencion audiencia valor" value="6:01(34,0 %)">
               <Text style={{ fontSize: 16, fontWeight: '400', color: '#282828' }}>6:01(34,0 %)</Text>
+              </AE>
             </View>
             <Text style={{ fontSize: 14, fontWeight: '400', color: '#737373', marginTop: 4 }}>Duracion media de las visualizaciones · Total</Text>
             <View style={{ height: 1, backgroundColor: '#e4e4e4', marginTop: 12 }} />
@@ -1328,7 +1421,9 @@ export default function AnalyticsScreen() {
                 <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0 %</Text>
               </View>
               <View style={{ flex: 1 }}>
+                <AE isAdmin={isAdmin} table="vd_int" column="chart" rowId={`vd${vdVid}_int_retention_chart_${vdPK}`} label="Chart retencion audiencia" value="" type="image">
                 <Image source={require('../../assets/figma/int_v2_chart_retention.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                </AE>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
                   <Text style={{ fontSize: 10, fontWeight: '400', color: '#727272' }}>0:00</Text>
                   <Text style={{ fontSize: 10, fontWeight: '400', color: '#707070' }}>17:42</Text>
@@ -1351,7 +1446,9 @@ export default function AnalyticsScreen() {
               <View key={i} style={{ marginTop: 18 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }} numberOfLines={1}>{item.label}</Text>
+                  <AE isAdmin={isAdmin} table="vd_int" column={i === 0 ? 'likes' : 'dislikes'} rowId={`vd${vdVid}_int_${i === 0 ? 'likes' : 'dislikes'}_${vdPK}`} label={i === 0 ? 'Me gusta pct' : 'No me gusta pct'} value={item.pct}>
                   <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a', marginLeft: 8 }}>{item.pct}</Text>
+                  </AE>
                 </View>
                 <View style={{ height: 8, backgroundColor: '#e8e8e8', borderRadius: 4, marginTop: 8 }}>
                   <View style={{ height: 8, backgroundColor: '#e84393', borderRadius: 4, width: `${item.bar * 100}%` }} />
@@ -1372,7 +1469,9 @@ export default function AnalyticsScreen() {
               <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Usuarios unicos</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                  <AE isAdmin={isAdmin} table="vd_aud" column="users" rowId={`vd${vdVid}_aud_users_${vdPK}`} label="Usuarios unicos" value="1,2K">
                   <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>1,2K</Text>
+                  </AE>
                   <Image source={require('../../assets/figma/aud_v1_arrow_users.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
                 </View>
                 <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
@@ -1383,7 +1482,9 @@ export default function AnalyticsScreen() {
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0</Text>
                   </View>
                   <View style={{ flex: 1 }}>
+                    <AE isAdmin={isAdmin} table="vd_aud" column="chart" rowId={`vd${vdVid}_aud_users_chart_${vdPK}`} label="Chart usuarios unicos" value="" type="image">
                     <Image source={require('../../assets/figma/aud_v1_chart_users.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    </AE>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>18 mar</Text>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#7b7b7b' }}>20 abr</Text>
@@ -1397,7 +1498,9 @@ export default function AnalyticsScreen() {
               <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Suscriptores</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                  <AE isAdmin={isAdmin} table="vd_aud" column="subs" rowId={`vd${vdVid}_aud_subs_${vdPK}`} label="Suscriptores" value="+2">
                   <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>+2</Text>
+                  </AE>
                 </View>
                 <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
                   <View style={{ width: 22, justifyContent: 'space-between', paddingRight: 3, marginBottom: 14 }}>
@@ -1407,7 +1510,9 @@ export default function AnalyticsScreen() {
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>-2</Text>
                   </View>
                   <View style={{ flex: 1 }}>
+                    <AE isAdmin={isAdmin} table="vd_aud" column="chart" rowId={`vd${vdVid}_aud_subs_chart_${vdPK}`} label="Chart suscriptores" value="" type="image">
                     <Image source={require('../../assets/figma/aud_v2_chart_subs.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    </AE>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>0</Text>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#7b7b7b' }}>32 dias</Text>
@@ -1438,8 +1543,12 @@ export default function AnalyticsScreen() {
             ].map((src, i) => (
               <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 14 }}>
                 <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: src.color, marginRight: 10 }} />
+                <AE isAdmin={isAdmin} table="vd_aud" column="behavior_label" rowId={`vd${vdVid}_aud_behavior_${i}_${vdPK}`} label={`Comportamiento ${i} label`} value={src.label}>
                 <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{src.label}</Text>
+                </AE>
+                <AE isAdmin={isAdmin} table="vd_aud" column="behavior_pct" rowId={`vd${vdVid}_aud_behavior_${i}_${vdPK}`} label={`Comportamiento ${i} pct`} value={src.pct}>
                 <Text style={{ fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{src.pct}</Text>
+                </AE>
               </View>
             ))}
           </View>
@@ -1458,8 +1567,12 @@ export default function AnalyticsScreen() {
               <View key={i} style={{ flexDirection: 'row', marginTop: 14, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: '#ebebeb' }}>
                 <Image source={item.thumb} style={{ width: 56, height: 32, borderRadius: 4, marginRight: 10 }} resizeMode="cover" />
                 <View style={{ flex: 1 }}>
+                  <AE isAdmin={isAdmin} table="vd_aud" column="related_title" rowId={`vd${vdVid}_aud_related_${i}_${vdPK}`} label={`Related video ${i} title`} value={item.title}>
                   <Text style={{ fontSize: 13, fontWeight: '500', color: '#2a2a2a' }} numberOfLines={1}>{item.title}</Text>
+                  </AE>
+                  <AE isAdmin={isAdmin} table="vd_aud" column="related_sub" rowId={`vd${vdVid}_aud_related_${i}_${vdPK}`} label={`Related video ${i} sub`} value={item.sub}>
                   <Text style={{ fontSize: 11, fontWeight: '400', color: '#777777', marginTop: 2 }} numberOfLines={1}>{item.sub}</Text>
+                  </AE>
                 </View>
               </View>
             ))}
@@ -1485,8 +1598,12 @@ export default function AnalyticsScreen() {
             ].map((src, i) => (
               <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 14 }}>
                 <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: src.color, marginRight: 10 }} />
+                <AE isAdmin={isAdmin} table="vd_aud" column="device_label" rowId={`vd${vdVid}_aud_device_${i}_${vdPK}`} label={`Dispositivo ${i} label`} value={src.label}>
                 <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{src.label}</Text>
+                </AE>
+                <AE isAdmin={isAdmin} table="vd_aud" column="device_pct" rowId={`vd${vdVid}_aud_device_${i}_${vdPK}`} label={`Dispositivo ${i} pct`} value={src.pct}>
                 <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>{src.pct}</Text>
+                </AE>
               </View>
             ))}
           </View>
@@ -1506,8 +1623,12 @@ export default function AnalyticsScreen() {
             ].map((item, i) => (
               <View key={i} style={{ marginTop: 16 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <AE isAdmin={isAdmin} table="vd_aud" column="age_label" rowId={`vd${vdVid}_aud_age_${i}_${vdPK}`} label={`Edad ${i} label`} value={item.label}>
                   <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{item.label}</Text>
+                  </AE>
+                  <AE isAdmin={isAdmin} table="vd_aud" column="age_pct" rowId={`vd${vdVid}_aud_age_${i}_${vdPK}`} label={`Edad ${i} pct`} value={item.pct}>
                   <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>{item.pct}</Text>
+                  </AE>
                 </View>
                 <View style={{ height: 6, backgroundColor: '#e8e8e8', borderRadius: 3, marginTop: 8 }}>
                   {item.bar > 0 && <View style={{ height: 6, backgroundColor: '#7b2d8e', borderRadius: 3, width: `${item.bar * 100}%` }} />}
@@ -1528,8 +1649,12 @@ export default function AnalyticsScreen() {
             ].map((item, i) => (
               <View key={i} style={{ marginTop: 16 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <AE isAdmin={isAdmin} table="vd_aud" column="gender_label" rowId={`vd${vdVid}_aud_gender_${i}_${vdPK}`} label={`Sexo ${i} label`} value={item.label}>
                   <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{item.label}</Text>
+                  </AE>
+                  <AE isAdmin={isAdmin} table="vd_aud" column="gender_pct" rowId={`vd${vdVid}_aud_gender_${i}_${vdPK}`} label={`Sexo ${i} pct`} value={item.pct}>
                   <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>{item.pct}</Text>
+                  </AE>
                 </View>
                 <View style={{ height: 6, backgroundColor: '#e8e8e8', borderRadius: 3, marginTop: 8 }}>
                   {item.bar > 0 && <View style={{ height: 6, backgroundColor: '#7b2d8e', borderRadius: 3, width: `${item.bar * 100}%` }} />}
@@ -1550,8 +1675,12 @@ export default function AnalyticsScreen() {
             ].map((item, i) => (
               <View key={i} style={{ marginTop: 16 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <AE isAdmin={isAdmin} table="vd_aud" column="region_label" rowId={`vd${vdVid}_aud_region_${i}_${vdPK}`} label={`Region ${i} label`} value={item.label}>
                   <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{item.label}</Text>
+                  </AE>
+                  <AE isAdmin={isAdmin} table="vd_aud" column="region_pct" rowId={`vd${vdVid}_aud_region_${i}_${vdPK}`} label={`Region ${i} pct`} value={item.pct}>
                   <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>{item.pct}</Text>
+                  </AE>
                 </View>
                 <View style={{ height: 6, backgroundColor: '#e8e8e8', borderRadius: 3, marginTop: 8 }}>
                   <View style={{ height: 6, backgroundColor: '#7b2d8e', borderRadius: 3, width: `${item.bar * 100}%` }} />
@@ -1572,8 +1701,12 @@ export default function AnalyticsScreen() {
             ].map((item, i) => (
               <View key={i} style={{ marginTop: 16 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <AE isAdmin={isAdmin} table="vd_aud" column="lang_label" rowId={`vd${vdVid}_aud_lang_${i}_${vdPK}`} label={`Idioma ${i} label`} value={item.label}>
                   <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{item.label}</Text>
+                  </AE>
+                  <AE isAdmin={isAdmin} table="vd_aud" column="lang_pct" rowId={`vd${vdVid}_aud_lang_${i}_${vdPK}`} label={`Idioma ${i} pct`} value={item.pct}>
                   <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>{item.pct}</Text>
+                  </AE>
                 </View>
                 <View style={{ height: 6, backgroundColor: '#e8e8e8', borderRadius: 3, marginTop: 8 }}>
                   <View style={{ height: 6, backgroundColor: '#7b2d8e', borderRadius: 3, width: `${item.bar * 100}%` }} />
@@ -1593,8 +1726,12 @@ export default function AnalyticsScreen() {
             ].map((item, i) => (
               <View key={i} style={{ marginTop: 16 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <AE isAdmin={isAdmin} table="vd_aud" column="subtime_label" rowId={`vd${vdVid}_aud_subtime_${i}_${vdPK}`} label={`Subtime ${i} label`} value={item.label}>
                   <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{item.label}</Text>
+                  </AE>
+                  <AE isAdmin={isAdmin} table="vd_aud" column="subtime_pct" rowId={`vd${vdVid}_aud_subtime_${i}_${vdPK}`} label={`Subtime ${i} pct`} value={item.pct}>
                   <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>{item.pct}</Text>
+                  </AE>
                 </View>
                 <View style={{ height: 6, backgroundColor: '#e8e8e8', borderRadius: 3, marginTop: 8 }}>
                   <View style={{ height: 6, backgroundColor: '#7b2d8e', borderRadius: 3, width: `${item.bar * 100}%` }} />
@@ -1614,7 +1751,9 @@ export default function AnalyticsScreen() {
             <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
               <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Ingresos estimados</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                <AE isAdmin={isAdmin} table="vd_ing" column="revenue" rowId={`vd${vdVid}_ing_revenue_${vdPK}`} label="Ingresos estimados" value="9,34€">
                 <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>9,34€</Text>
+                </AE>
                 <Image source={require('../../assets/figma/ing_v1_arrow.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
               </View>
               <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
@@ -1625,7 +1764,9 @@ export default function AnalyticsScreen() {
                   <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0€</Text>
                 </View>
                 <View style={{ flex: 1 }}>
+                  <AE isAdmin={isAdmin} table="vd_ing" column="chart" rowId={`vd${vdVid}_ing_revenue_chart_${vdPK}`} label="Chart ingresos estimados" value="" type="image">
                   <Image source={require('../../assets/figma/ing_v1_chart.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                  </AE>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>18 mar</Text>
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#7b7b7b' }}>20abr</Text>
@@ -1650,8 +1791,12 @@ export default function AnalyticsScreen() {
             ].map((src, i) => (
               <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 14 }}>
                 <Image source={src.dot} style={{ width: 10, height: 10, marginRight: 10 }} resizeMode="contain" />
+                <AE isAdmin={isAdmin} table="vd_ing" column="source_label" rowId={`vd${vdVid}_ing_source_${i}_label_${vdPK}`} label={`Fuente ingreso ${i} label`} value={src.label}>
                 <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: src.labelColor }}>{src.label}</Text>
+                </AE>
+                <AE isAdmin={isAdmin} table="vd_ing" column="source_pct" rowId={`vd${vdVid}_ing_source_${i}_pct_${vdPK}`} label={`Fuente ingreso ${i} pct`} value={src.pct}>
                 <Text style={{ fontSize: 14, fontWeight: '600', color: src.pctColor }}>{src.pct}</Text>
+                </AE>
               </View>
             ))}
           </View>
@@ -1661,16 +1806,22 @@ export default function AnalyticsScreen() {
             <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Rendimiento de los vídeos</Text>
             <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Desde la publicacion</Text>
             <View style={{ marginTop: 16 }}>
+              <AE isAdmin={isAdmin} table="vd_ing" column="perf_revenue" rowId={`vd${vdVid}_ing_perf_revenue_${vdPK}`} label="Rendimiento ingresos" value="9,23 €">
               <Text style={{ fontSize: 22, fontWeight: '700', color: '#161616' }}>9,23 €</Text>
+              </AE>
               <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Ingresos estimados</Text>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 }}>
               <Text style={{ fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>Visualizaciones</Text>
+              <AE isAdmin={isAdmin} table="vd_ing" column="perf_views" rowId={`vd${vdVid}_ing_perf_views_${vdPK}`} label="Rendimiento visualizaciones" value="2,1K">
               <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>2,1K</Text>
+              </AE>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 }}>
               <Text style={{ fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>Ingresos por cada mil{'\n'}visualizaciones (RPM)</Text>
+              <AE isAdmin={isAdmin} table="vd_ing" column="perf_rpm" rowId={`vd${vdVid}_ing_perf_rpm_${vdPK}`} label="RPM" value="4,29€">
               <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>4,29€</Text>
+              </AE>
             </View>
           </View>
 
@@ -1679,7 +1830,9 @@ export default function AnalyticsScreen() {
             <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Cuanto pagan los anunciantes</Text>
             <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Desde la publicacion</Text>
             <View style={{ marginTop: 16 }}>
+              <AE isAdmin={isAdmin} table="vd_ing" column="cpm" rowId={`vd${vdVid}_ing_cpm_${vdPK}`} label="CPM anunciantes" value="7,32€">
               <Text style={{ fontSize: 22, fontWeight: '700', color: '#161616' }}>7,32€</Text>
+              </AE>
               <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Coste por cada 1000 reproducciones (CPM basado en{'\n'}reproducciones)</Text>
             </View>
           </View>
@@ -1697,8 +1850,12 @@ export default function AnalyticsScreen() {
             ].map((item, i) => (
               <View key={i} style={{ marginTop: 16 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <AE isAdmin={isAdmin} table="vd_ing" column="adtype_label" rowId={`vd${vdVid}_ing_adtype_${i}_label_${vdPK}`} label={`Ad type ${i} label`} value={item.label}>
                   <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{item.label}</Text>
+                  </AE>
+                  <AE isAdmin={isAdmin} table="vd_ing" column="adtype_pct" rowId={`vd${vdVid}_ing_adtype_${i}_pct_${vdPK}`} label={`Ad type ${i} pct`} value={item.pct}>
                   <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a', marginLeft: 8 }}>{item.pct}</Text>
+                  </AE>
                 </View>
                 <View style={{ height: 6, backgroundColor: '#e8e8e8', borderRadius: 3, marginTop: 8 }}>
                   <View style={{ height: 6, backgroundColor: '#0d9488', borderRadius: 3, width: `${item.bar * 100}%` }} />
