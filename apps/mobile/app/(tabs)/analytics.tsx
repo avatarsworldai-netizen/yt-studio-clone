@@ -1361,6 +1361,111 @@ export default function AnalyticsScreen() {
 
           <View style={{ height: 40 }} />
           </>}
+
+          {videoDetailTab === 3 && <>
+          {/* ── Audiencia tab ── */}
+          <Carousel itemWidth={Math.round(screenW * 0.75)}>
+            {/* Usuarios únicos card */}
+            <View style={{ paddingLeft: 14, paddingRight: 6, paddingTop: 8, paddingBottom: 8 }}>
+              <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Usuarios unicos</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                  <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>1,2K</Text>
+                  <Image source={require('../../assets/figma/aud_v1_arrow_users.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
+                </View>
+                <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
+                  <View style={{ width: 28, justifyContent: 'space-between', paddingRight: 3, marginBottom: 14 }}>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>540</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>360</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>180</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Image source={require('../../assets/figma/aud_v1_chart_users.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
+                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>18 mar</Text>
+                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#7b7b7b' }}>20 abr</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
+            {/* Suscriptores card */}
+            <View style={{ paddingLeft: 14, paddingRight: 6, paddingTop: 8, paddingBottom: 8 }}>
+              <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Suscriptores</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                  <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>+2</Text>
+                </View>
+                <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
+                  <View style={{ width: 22, justifyContent: 'space-between', paddingRight: 3, marginBottom: 14 }}>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>4</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>2</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>-2</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Image source={require('../../assets/figma/aud_v1_chart_subs.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
+                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>0</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </Carousel>
+
+          {/* Audiencia por comportamiento de visualización */}
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020', flex: 1 }}>Audiencia por comportamiento de{'\n'}visualización</Text>
+              <Image source={require('../../assets/figma/aud_v1_info_icon.png')} style={{ width: 16, height: 16 }} resizeMode="contain" />
+            </View>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Usuarios unicos · Desde la publicacion</Text>
+            {/* Colored bar */}
+            <View style={{ flexDirection: 'row', height: 12, borderRadius: 6, overflow: 'hidden', marginTop: 14 }}>
+              <View style={{ flex: 63.6, backgroundColor: '#1a1a4e' }} />
+              <View style={{ flex: 26.1, backgroundColor: '#5b5bb5' }} />
+              <View style={{ flex: 10.2, backgroundColor: '#d4a5d4' }} />
+            </View>
+            {[
+              { color: '#1a1a4e', label: 'Usuarios nuevos', pct: '10.2 %' },
+              { color: '#5b5bb5', label: 'Usuarios ocasionales', pct: '26.1%' },
+              { color: '#d4a5d4', label: 'Usuarios habituales', pct: '63.6 %' },
+            ].map((src, i) => (
+              <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 14 }}>
+                <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: src.color, marginRight: 10 }} />
+                <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{src.label}</Text>
+                <Text style={{ fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{src.pct}</Text>
+              </View>
+            ))}
+          </View>
+
+          {/* Los usuarios también ven */}
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Los usuarios también ven</Text>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Ultimos 90 dias</Text>
+            {[
+              { thumb: require('../../assets/figma/aud_v1_vid_thumb2.png'), title: 'CALCULA TU TIER & RELLENA el FORMULARI...', sub: 'CEOCRYPTO |...·4,0 K visualizaciones ·hace 2 meses' },
+              { thumb: require('../../assets/figma/aud_v1_vid_thumb1.png'), title: 'Bridge de FLORK a DUMP + PROYECTO OPO...', sub: 'CEOCRYPTO |M....2,2 K visualizaciones.hace 1 mes' },
+            ].map((item, i) => (
+              <View key={i} style={{ flexDirection: 'row', marginTop: 14, paddingBottom: i === 0 ? 14 : 0, borderBottomWidth: i === 0 ? 1 : 0, borderBottomColor: '#ebebeb' }}>
+                <Image source={item.thumb} style={{ width: 56, height: 32, borderRadius: 4, marginRight: 10 }} resizeMode="cover" />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 13, fontWeight: '500', color: '#2a2a2a' }} numberOfLines={1}>{item.title}</Text>
+                  <Text style={{ fontSize: 11, fontWeight: '400', color: '#777777', marginTop: 2 }} numberOfLines={1}>{item.sub}</Text>
+                </View>
+              </View>
+            ))}
+            {/* Small bottom link */}
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 14, paddingTop: 10, borderTopWidth: 1, borderTopColor: '#ebebeb' }}>
+              <Image source={require('../../assets/figma/aud_v1_vid_thumb3.png')} style={{ width: 56, height: 8, borderRadius: 2 }} resizeMode="cover" />
+              <Text style={{ fontSize: 11, fontWeight: '400', color: '#777777', marginLeft: 8 }} numberOfLines={1}>Descubre en gue TiER calificas y cómo hacer</Text>
+            </View>
+          </View>
+
+          <View style={{ height: 40 }} />
+          </>}
         </ScrollView>
       </View>
     );
