@@ -1043,10 +1043,10 @@ export default function AnalyticsScreen() {
                 </View>
               </View>
             </View>
-            {/* Porcentaje de clics card */}
+            {/* Porcentaje de clics de las impresiones card */}
             <View style={{ paddingLeft: 14, paddingRight: 6, paddingTop: 8, paddingBottom: 8 }}>
               <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
-                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Porcentaje de</Text>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Porcentaje de clics de las impresiones</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
                   <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>13.0 %</Text>
                 </View>
@@ -1054,13 +1054,14 @@ export default function AnalyticsScreen() {
                   <View style={{ width: 36, justifyContent: 'space-between', paddingRight: 3, marginBottom: 14 }}>
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>21,0%</Text>
                     <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>14,0%</Text>
-                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>7.0 %</Text>
-                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0.0%</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>7,0 %</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0,0 %</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Image source={require('../../assets/figma/cob_chart_porcentaje.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <Image source={require('../../assets/figma/cob_v2_chart_ctr.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
                       <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>0</Text>
+                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#7b7b7b' }}>32 dias</Text>
                     </View>
                   </View>
                 </View>
