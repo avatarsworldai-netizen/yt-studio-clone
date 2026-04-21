@@ -105,69 +105,53 @@ function seededRand(seed: number): number {
 }
 
 /**
- * Build a pattern function with daily noise like real YT Studio data.
- * Low baseline near 0, sharp spikes up, retrace back to near 0.
+ * Build a pattern function like real YT Studio revenue data.
+ * `intensity` controls spike probability & height at position t (0→1).
+ * Retraces always go back near 0.
  */
-function makePattern(shape: (t: number) => number, seed: number = 0) {
+function makePattern(intensity: (t: number) => number, seed: number = 0) {
   return (t: number, i: number, count: number): number => {
-    const trend = shape(t);
+    const power = Math.max(0, intensity(t)); // 0→1 how active this zone is
     const r = seededRand(i * 13.37 + seed);
-    // ~75% near zero, ~15% small bump, ~10% spike
-    let daily: number;
-    if (r < 0.75) {
-      daily = seededRand(i * 7.91 + seed * 3.1) * 0.06;
-    } else if (r < 0.90) {
-      daily = 0.05 + seededRand(i * 19.3 + seed * 2.3) * 0.15;
-    } else {
-      daily = 0.3 + seededRand(i * 41.1 + seed * 5.7) * 0.7;
+    const spikeChance = 0.08 + power * 0.22; // 8-30% chance of spike based on intensity
+    const isSpike = r > (1 - spikeChance);
+    if (isSpike) {
+      // Spike height scales with intensity
+      return (0.3 + seededRand(i * 41.1 + seed * 5.7) * 0.7) * (0.4 + power * 0.6);
     }
-    return Math.max(0, daily * 0.5 + trend * 0.5 * daily * 3);
+    // Baseline: near zero with tiny jitter
+    return seededRand(i * 7.91 + seed * 3.1) * 0.05;
   };
 }
 
 export const CHART_PATTERNS: Record<string, { name: string; fn: (t: number, i: number, count: number) => number }> = {
-  '1': { name: 'Estable', fn: makePattern((t) => 0.45, 1) },
-  '2': { name: 'Subida gradual', fn: makePattern((t) => 0.05 + t * 0.7, 2) },
-  '3': { name: 'Bajada gradual', fn: makePattern((t) => 0.75 - t * 0.65, 3) },
-  '4': { name: 'Pico al inicio', fn: makePattern((t) => t < 0.15 ? t * 6 : Math.max(0.05, 0.9 - (t - 0.15) * 0.95), 4) },
-  '5': { name: 'Pico al final', fn: makePattern((t) => t > 0.85 ? 0.1 + (t - 0.85) * 6 : 0.08 + t * 0.05, 5) },
-  '6': { name: 'Pico en el medio', fn: makePattern((t) => 0.05 + 0.9 * Math.exp(-((t - 0.5) ** 2) / 0.02), 6) },
-  '7': { name: 'Valle en el medio', fn: makePattern((t) => {
-    const d = Math.abs(t - 0.5);
-    return d < 0.15 ? 0.05 + d * 3 : 0.5 + d * 0.4;
-  }, 7) },
-  '8': { name: 'Dos picos', fn: makePattern((t) => {
-    const p1 = Math.exp(-((t - 0.3) ** 2) / 0.01) * 0.9;
-    const p2 = Math.exp(-((t - 0.75) ** 2) / 0.01) * 0.7;
-    return 0.05 + Math.max(p1, p2);
-  }, 8) },
-  '9': { name: 'Crecimiento explosivo', fn: makePattern((t) => 0.03 + 0.9 * (t ** 3), 9) },
-  '10': { name: 'Dientes de sierra', fn: makePattern((t) => {
-    const cycle = (t * 4) % 1;
-    return 0.1 + cycle * 0.6;
-  }, 10) },
-  '11': { name: 'Meseta alta', fn: makePattern((t) => t < 0.2 ? t * 4 : t > 0.8 ? 0.8 - (t - 0.8) * 4 : 0.8, 11) },
-  '12': { name: 'Onda suave', fn: makePattern((t) => 0.4 + 0.35 * Math.sin(t * Math.PI * 2), 12) },
-  '13': { name: 'Triple pico', fn: makePattern((t) => {
-    const p1 = Math.exp(-((t - 0.2) ** 2) / 0.008) * 0.8;
-    const p2 = Math.exp(-((t - 0.5) ** 2) / 0.008) * 0.9;
-    const p3 = Math.exp(-((t - 0.8) ** 2) / 0.008) * 0.7;
-    return 0.05 + Math.max(p1, p2, p3);
-  }, 13) },
-  '14': { name: 'Rampa con caída', fn: makePattern((t) => t < 0.7 ? t * 1.2 : 0.84 - (t - 0.7) * 2.5, 14) },
-  '15': { name: 'Caída con rebote', fn: makePattern((t) => t < 0.4 ? 0.8 - t * 1.8 : 0.08 + (t - 0.4) * 1.2, 15) },
-  '16': { name: 'Curva S', fn: makePattern((t) => 0.05 + 0.85 / (1 + Math.exp(-12 * (t - 0.5))), 16) },
+  '1':  { name: 'Estable', fn: makePattern(() => 0.5, 1) },
+  '2':  { name: 'Subida gradual', fn: makePattern((t) => t, 2) },
+  '3':  { name: 'Bajada gradual', fn: makePattern((t) => 1 - t, 3) },
+  '4':  { name: 'Pico al inicio', fn: makePattern((t) => t < 0.25 ? 1 : 0.1, 4) },
+  '5':  { name: 'Pico al final', fn: makePattern((t) => t > 0.75 ? 1 : 0.1, 5) },
+  '6':  { name: 'Pico en el medio', fn: makePattern((t) => Math.exp(-((t - 0.5) ** 2) / 0.02), 6) },
+  '7':  { name: 'Valle en el medio', fn: makePattern((t) => 1 - Math.exp(-((t - 0.5) ** 2) / 0.03), 7) },
+  '8':  { name: 'Dos picos', fn: makePattern((t) => Math.max(Math.exp(-((t - 0.3) ** 2) / 0.01), Math.exp(-((t - 0.75) ** 2) / 0.01)), 8) },
+  '9':  { name: 'Crecimiento explosivo', fn: makePattern((t) => t ** 3, 9) },
+  '10': { name: 'Dientes de sierra', fn: makePattern((t) => (t * 4) % 1, 10) },
+  '11': { name: 'Meseta alta', fn: makePattern((t) => t > 0.2 && t < 0.8 ? 0.9 : 0.1, 11) },
+  '12': { name: 'Onda', fn: makePattern((t) => 0.5 + 0.5 * Math.sin(t * Math.PI * 2), 12) },
+  '13': { name: 'Triple pico', fn: makePattern((t) => Math.max(Math.exp(-((t - 0.2) ** 2) / 0.008), Math.exp(-((t - 0.5) ** 2) / 0.008), Math.exp(-((t - 0.8) ** 2) / 0.008)), 13) },
+  '14': { name: 'Rampa con caída', fn: makePattern((t) => t < 0.7 ? t * 1.3 : Math.max(0, 0.91 - (t - 0.7) * 3), 14) },
+  '15': { name: 'Caída con rebote', fn: makePattern((t) => t < 0.35 ? 1 - t * 2.5 : 0.1 + (t - 0.35) * 1.4, 15) },
+  '16': { name: 'Curva S', fn: makePattern((t) => 1 / (1 + Math.exp(-12 * (t - 0.5))), 16) },
   '17': { name: 'W doble valle', fn: makePattern((t) => {
-    const v1 = Math.exp(-((t - 0.3) ** 2) / 0.01) * 0.6;
-    const v2 = Math.exp(-((t - 0.7) ** 2) / 0.01) * 0.6;
-    return 0.7 - Math.max(v1, v2);
+    const v1 = Math.exp(-((t - 0.3) ** 2) / 0.01);
+    const v2 = Math.exp(-((t - 0.7) ** 2) / 0.01);
+    return 1 - Math.max(v1, v2) * 0.9;
   }, 17) },
-  '18': { name: 'Logarítmico', fn: makePattern((t) => 0.1 + 0.7 * Math.log10(1 + t * 9), 18) },
+  '18': { name: 'Logarítmico', fn: makePattern((t) => Math.log10(1 + t * 9), 18) },
   '19': { name: 'Zigzag', fn: makePattern((t) => {
-    const cycle = (t * 3) % 1;
-    return 0.15 + 0.55 * (cycle < 0.5 ? cycle * 2 : 2 - cycle * 2);
+    const c = (t * 3) % 1;
+    return c < 0.5 ? c * 2 : 2 - c * 2;
   }, 19) },
-  '20': { name: 'Caos controlado', fn: makePattern((t) => 0.3 + 0.3 * Math.sin(t * 17) * Math.cos(t * 7), 20) },
+  '20': { name: 'Caos controlado', fn: makePattern((t) => 0.5 + 0.5 * Math.sin(t * 17) * Math.cos(t * 7), 20) },
 };
 
 export const PATTERN_LIST = Object.entries(CHART_PATTERNS).map(([id, p]) => ({ id, name: p.name }));
