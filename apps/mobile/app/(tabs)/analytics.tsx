@@ -1152,10 +1152,44 @@ export default function AnalyticsScreen() {
           <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
             <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Sitios o aplicaciones de terceros</Text>
             <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Visualizaciones · Desde la publicacion</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16 }}>
-              <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>WhatsApp</Text>
-              <Text style={{ fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>24.6 %</Text>
-            </View>
+            {[
+              { label: 'WhatsApp', pct: '24.6 %', bar: 1.0 },
+              { label: 'Google Search', pct: '14.8 %', bar: 0.6 },
+              { label: 'discord.com', pct: '14,8%', bar: 0.6 },
+            ].map((item, i) => (
+              <View key={i} style={{ marginTop: 16 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{item.label}</Text>
+                  <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>{item.pct}</Text>
+                </View>
+                <View style={{ height: 6, backgroundColor: '#e8e8e8', borderRadius: 3, marginTop: 8 }}>
+                  <View style={{ height: 6, backgroundColor: '#4a4ab5', borderRadius: 3, width: `${item.bar * 100}%` }} />
+                </View>
+                {i < 2 && <View style={{ height: 1, backgroundColor: '#ebebeb', marginTop: 16 }} />}
+              </View>
+            ))}
+          </View>
+
+          {/* Términos de búsqueda de YouTube */}
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Términos de busqueda de YouTube</Text>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Visualizaciones · Desde la publicacion</Text>
+            {[
+              { label: 'flork', pct: '23.6 %', bar: 1.0 },
+              { label: 'ceocrypto', pct: '11,2 %', bar: 0.47 },
+              { label: 'dump', pct: '1.1%', bar: 0.05 },
+            ].map((item, i) => (
+              <View key={i} style={{ marginTop: 16 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{item.label}</Text>
+                  <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>{item.pct}</Text>
+                </View>
+                <View style={{ height: 6, backgroundColor: '#e8e8e8', borderRadius: 3, marginTop: 8 }}>
+                  <View style={{ height: 6, backgroundColor: '#4a4ab5', borderRadius: 3, width: `${item.bar * 100}%` }} />
+                </View>
+                {i < 2 && <View style={{ height: 1, backgroundColor: '#ebebeb', marginTop: 16 }} />}
+              </View>
+            ))}
           </View>
 
           <View style={{ height: 40 }} />
