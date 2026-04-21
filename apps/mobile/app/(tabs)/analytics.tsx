@@ -8,7 +8,7 @@ import { Carousel } from '../../components/ui/Carousel';
 import { supabase } from '../../lib/supabase';
 import { useRealtimeSubscription } from '../../hooks/useRealtimeSubscription';
 import { C, F } from '../../constants/theme';
-import Svg, { Polyline } from 'react-native-svg';
+import Svg, { Circle, Path, Polyline } from 'react-native-svg';
 import { DynamicLineChart, DynamicBarChart, parseValue, niceStep, formatYLabel, PATTERN_LIST, BAR_PATTERN_LIST, generateBarData } from '../../components/DynamicChart';
 import { getOverride, useFieldOverrides, getActiveChannelForOverrides } from '../../hooks/useFieldOverrides';
 import { useChannel } from '../../contexts/ChannelContext';
@@ -1638,23 +1638,26 @@ export default function AnalyticsScreen() {
           {/* Como ganas dinero */}
           <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Como ganas dinero</Text>
-              <Image source={require('../../assets/figma/ing_v1_info_icon.png')} style={{ width: 16, height: 16 }} resizeMode="contain" />
+              <Text style={{ fontSize: 17, fontWeight: '700', color: '#242424' }}>Como ganas dinero</Text>
+              <Svg width={16} height={16} viewBox="0 0 16 16" fill="none">
+                <Circle cx="8" cy="8" r="7" stroke="#888" strokeWidth={1.2} fill="none" />
+                <Path d="M8 4v4.5l3 1.5" stroke="#888" strokeWidth={1.2} strokeLinecap="round" strokeLinejoin="round" />
+              </Svg>
             </View>
-            <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Estimacion · Desde la publicacion</Text>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#787878', marginTop: 2 }}>Estimacion · Desde la publicacion</Text>
             {/* Colored bar */}
             <View style={{ flexDirection: 'row', height: 12, borderRadius: 6, overflow: 'hidden', marginTop: 14 }}>
               <View style={{ flex: 96.1, backgroundColor: '#0d9488' }} />
               <View style={{ flex: 3.9, backgroundColor: '#11857a' }} />
             </View>
             {[
-              { color: '#0d9488', label: 'Anuncios de la pagina de visualizacion', pct: '96,1' },
-              { color: '#11857a', label: 'YouTube Premium', pct: '3.9%' },
+              { color: '#0d9488', label: 'Anuncios de la pagina de visualizacion', labelColor: '#3e3e3e', pct: '96.1%', pctColor: '#2d2d2d' },
+              { color: '#11857a', label: 'YouTube Premium', labelColor: '#303030', pct: '3.9%', pctColor: '#222222' },
             ].map((src, i) => (
               <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 14 }}>
                 <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: src.color, marginRight: 10 }} />
-                <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{src.label}</Text>
-                <Text style={{ fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{src.pct}</Text>
+                <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: src.labelColor }}>{src.label}</Text>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: src.pctColor }}>{src.pct}</Text>
               </View>
             ))}
           </View>
