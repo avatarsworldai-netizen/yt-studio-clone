@@ -100,6 +100,7 @@ const IE_X_LABELS = ['1mar', '14 mar', '28 mar'];
 
 // Popular content detail data
 const POP_PERIODS = ['7D', '28 D', '90 D', '365 D', 'Abr', 'Mar', 'Feb'];
+const POP_PERIOD_KEYS = ['7d', '28d', '90d', '365d', 'abr', 'mar', 'feb'];
 const POP_VIDEOS = [
   { thumb: require('../../assets/figma/pop_thumb_1.png'), title: 'Tutorial BRIDGE FLORK a DUMP (Paso a...', views: 464, isShort: false },
   { thumb: require('../../assets/figma/pop_thumb_2.png'), title: 'CALCULA TU TIER & RELLENA el FORM...', views: 109, isShort: false },
@@ -129,6 +130,7 @@ export default function AnalyticsScreen() {
   const [showVideoDetail, setShowVideoDetail] = useState<number | null>(null); // index into POP_VIDEOS
   const [videoDetailTab, setVideoDetailTab] = useState(0);
   const [popPeriod, setPopPeriod] = useState(1);
+  const popPK = POP_PERIOD_KEYS[popPeriod] || '28d';
   const [vdPeriod, setVdPeriod] = useState(1);
   const [iePeriod, setIePeriod] = useState(1);
   const [selectedBar, setSelectedBar] = useState<number | null>(null);
@@ -1897,7 +1899,7 @@ export default function AnalyticsScreen() {
           </ScrollView>
           {/* Date range */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 8, paddingBottom: 14 }}>
-            <AE isAdmin={isAdmin} table="ui_analytics" column="text" rowId="pop_date_range" label="Rango de fechas" value="23 mar-19 abr 2026">
+            <AE isAdmin={isAdmin} table="ui_analytics" column="text" rowId={`pop_date_range_${popPK}`} label="Rango de fechas" value="23 mar-19 abr 2026">
               <Text style={{ fontSize: 12, fontWeight: '400', color: '#757575' }}>23 mar-19 abr 2026</Text>
             </AE>
             <Text style={{ fontSize: 12, fontWeight: '400', color: '#707070' }}>Visualizaciones</Text>
@@ -1908,13 +1910,15 @@ export default function AnalyticsScreen() {
             return (
               <TouchableOpacity key={i} activeOpacity={0.7} onPress={() => setShowVideoDetail(i)} style={{ paddingHorizontal: 16, paddingVertical: 10 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                  <Image source={vid.thumb} style={vid.isShort ? { width: 32, height: 44, borderRadius: 4, backgroundColor: '#f0f0f0' } : s.vgPopThumb} resizeMode="cover" />
+                  <AE isAdmin={isAdmin} table="videos" column="thumbnail_url" rowId={`pop_vid_${i}_thumb_${popPK}`} label={`Thumbnail popular ${i+1}`} value="" type="image">
+                    <Image source={vid.thumb} style={vid.isShort ? { width: 32, height: 44, borderRadius: 4, backgroundColor: '#f0f0f0' } : s.vgPopThumb} resizeMode="cover" />
+                  </AE>
                   <View style={{ flex: 1 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                      <AE isAdmin={isAdmin} table="videos" column="title" rowId={`pop_vid_${i}`} label={`Título popular ${i+1}`} value={vid.title}>
+                      <AE isAdmin={isAdmin} table="videos" column="title" rowId={`pop_vid_${i}_title_${popPK}`} label={`Título popular ${i+1}`} value={vid.title}>
                         <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2e2e2e' }} numberOfLines={1}>{vid.title}</Text>
                       </AE>
-                      <AE isAdmin={isAdmin} table="videos" column="view_count" rowId={`pop_vid_${i}`} label={`Views popular ${i+1}`} value={String(vid.views)}>
+                      <AE isAdmin={isAdmin} table="videos" column="view_count" rowId={`pop_vid_${i}_views_${popPK}`} label={`Views popular ${i+1}`} value={String(vid.views)}>
                         <Text style={{ fontSize: 14, fontWeight: '600', color: '#1f1f1f' }}>{vid.views}</Text>
                       </AE>
                     </View>
