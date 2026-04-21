@@ -833,6 +833,7 @@ export default function AnalyticsScreen() {
         </View>
 
         <ScrollView style={s.root} showsVerticalScrollIndicator={false}>
+          {videoDetailTab === 0 && <>
           {/* Summary text */}
           <View style={{ paddingHorizontal: 16, paddingTop: 20, paddingBottom: 16 }}>
             <Text style={{ fontSize: 19, fontWeight: '700', color: '#232323', lineHeight: 26, textAlign: 'center' }}>
@@ -1013,6 +1014,100 @@ export default function AnalyticsScreen() {
           </View>
 
           <View style={{ height: 40 }} />
+          </>}
+
+          {videoDetailTab === 1 && <>
+          {/* ── Cobertura tab ── */}
+          <Carousel itemWidth={Math.round(screenW * 0.75)}>
+            {/* Impresiones card */}
+            <View style={{ paddingLeft: 14, paddingRight: 6, paddingTop: 8, paddingBottom: 8 }}>
+              <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Impresiones</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                  <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>10,4K</Text>
+                </View>
+                <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
+                  <View style={{ width: 36, justifyContent: 'space-between', paddingRight: 3, marginBottom: 14 }}>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>10,5 K</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>7,0K</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>3,5K</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Image source={require('../../assets/figma/cob_chart_impresiones.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
+                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>0</Text>
+                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#7b7b7b' }}>31 dias</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
+            {/* Porcentaje de clics card */}
+            <View style={{ paddingLeft: 14, paddingRight: 6, paddingTop: 8, paddingBottom: 8 }}>
+              <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Porcentaje de</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                  <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>13.0 %</Text>
+                </View>
+                <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
+                  <View style={{ width: 36, justifyContent: 'space-between', paddingRight: 3, marginBottom: 14 }}>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>21,0%</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>14,0%</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>7.0 %</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0.0%</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Image source={require('../../assets/figma/cob_chart_porcentaje.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
+                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>0</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </Carousel>
+
+          {/* Como encuentran este vídeo los usuarios */}
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Como encuentran este vídeo los usuarios</Text>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Visualizaciones · Desde la publicacion</Text>
+            {/* Colored source bar */}
+            <View style={{ flexDirection: 'row', height: 12, borderRadius: 6, overflow: 'hidden', marginTop: 14 }}>
+              <View style={{ flex: 41.3, backgroundColor: '#1a1a4e' }} />
+              <View style={{ flex: 24.4, backgroundColor: '#5b5bb5' }} />
+              <View style={{ flex: 9.9, backgroundColor: '#9a9ad4' }} />
+              <View style={{ flex: 9.5, backgroundColor: '#a855a8' }} />
+              <View style={{ flex: 14.9, backgroundColor: '#a0a0a0' }} />
+            </View>
+            {/* Source list */}
+            {[
+              { color: '#1a1a4e', label: 'Funciones de exploracion', pct: '41,3 %' },
+              { color: '#5b5bb5', label: 'Paginas de canal', pct: '24.4 %' },
+              { color: '#9a9ad4', label: 'Directa o desconocida', pct: '9.9 %' },
+              { color: '#a855a8', label: 'Notificaciones', pct: '9.5 %' },
+              { color: '#a0a0a0', label: 'Otros', pct: '14,9%' },
+            ].map((src, i) => (
+              <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16 }}>
+                <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: src.color, marginRight: 10 }} />
+                <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{src.label}</Text>
+                <Text style={{ fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{src.pct}</Text>
+              </View>
+            ))}
+          </View>
+
+          {/* Sitios o aplicaciones de terceros */}
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Sitios o aplicaciones de terceros</Text>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Visualizaciones · Desde la publicacion</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16 }}>
+              <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>WhatsApp</Text>
+              <Text style={{ fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>24.6 %</Text>
+            </View>
+          </View>
+
+          <View style={{ height: 40 }} />
+          </>}
         </ScrollView>
       </View>
     );
