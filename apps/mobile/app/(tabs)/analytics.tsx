@@ -1223,6 +1223,113 @@ export default function AnalyticsScreen() {
 
           <View style={{ height: 40 }} />
           </>}
+
+          {videoDetailTab === 2 && <>
+          {/* ── Interaccion tab ── */}
+          <Carousel itemWidth={Math.round(screenW * 0.75)}>
+            {/* Tiempo de visualización card */}
+            <View style={{ paddingLeft: 14, paddingRight: 6, paddingTop: 8, paddingBottom: 8 }}>
+              <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Tiempo de visualizacion (horas)</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                  <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>215</Text>
+                  <Image source={require('../../assets/figma/int_v1_arrow_watchtime.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
+                </View>
+                <Text style={{ fontSize: 12, fontWeight: '400', color: '#488248', marginTop: 1 }}>45,1 mas de lo habitual</Text>
+                <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
+                  <View style={{ width: 28, justifyContent: 'space-between', paddingRight: 3, marginBottom: 14 }}>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>216</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>144</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>72,2</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0,0</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Image source={require('../../assets/figma/int_v1_chart_watchtime.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
+                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>0</Text>
+                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#7b7b7b' }}>32 dias</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
+            {/* Duración media card */}
+            <View style={{ paddingLeft: 14, paddingRight: 6, paddingTop: 8, paddingBottom: 8 }}>
+              <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Duracion media</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                  <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>6:00</Text>
+                  <Image source={require('../../assets/figma/int_v1_arrow_duration.png')} style={{ width: 17, height: 17 }} resizeMode="contain" />
+                </View>
+                <Text style={{ fontSize: 12, fontWeight: '400', color: '#9d9d9d', marginTop: 1 }}>Casi igual que siempre</Text>
+                <View style={{ marginTop: 6, flexDirection: 'row', flex: 1 }}>
+                  <View style={{ width: 28, justifyContent: 'space-between', paddingRight: 3, marginBottom: 14 }}>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>7:00</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>4:40</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>2:20</Text>
+                    <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>0:00</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Image source={require('../../assets/figma/int_v1_chart_duration.png')} style={{ width: '100%', flex: 1 }} resizeMode="stretch" />
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
+                      <Text style={{ fontSize: 10, fontWeight: '400', color: '#777777' }}>0</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </Carousel>
+
+          {/* Hype */}
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Hype</Text>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Primeros 7 dias</Text>
+            <View style={{ flexDirection: 'row', marginTop: 16, gap: 30 }}>
+              <View>
+                <Text style={{ fontSize: 22, fontWeight: '700', color: '#161616' }}>0</Text>
+                <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Puntos hype</Text>
+              </View>
+              <View style={{ width: 1, backgroundColor: '#e4e4e4' }} />
+              <View>
+                <Text style={{ fontSize: 22, fontWeight: '700', color: '#161616' }}>0</Text>
+                <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Hypes</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Retención de la audiencia */}
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Retención de la audiencia</Text>
+              <Text style={{ fontSize: 16, fontWeight: '400', color: '#282828' }}>6:01(34,0 %)</Text>
+            </View>
+            <Text style={{ fontSize: 14, fontWeight: '400', color: '#737373', marginTop: 4 }}>Duracion media de las visualizaciones · Total</Text>
+            <View style={{ height: 1, backgroundColor: '#e4e4e4', marginTop: 12 }} />
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#313131', marginTop: 12 }}>Momentos clave de retencion de la audiencia</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }} contentContainerStyle={{ gap: 6 }}>
+              <View style={{ paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, backgroundColor: '#0e0e0e' }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#e6e6e6' }}>Introducción</Text>
+              </View>
+              <View style={{ paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, backgroundColor: '#f1f2f2' }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#2a2a2a' }}>2 momentos destacados</Text>
+              </View>
+              <View style={{ paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, backgroundColor: '#f1f2f2' }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#1e1e1e' }}>Pico</Text>
+              </View>
+            </ScrollView>
+            <View style={{ marginTop: 10, flexDirection: 'row', height: 110 }}>
+              <View style={{ width: 30, justifyContent: 'space-between', paddingRight: 3 }}>
+                <Text style={{ fontSize: 10, fontWeight: '400', color: '#757575' }}>100%</Text>
+                <Text style={{ fontSize: 10, fontWeight: '400', color: '#737373' }}>66 %</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Image source={require('../../assets/figma/int_v1_chart_retention.png')} style={{ width: '100%', height: '100%' }} resizeMode="stretch" />
+              </View>
+            </View>
+          </View>
+
+          <View style={{ height: 40 }} />
+          </>}
         </ScrollView>
       </View>
     );
