@@ -105,21 +105,18 @@ function seededRand(seed: number): number {
 }
 
 /**
- * Build a pattern function with sharp daily noise (like real YT Studio data).
- * `shape` defines the overall trend, noise adds daily randomness.
- * Noise scales with point count: dramatic spikes for 7D, fine grain for 365D.
+ * Build a pattern function with daily noise like real YT Studio data.
+ * Revenue-style: mostly low baseline with occasional sharp spikes upward.
  */
 function makePattern(shape: (t: number) => number, seed: number = 0) {
   return (t: number, i: number, count: number): number => {
     const base = shape(t);
-    // Scale noise: fewer points → bigger swings, more points → fine grain
-    const noiseAmp = count <= 7 ? 0.15 : count <= 28 ? 0.25 : count <= 90 ? 0.35 : 0.45;
-    // Multiple noise octaves for realistic daily spikes
-    const n1 = (seededRand(i * 13.37 + seed) - 0.5) * noiseAmp;
-    const n2 = (seededRand(i * 7.91 + seed * 3.1) - 0.5) * noiseAmp * 0.5;
-    // Occasional sharp spikes (like real revenue data)
-    const spike = seededRand(i * 29.3 + seed * 5.7) > 0.88 ? seededRand(i * 41.1 + seed) * noiseAmp * 2 : 0;
-    return Math.max(0, base + n1 + n2 + spike);
+    // Daily jitter — small random variation per day
+    const jitter = (seededRand(i * 13.37 + seed) - 0.5) * 0.2;
+    // Occasional sharp spike upward (~15% of days)
+    const r = seededRand(i * 29.3 + seed * 5.7);
+    const spike = r > 0.85 ? seededRand(i * 41.1 + seed) * 0.6 : 0;
+    return Math.max(0, base + jitter + spike);
   };
 }
 
@@ -443,15 +440,8 @@ export function DynamicLineChart({
           {[0, 1, 2, 3].map(i => (
             <View key={i} style={{ position: 'absolute', left: 0, right: 0, top: i * (height / 3), height: 1, backgroundColor: GRID_COLOR, zIndex: 0 }} />
           ))}
-          {/* SVG filled area + line */}
+          {/* SVG line */}
           <Svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1 }}>
-            <Defs>
-              <LinearGradient id={`fill_${touchLayerId}`} x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0" stopColor={color} stopOpacity="0.25" />
-                <Stop offset="1" stopColor={color} stopOpacity="0.02" />
-              </LinearGradient>
-            </Defs>
-            <Path d={`M0,${height} ${polyPoints.split(' ').map(p => `L${p}`).join(' ')} L${width},${height} Z`} fill={`url(#fill_${touchLayerId})`} />
             <Polyline points={polyPoints} fill="none" stroke={color} strokeWidth={pts.length > 90 ? 1 : pts.length > 28 ? 1.5 : 2} />
           </Svg>
           {/* Touch/click layer on top of everything */}
