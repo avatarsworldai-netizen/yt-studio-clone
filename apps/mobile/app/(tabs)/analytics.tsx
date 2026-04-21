@@ -1447,10 +1447,13 @@ export default function AnalyticsScreen() {
             <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Los usuarios también ven</Text>
             <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Ultimos 90 dias</Text>
             {[
-              { thumb: require('../../assets/figma/aud_v1_vid_thumb2.png'), title: 'CALCULA TU TIER & RELLENA el FORMULARI...', sub: 'CEOCRYPTO |...·4,0 K visualizaciones ·hace 2 meses' },
-              { thumb: require('../../assets/figma/aud_v1_vid_thumb1.png'), title: 'Bridge de FLORK a DUMP + PROYECTO OPO...', sub: 'CEOCRYPTO |M....2,2 K visualizaciones.hace 1 mes' },
+              { thumb: require('../../assets/figma/aud_v3_thumb1.png'), title: 'CALCULA TU TIER & RELLENA el FORMULARI...', sub: 'CEOCRYPTO|...·4,0 K visualizaciones·hace 2 meses' },
+              { thumb: require('../../assets/figma/aud_v3_thumb2.png'), title: 'Bridge de FLORK a DUMP + PROYECTO OPO...', sub: 'CEOCRYPTO|M....2,2 K visualizaciones.hace 1 mes' },
+              { thumb: require('../../assets/figma/aud_v3_thumb3.png'), title: 'Descubre en que TlER calificas y como hacer...', sub: 'CEOCRYPTO|....2,1 K visualizaciones. hace 3 meses' },
+              { thumb: require('../../assets/figma/aud_v3_thumb4.png'), title: 'Así fue el lanzamiento de $Awl I Como crear...', sub: 'CEOCRYPTO |...·1,4 K visualizaciones ·hace 2 meses' },
+              { thumb: require('../../assets/figma/aud_v3_thumb5.png'), title: 'TODO SOBRE FLORK Y DUMPFUN', sub: 'CEOCRYPTO|...·4,1 K visualizaciones·hace 4 meses' },
             ].map((item, i) => (
-              <View key={i} style={{ flexDirection: 'row', marginTop: 14, paddingBottom: i === 0 ? 14 : 0, borderBottomWidth: i === 0 ? 1 : 0, borderBottomColor: '#ebebeb' }}>
+              <View key={i} style={{ flexDirection: 'row', marginTop: 14, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: '#ebebeb' }}>
                 <Image source={item.thumb} style={{ width: 56, height: 32, borderRadius: 4, marginRight: 10 }} resizeMode="cover" />
                 <View style={{ flex: 1 }}>
                   <Text style={{ fontSize: 13, fontWeight: '500', color: '#2a2a2a' }} numberOfLines={1}>{item.title}</Text>
@@ -1458,11 +1461,32 @@ export default function AnalyticsScreen() {
                 </View>
               </View>
             ))}
-            {/* Small bottom link */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 14, paddingTop: 10, borderTopWidth: 1, borderTopColor: '#ebebeb' }}>
-              <Image source={require('../../assets/figma/aud_v1_vid_thumb3.png')} style={{ width: 56, height: 8, borderRadius: 2 }} resizeMode="cover" />
-              <Text style={{ fontSize: 11, fontWeight: '400', color: '#777777', marginLeft: 8 }} numberOfLines={1}>Descubre en gue TiER calificas y cómo hacer</Text>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 10 }}>y 10 mas</Text>
+          </View>
+
+          {/* Tipo de dispositivo */}
+          <View style={{ backgroundColor: C.cardBg, borderRadius: 12, marginHorizontal: 12, marginTop: 16, padding: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: '#202020' }}>Tipo de dispositivo</Text>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Tiempo de visualizacion (horas) · Desde la publicacion</Text>
+            {/* Colored bar */}
+            <View style={{ flexDirection: 'row', height: 12, borderRadius: 6, overflow: 'hidden', marginTop: 14 }}>
+              <View style={{ flex: 51.6, backgroundColor: '#1a1a4e' }} />
+              <View style={{ flex: 37.7, backgroundColor: '#5b5bb5' }} />
+              <View style={{ flex: 9.2, backgroundColor: '#9a9ad4' }} />
+              <View style={{ flex: 1.6, backgroundColor: '#d4a5d4' }} />
             </View>
+            {[
+              { color: '#1a1a4e', label: 'Movil', pct: '51,6 %' },
+              { color: '#5b5bb5', label: 'Ordenador', pct: '37.7%' },
+              { color: '#9a9ad4', label: 'Television', pct: '9.2%' },
+              { color: '#d4a5d4', label: 'Tablet', pct: '1,6 %' },
+            ].map((src, i) => (
+              <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 14 }}>
+                <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: src.color, marginRight: 10 }} />
+                <Text style={{ flex: 1, fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>{src.label}</Text>
+                <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>{src.pct}</Text>
+              </View>
+            ))}
           </View>
 
           <View style={{ height: 40 }} />
