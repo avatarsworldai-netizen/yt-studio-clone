@@ -1611,7 +1611,7 @@ export default function AnalyticsScreen() {
           {/* ── Ingresos tab ── */}
           {/* Ingresos estimados chart card */}
           <View style={{ paddingHorizontal: 12, paddingTop: 8 }}>
-            <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 230, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
+            <View style={{ backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingTop: 14, paddingBottom: 8, height: 210, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 3 }}>
               <Text style={{ fontSize: 14, fontWeight: '600', color: '#6f6f6f' }}>Ingresos estimados</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
                 <Text style={{ fontSize: 23, fontWeight: '700', color: '#161616' }}>9,34€</Text>
@@ -1644,12 +1644,12 @@ export default function AnalyticsScreen() {
             <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Estimacion · Desde la publicacion</Text>
             {/* Colored bar */}
             <View style={{ flexDirection: 'row', height: 12, borderRadius: 6, overflow: 'hidden', marginTop: 14 }}>
-              <View style={{ flex: 96.1, backgroundColor: '#1db4a5' }} />
-              <View style={{ flex: 3.9, backgroundColor: '#4ecdc4' }} />
+              <View style={{ flex: 96.1, backgroundColor: '#0d9488' }} />
+              <View style={{ flex: 3.9, backgroundColor: '#11857a' }} />
             </View>
             {[
-              { color: '#1db4a5', label: 'Anuncios de la pagina de visualizacion', pct: '96,1' },
-              { color: '#4ecdc4', label: 'YouTube Premium', pct: '3.9%' },
+              { color: '#0d9488', label: 'Anuncios de la pagina de visualizacion', pct: '96,1' },
+              { color: '#11857a', label: 'YouTube Premium', pct: '3.9%' },
             ].map((src, i) => (
               <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 14 }}>
                 <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: src.color, marginRight: 10 }} />
@@ -1667,12 +1667,10 @@ export default function AnalyticsScreen() {
               <Text style={{ fontSize: 22, fontWeight: '700', color: '#161616' }}>9,23 €</Text>
               <Text style={{ fontSize: 13, fontWeight: '400', color: '#777777', marginTop: 2 }}>Ingresos estimados</Text>
             </View>
-            <View style={{ height: 1, backgroundColor: '#ebebeb', marginTop: 16 }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 }}>
               <Text style={{ fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>Visualizaciones</Text>
               <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>2,1K</Text>
             </View>
-            <View style={{ height: 1, backgroundColor: '#ebebeb', marginTop: 16 }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 }}>
               <Text style={{ fontSize: 14, fontWeight: '400', color: '#2a2a2a' }}>Ingresos por cada mil{'\n'}visualizaciones (RPM)</Text>
               <Text style={{ fontSize: 14, fontWeight: '700', color: '#2a2a2a' }}>4,29€</Text>
