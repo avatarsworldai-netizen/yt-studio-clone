@@ -124,6 +124,23 @@ function makePattern(intensity: (t: number) => number, seed: number = 0) {
   };
 }
 
+/**
+ * Build a STABLE pattern function — recurring income with small daily variations.
+ * `level` returns the moderate baseline at position t (0→1).
+ * Each day has small jitter around the level, no big spikes or zero retraces.
+ */
+function makeStablePattern(level: (t: number) => number, seed: number = 0) {
+  return (t: number, i: number, count: number): number => {
+    const base = Math.max(0.1, level(t));
+    // Small daily jitter — ±15% of the base level
+    const jitter = (seededRand(i * 13.37 + seed) - 0.5) * 0.3 * base;
+    // Occasional small bump (~10% of days, much smaller than the spike pattern)
+    const r = seededRand(i * 29.3 + seed * 5.7);
+    const bump = r > 0.90 ? seededRand(i * 41.1 + seed) * 0.15 : 0;
+    return Math.max(0.05, base + jitter + bump);
+  };
+}
+
 export const CHART_PATTERNS: Record<string, { name: string; fn: (t: number, i: number, count: number) => number }> = {
   '1':  { name: 'Estable', fn: makePattern(() => 0.5, 1) },
   '2':  { name: 'Subida gradual', fn: makePattern((t) => t, 2) },
@@ -152,6 +169,17 @@ export const CHART_PATTERNS: Record<string, { name: string; fn: (t: number, i: n
     return c < 0.5 ? c * 2 : 2 - c * 2;
   }, 19) },
   '20': { name: 'Caos controlado', fn: makePattern((t) => 0.5 + 0.5 * Math.sin(t * 17) * Math.cos(t * 7), 20) },
+  // Stable recurring income patterns (21-30)
+  '21': { name: 'Estable recurrente', fn: makeStablePattern(() => 0.4, 21) },
+  '22': { name: 'Estable bajo recurrente', fn: makeStablePattern(() => 0.2, 22) },
+  '23': { name: 'Estable alto recurrente', fn: makeStablePattern(() => 0.65, 23) },
+  '24': { name: 'Subida estable', fn: makeStablePattern((t) => 0.2 + t * 0.5, 24) },
+  '25': { name: 'Bajada estable', fn: makeStablePattern((t) => 0.7 - t * 0.5, 25) },
+  '26': { name: 'Onda estable', fn: makeStablePattern((t) => 0.4 + 0.2 * Math.sin(t * Math.PI * 2), 26) },
+  '27': { name: 'Crecimiento gradual', fn: makeStablePattern((t) => 0.15 + t * t * 0.6, 27) },
+  '28': { name: 'Plateau central', fn: makeStablePattern((t) => t > 0.25 && t < 0.75 ? 0.6 : 0.3, 28) },
+  '29': { name: 'Doble nivel estable', fn: makeStablePattern((t) => t < 0.5 ? 0.3 : 0.55, 29) },
+  '30': { name: 'Estable con micro tendencia', fn: makeStablePattern((t) => 0.35 + t * 0.15 + 0.05 * Math.sin(t * Math.PI * 4), 30) },
 };
 
 export const PATTERN_LIST = Object.entries(CHART_PATTERNS).map(([id, p]) => ({ id, name: p.name }));

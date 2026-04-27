@@ -191,7 +191,7 @@ export default function AnalyticsScreen() {
           <Text style={s.chartValue}>{revenueVal} €</Text>
         </AE>
         {/* Editable chart pattern selector */}
-        {isAdmin && <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId="chart_main" label={`Patrón gráfica (1-20): ${patternName}`} value={chartPattern}>
+        {isAdmin && <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId="chart_main" label={`Patrón gráfica (1-30): ${patternName}`} value={chartPattern}>
           <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{'📈 ' + (PATTERN_LIST.find(p => p.id === chartPattern)?.name || chartPattern)}</Text>
         </AE>}
         <View style={{ marginTop: 20, flexDirection: 'row' }}>
@@ -464,7 +464,7 @@ export default function AnalyticsScreen() {
                 <AE isAdmin={isAdmin} table="revenue" column="estimated_revenue" rowId="feed_val" label="Ingresos Shorts feed" value={feedVal}>
                   <Text style={[s.chartValue, { fontSize: 20 }]}>{feedVal}</Text>
                 </AE>
-                {isAdmin && <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId="feed_chart" label={`Patrón gráfica feed (1-20): ${feedPatternName}`} value={feedPattern}>
+                {isAdmin && <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId="feed_chart" label={`Patrón gráfica feed (1-30): ${feedPatternName}`} value={feedPattern}>
                   <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{'📈 ' + feedPatternName}</Text>
                 </AE>}
                 <DynamicLineChart value={feedVal} xLabels={[firstDate, lastDate]} height={chartH} color="#1db4a5" pattern={feedPattern} tooltipId="feed_chart" />
@@ -609,7 +609,7 @@ export default function AnalyticsScreen() {
                   {item.sub ? <AE isAdmin={isAdmin} table="dashboard_stats" column="views_change_percent" rowId={`vgchartsub_${idx}`} label={`${item.label} - subtexto`} value={item.sub}>
                     <Text style={s.vgChartSub}>{item.sub}</Text>
                   </AE> : null}
-                  {isAdmin && <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId={`cv_chart_${idx}`} label={`Patrón gráfica contenido ${idx+1} (1-20): ${cvPatternName}`} value={cvPattern}>
+                  {isAdmin && <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId={`cv_chart_${idx}`} label={`Patrón gráfica contenido ${idx+1} (1-30): ${cvPatternName}`} value={cvPattern}>
                     <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{'📈 ' + cvPatternName}</Text>
                   </AE>}
                   <View style={{ marginTop: 12, flex: 1 }}>
@@ -698,7 +698,7 @@ export default function AnalyticsScreen() {
                   {item.sub ? <AE isAdmin={isAdmin} table="dashboard_stats" column="views_change_percent" rowId={`vgchartsub_${idx}`} label={`${item.label} - subtexto`} value={item.sub}>
                     <Text style={[s.vgChartSub, item.subGreen && { color: '#508650' }]}>{item.sub}</Text>
                   </AE> : null}
-                  {isAdmin && <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId={`vg_chart_${idx}`} label={`Patrón gráfica VG ${idx+1} (1-20): ${vgPatternName}`} value={vgPattern}>
+                  {isAdmin && <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId={`vg_chart_${idx}`} label={`Patrón gráfica VG ${idx+1} (1-30): ${vgPatternName}`} value={vgPattern}>
                     <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{'📈 ' + vgPatternName}</Text>
                   </AE>}
                   <View style={{ marginTop: 12, flex: 1 }}>
@@ -2168,7 +2168,7 @@ export default function AnalyticsScreen() {
     return (
       <View style={{ marginHorizontal: 16 }}>
         {isAdmin && <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 4 }}>
-          <AE isAdmin={isAdmin} table="ui_analytics" column="bar_pattern" rowId={`ie_${periodKey}`} label={`Patrón barras ${periodKey} (1-20): ${currentBarPatternName}`} value={currentBarPatternId}>
+          <AE isAdmin={isAdmin} table="ui_analytics" column="bar_pattern" rowId={`ie_${periodKey}`} label={`Patrón barras ${periodKey} (1-30): ${currentBarPatternName}`} value={currentBarPatternId}>
             <View style={{ backgroundColor: '#f0f0f0', borderRadius: 6, paddingHorizontal: 10, paddingVertical: 4 }}>
               <Text style={{ fontSize: 11, color: '#888' }}>📊 {currentBarPatternName}</Text>
             </View>
@@ -2302,7 +2302,7 @@ export default function AnalyticsScreen() {
           function PatternSelector() {
             if (!isAdmin) return null;
             return (
-              <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId={`ie_${periodKey}`} label={`Patrón gráfica ${periodKey} (1-20): ${iePatternName}`} value={iePattern}>
+              <AE isAdmin={isAdmin} table="ui_analytics" column="chart_pattern" rowId={`ie_${periodKey}`} label={`Patrón gráfica ${periodKey} (1-30): ${iePatternName}`} value={iePattern}>
                 <Text style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>{'📈 ' + iePatternName}</Text>
               </AE>
             );
