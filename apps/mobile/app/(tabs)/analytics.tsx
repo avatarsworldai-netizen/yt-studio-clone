@@ -207,13 +207,21 @@ export default function AnalyticsScreen() {
             <DynamicLineChart
               value={revenueVal}
               points={tsPoints}
-              xLabels={[firstDate, lastDate]}
               height={chartH}
               color="#1db4a5"
               hideYLabels
+              hideXLabels
               pattern={chartPattern}
               tooltipId="chart_main"
             />
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
+              <AE isAdmin={isAdmin} table="ui_analytics" column="x_label" rowId="chart_main_x0" label={`Fecha inicio gráfica: ${firstDate}`} value={firstDate}>
+                <Text style={{ fontSize: 10, fontWeight: '500', color: '#7a7a7a' }}>{firstDate}</Text>
+              </AE>
+              <AE isAdmin={isAdmin} table="ui_analytics" column="x_label" rowId="chart_main_x1" label={`Fecha fin gráfica: ${lastDate}`} value={lastDate}>
+                <Text style={{ fontSize: 10, fontWeight: '500', color: '#7a7a7a' }}>{lastDate}</Text>
+              </AE>
+            </View>
           </View>
         </View>
       </View>
