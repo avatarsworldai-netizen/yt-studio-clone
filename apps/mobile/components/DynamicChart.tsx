@@ -144,6 +144,75 @@ function makeStablePattern(level: (t: number) => number, seed: number = 0) {
 type Peak = number | { at: number; h: number };
 
 /**
+ * Build a TOTAL pattern (multi-year) — dense daily zigzag with asymmetric
+ * mountain envelope. Used for the "Total" period in YT Studio.
+ *
+ * MAX_H = 0.715 keeps maxVal under niceStep boundary so yMax = 10 cleanly.
+ *
+ * Options:
+ *   bandFloor: floor of band at position t (0-1)
+ *   bandTop: top of band at position t (excluding spikes)
+ *   peaks: guaranteed tall peak positions/heights
+ *   seed: unique random seed per pattern
+ *   startsAtZero: if true, point at i=0 is literal zero (origin)
+ *   spikeT: [tMin, tMax] range where medium spikes appear (default [0.10, 0.85])
+ *   bigSpikeT: [tMin, tMax] for taller random spikes (default [0.30, 0.70])
+ */
+function makeTotalPattern(opts: {
+  bandFloor: (t: number) => number;
+  bandTop: (t: number) => number;
+  peaks: Peak[];
+  seed: number;
+  startsAtZero?: boolean;
+  spikeT?: [number, number];
+  bigSpikeT?: [number, number];
+}) {
+  const MAX_H = 0.715;
+  const HARD_CAP = 0.710;
+  const spikeT = opts.spikeT ?? [0.10, 0.85];
+  const bigSpikeT = opts.bigSpikeT ?? [0.30, 0.70];
+
+  return (t: number, i: number, count: number): number => {
+    if (opts.startsAtZero && i === 0) return 0;
+
+    const floor = opts.bandFloor(t);
+    const top = opts.bandTop(t);
+    const center = (floor + top) / 2;
+    const halfBand = (top - floor) / 2;
+
+    const tolerance = Math.max(0.5 / count, 0.004);
+    for (let pi = 0; pi < opts.peaks.length; pi++) {
+      const p = opts.peaks[pi];
+      const pos = typeof p === 'number' ? p : p.at;
+      const heightRaw = typeof p === 'number' ? MAX_H : p.h;
+      if (Math.abs(t - pos) < tolerance) {
+        const jitter = seededRand(i * 41.1 + opts.seed + pi) * 0.015;
+        return Math.min(MAX_H, heightRaw) - jitter;
+      }
+    }
+
+    const r1 = seededRand(i * 13.37 + opts.seed);
+    const r2 = seededRand(i * 31.7 + opts.seed * 2);
+    const noise = (r1 + r2 - 1) * 1.0;
+    let val = center + noise * halfBand;
+
+    const sp = seededRand(i * 29.3 + opts.seed * 5.7);
+    if (t > spikeT[0] && t < spikeT[1] && sp > 0.88) {
+      const spikeH = top + seededRand(i * 17.9 + opts.seed * 3.1) * (MAX_H - top) * 0.55;
+      val = Math.max(val, spikeH);
+    }
+    if (t > bigSpikeT[0] && t < bigSpikeT[1] && sp > 0.98) {
+      val = top + seededRand(i * 23.1 + opts.seed * 4.3) * (MAX_H - top) * 0.85;
+    }
+
+    if (val > HARD_CAP) val = HARD_CAP;
+    if (val < floor * 0.5) val = floor * 0.5;
+    if (val < 0.005) val = 0.005;
+    return val;
+  };
+}
+
+/**
  * Build a VOLATILE pattern function — line oscillates in a band with
  * guaranteed peaks at specific positions.
  *
@@ -376,104 +445,298 @@ export const CHART_PATTERNS: Record<string, { name: string; fn: (t: number, i: n
       40,
     ),
   },
-  // Pattern 41: exact clone of YT Studio "Total" reference image (multi-year span)
-  // For Total: daily scale peak*2.5 ≈ 13.85. MAX_H=0.715 keeps max val ≤ 9.9,
-  // so niceStep yMax = 10 (no overshoot), peak hits ~99% of chart.
+  // Pattern 41: exact clone of YT Studio "Total" reference image
   '41': {
     name: 'Volátil total (referencia)',
-    fn: (() => {
-      const MAX_H = 0.715; // tallest peak — lands cleanly under niceStep boundary
-      const HARD_CAP = 0.710; // upper noise clamp, just below MAX_H
-      const peaks: Peak[] = [
-        { at: 0.18, h: 0.48 }, // early isolated spike rising from low plateau
-        { at: 0.27, h: MAX_H }, // tallest spike of entire chart (~95% in image)
-        { at: 0.30, h: 0.56 }, // secondary spike right after tallest (cluster tail)
-        { at: 0.38, h: 0.52 }, // spike entering dense activity zone
-        { at: 0.45, h: 0.54 }, // peak in mid-section dense cluster
-        { at: 0.50, h: 0.56 }, // spike around densest cluster center
-        { at: 0.54, h: 0.58 }, // cluster of tall peaks in densest area
-        { at: 0.58, h: 0.60 }, // high spike in dense middle
-        { at: 0.63, h: 0.52 }, // spike before decline begins
-        { at: 0.68, h: 0.64 }, // second-tallest isolated peak (~85% in image)
-        { at: 0.72, h: 0.48 }, // spike at start of declining phase
-        { at: 0.78, h: 0.42 }, // moderate spike in declining band
-        { at: 0.85, h: 0.38 }, // spike in late phase
-        { at: 0.92, h: 0.34 }, // small spike near end
-        { at: 0.97, h: 0.30 }, // final visible spike
-      ];
-
-      // Asymmetric "mountain" band envelope matching the image:
-      //   t=0:        floor 0, top ~0.18    (origin — line starts at zero)
-      //   t=0-0.10:   sharp rise to low plateau
-      //   t=0.10-0.30: gradual rise
-      //   t=0.30-0.65: broad HIGH plateau (densest activity)
-      //   t=0.65-0.85: gradual decline
-      //   t=0.85-1.00: late compression
-      const bandFloor = (t: number): number => {
+    fn: makeTotalPattern({
+      seed: 41,
+      startsAtZero: true,
+      peaks: [
+        { at: 0.18, h: 0.48 },
+        { at: 0.27, h: 0.715 },
+        { at: 0.30, h: 0.56 },
+        { at: 0.38, h: 0.52 },
+        { at: 0.45, h: 0.54 },
+        { at: 0.50, h: 0.56 },
+        { at: 0.54, h: 0.58 },
+        { at: 0.58, h: 0.60 },
+        { at: 0.63, h: 0.52 },
+        { at: 0.68, h: 0.64 },
+        { at: 0.72, h: 0.48 },
+        { at: 0.78, h: 0.42 },
+        { at: 0.85, h: 0.38 },
+        { at: 0.92, h: 0.34 },
+        { at: 0.97, h: 0.30 },
+      ],
+      bandFloor: (t) => {
         if (t < 0.005) return 0;
-        if (t < 0.10) return 0.04 + (t / 0.10) * 0.04; // 0.04 → 0.08
-        if (t < 0.30) return 0.08 + ((t - 0.10) / 0.20) * 0.09; // 0.08 → 0.17
-        if (t < 0.65) return 0.17; // broad plateau
-        if (t < 0.85) return 0.17 - ((t - 0.65) / 0.20) * 0.05; // 0.17 → 0.12
-        return 0.12 - ((t - 0.85) / 0.15) * 0.03; // 0.12 → 0.09
-      };
-      const bandTop = (t: number): number => {
+        if (t < 0.10) return 0.04 + (t / 0.10) * 0.04;
+        if (t < 0.30) return 0.08 + ((t - 0.10) / 0.20) * 0.09;
+        if (t < 0.65) return 0.17;
+        if (t < 0.85) return 0.17 - ((t - 0.65) / 0.20) * 0.05;
+        return 0.12 - ((t - 0.85) / 0.15) * 0.03;
+      },
+      bandTop: (t) => {
         if (t < 0.005) return 0.18;
-        if (t < 0.10) return 0.20 + (t / 0.10) * 0.05; // 0.20 → 0.25
-        if (t < 0.30) return 0.25 + ((t - 0.10) / 0.20) * 0.20; // 0.25 → 0.45
-        if (t < 0.65) return 0.45 + Math.sin(((t - 0.30) / 0.35) * Math.PI) * 0.05; // bow 0.45→0.50→0.45
-        if (t < 0.85) return 0.45 - ((t - 0.65) / 0.20) * 0.13; // 0.45 → 0.32
-        return 0.32 - ((t - 0.85) / 0.15) * 0.07; // 0.32 → 0.25
-      };
-
-      return (t: number, i: number, count: number): number => {
-        // Literal zero at the very first point (chart origin)
-        if (i === 0) return 0;
-
-        const floor = bandFloor(t);
-        const top = bandTop(t);
-        const center = (floor + top) / 2;
-        const halfBand = (top - floor) / 2;
-
-        // Guaranteed peaks (priority over noise)
-        const tolerance = Math.max(0.5 / count, 0.004);
-        for (let pi = 0; pi < peaks.length; pi++) {
-          const p = peaks[pi];
-          const pos = typeof p === 'number' ? p : p.at;
-          const heightRaw = typeof p === 'number' ? MAX_H : p.h;
-          if (Math.abs(t - pos) < tolerance) {
-            const jitter = seededRand(i * 41.1 + 41 + pi) * 0.015;
-            return Math.min(MAX_H, heightRaw) - jitter;
-          }
-        }
-
-        // DENSE daily noise — two seeds for genuine day-to-day chaos
-        const r1 = seededRand(i * 13.37 + 41);
-        const r2 = seededRand(i * 31.7 + 41 * 2);
-        const noise = (r1 + r2 - 1) * 1.0;
-        let val = center + noise * halfBand;
-
-        // Frequent medium spikes (~12%) in active range (t > 0.10 && t < 0.85)
-        // — recreates the dense "barcode of vertical strokes" look
-        const sp = seededRand(i * 29.3 + 41 * 5.7);
-        if (t > 0.10 && t < 0.85 && sp > 0.88) {
-          const spikeHeight = top + seededRand(i * 17.9 + 41 * 3.1) * (MAX_H - top) * 0.55;
-          val = Math.max(val, spikeHeight);
-        }
-
-        // Occasional taller random spikes (~2%) in densest middle (t=0.30-0.70)
-        if (t > 0.30 && t < 0.70 && sp > 0.98) {
-          val = top + seededRand(i * 23.1 + 41 * 4.3) * (MAX_H - top) * 0.85;
-        }
-
-        // Hard clamps — never exceed HARD_CAP, never drop below half-floor
-        if (val > HARD_CAP) val = HARD_CAP;
-        if (val < floor * 0.5) val = floor * 0.5;
-        if (val < 0.005) val = 0.005;
-
-        return val;
-      };
-    })(),
+        if (t < 0.10) return 0.20 + (t / 0.10) * 0.05;
+        if (t < 0.30) return 0.25 + ((t - 0.10) / 0.20) * 0.20;
+        if (t < 0.65) return 0.45 + Math.sin(((t - 0.30) / 0.35) * Math.PI) * 0.05;
+        if (t < 0.85) return 0.45 - ((t - 0.65) / 0.20) * 0.13;
+        return 0.32 - ((t - 0.85) / 0.15) * 0.07;
+      },
+    }),
+  },
+  // Pattern 42: pico temprano — canal explota al inicio, luego declive largo
+  '42': {
+    name: 'Volátil total pico temprano',
+    fn: makeTotalPattern({
+      seed: 42,
+      startsAtZero: true,
+      peaks: [
+        { at: 0.05, h: 0.40 },
+        { at: 0.12, h: 0.715 },
+        { at: 0.16, h: 0.58 },
+        { at: 0.22, h: 0.55 },
+        { at: 0.30, h: 0.50 },
+        { at: 0.40, h: 0.46 },
+        { at: 0.50, h: 0.42 },
+        { at: 0.60, h: 0.38 },
+        { at: 0.70, h: 0.34 },
+        { at: 0.80, h: 0.30 },
+        { at: 0.92, h: 0.26 },
+      ],
+      bandFloor: (t) => (t < 0.005 ? 0 : Math.max(0.05, 0.18 - t * 0.13)),
+      bandTop: (t) => (t < 0.005 ? 0.15 : Math.max(0.18, 0.50 - t * 0.32)),
+    }),
+  },
+  // Pattern 43: pico tardío — crecimiento lento, explota cerca del final
+  '43': {
+    name: 'Volátil total pico tardío',
+    fn: makeTotalPattern({
+      seed: 43,
+      peaks: [
+        { at: 0.10, h: 0.20 },
+        { at: 0.25, h: 0.28 },
+        { at: 0.40, h: 0.38 },
+        { at: 0.55, h: 0.50 },
+        { at: 0.65, h: 0.58 },
+        { at: 0.75, h: 0.65 },
+        { at: 0.82, h: 0.715 },
+        { at: 0.88, h: 0.60 },
+        { at: 0.95, h: 0.50 },
+      ],
+      bandFloor: (t) => 0.05 + t * 0.12,
+      bandTop: (t) => 0.15 + t * 0.32,
+      spikeT: [0.30, 0.95],
+      bigSpikeT: [0.60, 0.90],
+    }),
+  },
+  // Pattern 44: doble montaña — 2 booms separados por valle
+  '44': {
+    name: 'Volátil total doble montaña',
+    fn: makeTotalPattern({
+      seed: 44,
+      peaks: [
+        { at: 0.10, h: 0.45 },
+        { at: 0.18, h: 0.65 },
+        { at: 0.25, h: 0.55 },
+        { at: 0.32, h: 0.40 },
+        { at: 0.45, h: 0.32 },
+        { at: 0.58, h: 0.45 },
+        { at: 0.68, h: 0.715 },
+        { at: 0.75, h: 0.58 },
+        { at: 0.85, h: 0.45 },
+        { at: 0.95, h: 0.35 },
+      ],
+      bandFloor: (t) => {
+        const dipCenter = Math.abs(t - 0.45) > 0.15 ? 0.15 : 0.08;
+        return Math.max(0.06, dipCenter);
+      },
+      bandTop: (t) => {
+        // Two humps centered at t=0.20 and t=0.70
+        const h1 = Math.exp(-Math.pow((t - 0.20) / 0.12, 2)) * 0.50;
+        const h2 = Math.exp(-Math.pow((t - 0.70) / 0.12, 2)) * 0.55;
+        return Math.max(0.18, h1, h2) + 0.18;
+      },
+    }),
+  },
+  // Pattern 45: plateau muy largo — canal estable en alto durante años
+  '45': {
+    name: 'Volátil total plateau largo',
+    fn: makeTotalPattern({
+      seed: 45,
+      startsAtZero: true,
+      peaks: [
+        { at: 0.05, h: 0.30 },
+        { at: 0.12, h: 0.50 },
+        { at: 0.20, h: 0.62 },
+        { at: 0.30, h: 0.68 },
+        { at: 0.40, h: 0.70 },
+        { at: 0.50, h: 0.715 },
+        { at: 0.60, h: 0.68 },
+        { at: 0.70, h: 0.65 },
+        { at: 0.80, h: 0.60 },
+        { at: 0.90, h: 0.55 },
+        { at: 0.97, h: 0.50 },
+      ],
+      bandFloor: (t) => {
+        if (t < 0.005) return 0;
+        if (t < 0.15) return 0.05 + (t / 0.15) * 0.13;
+        return 0.18;
+      },
+      bandTop: (t) => {
+        if (t < 0.005) return 0.15;
+        if (t < 0.15) return 0.20 + (t / 0.15) * 0.30;
+        return 0.50;
+      },
+      spikeT: [0.05, 1.0],
+    }),
+  },
+  // Pattern 46: pico extremo único — un solo evento viral
+  '46': {
+    name: 'Volátil total pico extremo',
+    fn: makeTotalPattern({
+      seed: 46,
+      peaks: [
+        { at: 0.15, h: 0.18 },
+        { at: 0.30, h: 0.22 },
+        { at: 0.42, h: 0.30 },
+        { at: 0.48, h: 0.50 },
+        { at: 0.52, h: 0.715 }, // único pico extremo
+        { at: 0.56, h: 0.55 },
+        { at: 0.65, h: 0.30 },
+        { at: 0.80, h: 0.22 },
+        { at: 0.95, h: 0.18 },
+      ],
+      bandFloor: () => 0.07,
+      bandTop: (t) => {
+        const d = Math.abs(t - 0.5);
+        return d < 0.10 ? 0.40 - d * 1.5 : 0.18;
+      },
+      spikeT: [0.40, 0.60],
+      bigSpikeT: [0.45, 0.55],
+    }),
+  },
+  // Pattern 47: crecimiento sostenido — canal que crece año a año sin parar
+  '47': {
+    name: 'Volátil total crecimiento sostenido',
+    fn: makeTotalPattern({
+      seed: 47,
+      startsAtZero: true,
+      peaks: [
+        { at: 0.10, h: 0.20 },
+        { at: 0.20, h: 0.30 },
+        { at: 0.30, h: 0.40 },
+        { at: 0.40, h: 0.48 },
+        { at: 0.50, h: 0.55 },
+        { at: 0.60, h: 0.60 },
+        { at: 0.70, h: 0.64 },
+        { at: 0.80, h: 0.68 },
+        { at: 0.90, h: 0.70 },
+        { at: 0.97, h: 0.715 },
+      ],
+      bandFloor: (t) => (t < 0.005 ? 0 : 0.05 + t * 0.20),
+      bandTop: (t) => (t < 0.005 ? 0.12 : 0.15 + t * 0.30),
+      spikeT: [0.10, 1.0],
+    }),
+  },
+  // Pattern 48: decaimiento — empieza alto, baja gradualmente
+  '48': {
+    name: 'Volátil total decaimiento',
+    fn: makeTotalPattern({
+      seed: 48,
+      peaks: [
+        { at: 0.03, h: 0.715 },
+        { at: 0.10, h: 0.65 },
+        { at: 0.18, h: 0.58 },
+        { at: 0.28, h: 0.50 },
+        { at: 0.40, h: 0.42 },
+        { at: 0.52, h: 0.36 },
+        { at: 0.65, h: 0.30 },
+        { at: 0.78, h: 0.24 },
+        { at: 0.92, h: 0.20 },
+      ],
+      bandFloor: (t) => Math.max(0.05, 0.20 - t * 0.13),
+      bandTop: (t) => Math.max(0.18, 0.55 - t * 0.30),
+    }),
+  },
+  // Pattern 49: estable con boom corto — canal pequeño tiene un evento viral
+  '49': {
+    name: 'Volátil total estable + boom',
+    fn: makeTotalPattern({
+      seed: 49,
+      peaks: [
+        { at: 0.15, h: 0.18 },
+        { at: 0.30, h: 0.20 },
+        { at: 0.45, h: 0.22 },
+        { at: 0.60, h: 0.30 },
+        { at: 0.70, h: 0.55 },
+        { at: 0.75, h: 0.715 }, // boom
+        { at: 0.78, h: 0.62 },
+        { at: 0.82, h: 0.45 },
+        { at: 0.88, h: 0.28 },
+        { at: 0.95, h: 0.22 },
+      ],
+      bandFloor: (t) => (t > 0.65 && t < 0.85 ? 0.12 : 0.06),
+      bandTop: (t) => (t > 0.65 && t < 0.85 ? 0.45 : 0.18),
+      spikeT: [0.65, 0.85],
+      bigSpikeT: [0.70, 0.80],
+    }),
+  },
+  // Pattern 50: multi-pico tipo olas — 4 picos espaciados como olas
+  '50': {
+    name: 'Volátil total 4 olas',
+    fn: makeTotalPattern({
+      seed: 50,
+      peaks: [
+        { at: 0.10, h: 0.55 },
+        { at: 0.13, h: 0.45 },
+        { at: 0.30, h: 0.65 },
+        { at: 0.33, h: 0.48 },
+        { at: 0.55, h: 0.715 },
+        { at: 0.58, h: 0.55 },
+        { at: 0.80, h: 0.60 },
+        { at: 0.83, h: 0.48 },
+      ],
+      bandFloor: (t) => {
+        const wave = (Math.sin(t * Math.PI * 4) + 1) / 2;
+        return 0.08 + wave * 0.05;
+      },
+      bandTop: (t) => {
+        const wave = (Math.sin(t * Math.PI * 4) + 1) / 2;
+        return 0.22 + wave * 0.20;
+      },
+    }),
+  },
+  // Pattern 51: rampa simétrica suave — montaña simétrica, sin picos extremos
+  '51': {
+    name: 'Volátil total montaña simétrica',
+    fn: makeTotalPattern({
+      seed: 51,
+      startsAtZero: true,
+      peaks: [
+        { at: 0.20, h: 0.40 },
+        { at: 0.30, h: 0.50 },
+        { at: 0.40, h: 0.60 },
+        { at: 0.48, h: 0.68 },
+        { at: 0.52, h: 0.715 },
+        { at: 0.58, h: 0.66 },
+        { at: 0.65, h: 0.58 },
+        { at: 0.75, h: 0.48 },
+        { at: 0.85, h: 0.36 },
+        { at: 0.95, h: 0.28 },
+      ],
+      bandFloor: (t) => {
+        if (t < 0.005) return 0;
+        const dist = Math.abs(t - 0.5);
+        return 0.06 + (1 - dist * 2) * 0.10;
+      },
+      bandTop: (t) => {
+        if (t < 0.005) return 0.12;
+        const dist = Math.abs(t - 0.5);
+        return 0.18 + (1 - dist * 2) * 0.30;
+      },
+    }),
   },
 };
 
