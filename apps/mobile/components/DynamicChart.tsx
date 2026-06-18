@@ -249,9 +249,7 @@ export const CHART_PATTERNS: Record<string, { name: string; fn: (t: number, i: n
         return { min: minVal, max: maxVal };
       },
       [
-        { at: 0.046, h: 0.88 }, // early Jan peak ~87%
         { at: 0.216, h: 1.00 }, // late Jan peak ~100% (highest)
-        { at: 0.320, h: 0.78 }, // late Feb peak ~76%
         { at: 0.399, h: 0.85 }, // mid Mar peak ~82%
         { at: 0.850, h: 0.82 }, // late May peak ~79%
       ],
