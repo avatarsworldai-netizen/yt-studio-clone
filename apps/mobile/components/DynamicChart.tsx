@@ -181,10 +181,19 @@ function makeVolatilePattern(
       }
     }
 
-    // Normal variation around the band — bimodal-ish for dense zigzag
-    const r1 = seededRand(i * 13.37 + seed);
-    const r2 = seededRand(i * 31.7 + seed * 2);
-    const noise = (r1 + r2 - 1) * 0.9;
+    // Smooth zigzag: base random value changes every 2 days (not every day),
+    // interpolating between blocks halves the number of direction changes.
+    const blockSize = 2;
+    const blockI = i / blockSize;
+    const blockIdx = Math.floor(blockI);
+    const blockFrac = blockI - blockIdx;
+
+    const noiseAt = (b: number) => {
+      const a = seededRand(b * 13.37 + seed);
+      const c = seededRand(b * 31.7 + seed * 2);
+      return (a + c - 1) * 0.9;
+    };
+    const noise = noiseAt(blockIdx) * (1 - blockFrac) + noiseAt(blockIdx + 1) * blockFrac;
     let val = center + noise * halfBand;
 
     // Hard clamps to keep within visible chart range
