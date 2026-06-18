@@ -265,16 +265,117 @@ export const CHART_PATTERNS: Record<string, { name: string; fn: (t: number, i: n
       31,
     ),
   },
-  // Patterns 32-40 will be re-tuned to match this style once 31 is verified
-  '32': { name: 'Volátil 1 pico inicio', fn: makeVolatilePattern(() => ({ min: 0.30, max: 0.55 }), [0.08], 32) },
-  '33': { name: 'Volátil 1 pico final', fn: makeVolatilePattern(() => ({ min: 0.30, max: 0.55 }), [0.92], 33) },
-  '34': { name: 'Volátil 2 picos extremos', fn: makeVolatilePattern(() => ({ min: 0.30, max: 0.55 }), [0.1, 0.9], 34) },
-  '35': { name: 'Volátil 3 picos espaciados', fn: makeVolatilePattern(() => ({ min: 0.30, max: 0.55 }), [0.2, 0.5, 0.8], 35) },
-  '36': { name: 'Volátil tendencia alcista', fn: makeVolatilePattern((t) => ({ min: 0.25 + t * 0.15, max: 0.45 + t * 0.18 }), [0.95], 36) },
-  '37': { name: 'Volátil tendencia bajista', fn: makeVolatilePattern((t) => ({ min: 0.40 - t * 0.15, max: 0.60 - t * 0.18 }), [0.05], 37) },
-  '38': { name: 'Volátil banda ancha', fn: makeVolatilePattern(() => ({ min: 0.25, max: 0.60 }), [0.3, 0.75], 38) },
-  '39': { name: 'Volátil U invertida', fn: makeVolatilePattern((t) => { const d = Math.abs(t - 0.5); return { min: 0.40 - d * 0.18, max: 0.60 - d * 0.18 }; }, [0.5], 39) },
-  '40': { name: 'Volátil U valle central', fn: makeVolatilePattern((t) => { const d = Math.abs(t - 0.5); return { min: 0.25 + d * 0.18, max: 0.45 + d * 0.18 }; }, [0.05, 0.95], 40) },
+  // Pattern 32: 1 pico al inicio + tendencia bajista
+  '32': {
+    name: 'Volátil pico inicio + bajista',
+    fn: makeVolatilePattern(
+      (t) => ({ min: 0.45 - t * 0.20, max: 0.65 - t * 0.20 }),
+      [
+        { at: 0.08, h: 1.00 },
+        { at: 0.18, h: 0.78 },
+      ],
+      32,
+    ),
+  },
+  // Pattern 33: 1 pico al final + tendencia alcista
+  '33': {
+    name: 'Volátil pico final + alcista',
+    fn: makeVolatilePattern(
+      (t) => ({ min: 0.20 + t * 0.20, max: 0.40 + t * 0.20 }),
+      [
+        { at: 0.82, h: 0.85 },
+        { at: 0.92, h: 1.00 },
+      ],
+      33,
+    ),
+  },
+  // Pattern 34: 2 picos extremos (inicio y final)
+  '34': {
+    name: 'Volátil 2 picos extremos',
+    fn: makeVolatilePattern(
+      () => ({ min: 0.28, max: 0.50 }),
+      [
+        { at: 0.10, h: 0.92 },
+        { at: 0.90, h: 0.88 },
+      ],
+      34,
+    ),
+  },
+  // Pattern 35: 3 picos espaciados con dip central
+  '35': {
+    name: 'Volátil 3 picos + dip',
+    fn: makeVolatilePattern(
+      (t) => {
+        const dip = Math.exp(-Math.pow(t - 0.5, 2) / 0.04);
+        return { min: 0.30 - dip * 0.10, max: 0.50 - dip * 0.10 };
+      },
+      [
+        { at: 0.15, h: 0.95 },
+        { at: 0.50, h: 0.72 },
+        { at: 0.85, h: 0.90 },
+      ],
+      35,
+    ),
+  },
+  // Pattern 36: 1 pico grande en el medio (U invertida)
+  '36': {
+    name: 'Volátil U invertida 1 pico',
+    fn: makeVolatilePattern(
+      (t) => {
+        const d = Math.abs(t - 0.5);
+        return { min: 0.45 - d * 0.25, max: 0.65 - d * 0.25 };
+      },
+      [{ at: 0.5, h: 1.00 }],
+      36,
+    ),
+  },
+  // Pattern 37: 2 picos cercanos en el medio (cluster central)
+  '37': {
+    name: 'Volátil cluster central',
+    fn: makeVolatilePattern(
+      () => ({ min: 0.28, max: 0.48 }),
+      [
+        { at: 0.42, h: 0.95 },
+        { at: 0.55, h: 0.88 },
+      ],
+      37,
+    ),
+  },
+  // Pattern 38: estable casi sin picos (1 mini pico)
+  '38': {
+    name: 'Volátil casi estable',
+    fn: makeVolatilePattern(
+      () => ({ min: 0.32, max: 0.42 }),
+      [{ at: 0.50, h: 0.70 }],
+      38,
+    ),
+  },
+  // Pattern 39: tendencia alcista pronunciada con 3 picos crecientes
+  '39': {
+    name: 'Volátil alcista escalonada',
+    fn: makeVolatilePattern(
+      (t) => ({ min: 0.20 + t * 0.25, max: 0.40 + t * 0.20 }),
+      [
+        { at: 0.25, h: 0.70 },
+        { at: 0.55, h: 0.85 },
+        { at: 0.88, h: 1.00 },
+      ],
+      39,
+    ),
+  },
+  // Pattern 40: tendencia bajista pronunciada con 3 picos decrecientes
+  '40': {
+    name: 'Volátil bajista escalonada',
+    fn: makeVolatilePattern(
+      (t) => ({ min: 0.45 - t * 0.25, max: 0.60 - t * 0.20 }),
+      [
+        { at: 0.10, h: 1.00 },
+        { at: 0.45, h: 0.82 },
+        { at: 0.75, h: 0.68 },
+      ],
+      40,
+    ),
+  },
 };
 
 export const PATTERN_LIST = Object.entries(CHART_PATTERNS).map(([id, p]) => ({ id, name: p.name }));
