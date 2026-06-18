@@ -1,0 +1,33 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    # Cada 5 días a las 12:00 UTC
+    - cron: '0 12 */5 * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST API
+        run: |
+          SUPABASE_URL="https://dyzwlxhghmkrnuvesxqf.supabase.co"
+          ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5endseGhnaG1rcm51dmVzeHFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1Njk3MjQsImV4cCI6MjA5MDE0NTcyNH0.b3TWo5ZUd-qB1PHIc6ct2IlL14nT2nTVNh7l6qAU8ew"
+
+          RESPONSE=$(curl -s -w "\n%{http_code}" "$SUPABASE_URL/rest/v1/channel?select=id&limit=1" \
+            -H "apikey: $ANON_KEY" \
+            -H "Authorization: Bearer $ANON_KEY")
+
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          STATUS=$(echo "$RESPONSE" | tail -n1)
+
+          echo "Status: $STATUS"
+          echo "Body: $BODY"
+
+          if [ "$STATUS" != "200" ]; then
+            echo "::error::Supabase ping failed with status $STATUS"
+            exit 1
+          fi
+
+          echo "Supabase is alive!"
