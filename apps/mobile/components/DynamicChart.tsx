@@ -142,27 +142,44 @@ function makeStablePattern(level: (t: number) => number, seed: number = 0) {
 }
 
 /**
- * Build a VOLATILE pattern function — always-active line oscillating in a band.
- * `band` returns {min, max} for the current position t.
- * Line never retraces to zero; produces dense zigzag with occasional spikes above band.
+ * Build a VOLATILE pattern function — always-active line with dense zigzag.
+ * `band` returns {min, max} for the moving baseline at position t.
+ * Each day randomly swings hard above or below center, creating real YT Studio look.
  */
 function makeVolatilePattern(band: (t: number) => { min: number; max: number }, seed: number = 0) {
   return (t: number, i: number, count: number): number => {
     const { min, max } = band(t);
-    const safeMin = Math.max(0.1, min);
-    const safeMax = Math.max(safeMin + 0.05, max);
-    // Daily random value across the full band — produces dense zigzag
-    const r = seededRand(i * 13.37 + seed);
-    let val = safeMin + r * (safeMax - safeMin);
-    // Add fine jitter for sharper day-to-day variation
-    const jitter = (seededRand(i * 7.91 + seed * 3.1) - 0.5) * (safeMax - safeMin) * 0.4;
-    val += jitter;
-    // Occasional spike above the band (~10% of days)
+    const safeMin = Math.max(0.2, min);
+    const safeMax = Math.max(safeMin + 0.15, max);
+    const center = (safeMin + safeMax) / 2;
+    const halfBand = (safeMax - safeMin) / 2;
+
+    // Two independent random sources for direction & magnitude
+    const r1 = seededRand(i * 13.37 + seed);
+    const r2 = seededRand(i * 31.7 + seed * 2);
+    const r3 = seededRand(i * 47.9 + seed * 3);
+
+    // Direction: each day swings up or down from center
+    const sign = r1 > 0.5 ? 1 : -1;
+    // Magnitude: skewed to extremes so peaks/valleys are visible
+    const mag = Math.pow(r2, 0.4);
+
+    let val = center + sign * mag * halfBand * 1.4;
+
+    // Add another layer of jitter for fine-grained noise
+    val += (r3 - 0.5) * halfBand * 0.6;
+
+    // Big spike (~8%) — punches well above the band
     const sp = seededRand(i * 29.3 + seed * 5.7);
-    if (sp > 0.90) {
-      val = safeMax + seededRand(i * 41.1 + seed) * 0.3;
+    if (sp > 0.92) {
+      val = safeMax + seededRand(i * 41.1 + seed) * 0.6;
     }
-    return Math.max(safeMin * 0.7, val);
+    // Occasional low valley (~5%) — drops well below the band
+    if (sp < 0.05) {
+      val = safeMin - seededRand(i * 43.1 + seed) * 0.15;
+    }
+
+    return Math.max(0.1, val);
   };
 }
 
