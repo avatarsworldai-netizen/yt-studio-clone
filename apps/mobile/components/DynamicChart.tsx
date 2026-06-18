@@ -376,6 +376,61 @@ export const CHART_PATTERNS: Record<string, { name: string; fn: (t: number, i: n
       40,
     ),
   },
+  // Pattern 41: exact clone of YT Studio "Total" reference image (multi-year span)
+  // Features: floor touches near zero, dense daily zigzag (no smoothing),
+  // band ramps up to ~2023 then ramps down to 2026.
+  '41': {
+    name: 'Volátil total (referencia)',
+    fn: (() => {
+      const PEAK_CAP = 0.89;
+      const peaks: Peak[] = [
+        { at: 0.13, h: 0.65 },
+        { at: 0.25, h: 0.78 },
+        { at: 0.40, h: 0.98 },
+        { at: 0.55, h: 0.85 },
+        { at: 0.68, h: 0.70 },
+        { at: 0.82, h: 0.50 },
+      ];
+      return (t: number, i: number, count: number): number => {
+        // Band: ramps up to t=0.45 (peak in ~2023), then ramps down to t=1 (2026)
+        const rampUp = Math.min(1, t / 0.45);
+        const rampDown = Math.max(0, 1 - (t - 0.45) / 0.55);
+        const trend = rampUp * rampDown;
+        const safeMin = 0.02 + trend * 0.15;
+        const safeMax = 0.10 + trend * 0.50;
+        const center = (safeMin + safeMax) / 2;
+        const halfBand = (safeMax - safeMin) / 2;
+
+        // Guaranteed peaks
+        const tolerance = Math.max(0.5 / count, 0.005);
+        for (let pi = 0; pi < peaks.length; pi++) {
+          const p = peaks[pi];
+          const pos = typeof p === 'number' ? p : p.at;
+          const height = typeof p === 'number' ? PEAK_CAP : Math.min(PEAK_CAP, p.h * PEAK_CAP);
+          if (Math.abs(t - pos) < tolerance) {
+            return height - seededRand(i * 41.1 + 41 + pi) * 0.02;
+          }
+        }
+
+        // DENSE daily noise (no smoothing — every day is random)
+        const r1 = seededRand(i * 13.37 + 41);
+        const r2 = seededRand(i * 31.7 + 41 * 2);
+        const noise = (r1 + r2 - 1) * 1.0;
+        let val = center + noise * halfBand;
+
+        // Random small spikes (~6%) for the long-tail look
+        const sp = seededRand(i * 29.3 + 41 * 5.7);
+        if (sp > 0.94) {
+          val = safeMax + seededRand(i * 41.1 + 41) * (PEAK_CAP - safeMax) * 0.7;
+        }
+
+        if (val > PEAK_CAP - 0.03) val = PEAK_CAP - 0.03;
+        if (val < 0.005) val = 0.005;
+
+        return val;
+      };
+    })(),
+  },
 };
 
 export const PATTERN_LIST = Object.entries(CHART_PATTERNS).map(([id, p]) => ({ id, name: p.name }));

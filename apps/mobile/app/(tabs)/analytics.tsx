@@ -2296,7 +2296,9 @@ export default function AnalyticsScreen() {
             );
           }
 
-          const iePattern = getOverride('ui_analytics', 'chart_pattern', `ie_${periodKey}`) || '1';
+          // Default pattern per period: Total=41 (multi-year clone), 2026/2025=31 (year clone), rest=1
+          const defaultPattern = periodKey === 'total' ? '41' : (periodKey === '2026' || periodKey === '2025') ? '31' : '1';
+          const iePattern = getOverride('ui_analytics', 'chart_pattern', `ie_${periodKey}`) || defaultPattern;
           const iePatternName = PATTERN_LIST.find(p => p.id === iePattern)?.name || 'Estable';
 
           function PatternSelector() {
