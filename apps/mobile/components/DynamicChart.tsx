@@ -141,6 +141,31 @@ function makeStablePattern(level: (t: number) => number, seed: number = 0) {
   };
 }
 
+/**
+ * Build a VOLATILE pattern function — always-active line oscillating in a band.
+ * `band` returns {min, max} for the current position t.
+ * Line never retraces to zero; produces dense zigzag with occasional spikes above band.
+ */
+function makeVolatilePattern(band: (t: number) => { min: number; max: number }, seed: number = 0) {
+  return (t: number, i: number, count: number): number => {
+    const { min, max } = band(t);
+    const safeMin = Math.max(0.1, min);
+    const safeMax = Math.max(safeMin + 0.05, max);
+    // Daily random value across the full band — produces dense zigzag
+    const r = seededRand(i * 13.37 + seed);
+    let val = safeMin + r * (safeMax - safeMin);
+    // Add fine jitter for sharper day-to-day variation
+    const jitter = (seededRand(i * 7.91 + seed * 3.1) - 0.5) * (safeMax - safeMin) * 0.4;
+    val += jitter;
+    // Occasional spike above the band (~10% of days)
+    const sp = seededRand(i * 29.3 + seed * 5.7);
+    if (sp > 0.90) {
+      val = safeMax + seededRand(i * 41.1 + seed) * 0.3;
+    }
+    return Math.max(safeMin * 0.7, val);
+  };
+}
+
 export const CHART_PATTERNS: Record<string, { name: string; fn: (t: number, i: number, count: number) => number }> = {
   '1':  { name: 'Estable', fn: makePattern(() => 0.5, 1) },
   '2':  { name: 'Subida gradual', fn: makePattern((t) => t, 2) },
@@ -180,6 +205,20 @@ export const CHART_PATTERNS: Record<string, { name: string; fn: (t: number, i: n
   '28': { name: 'Plateau central', fn: makeStablePattern((t) => t > 0.25 && t < 0.75 ? 0.6 : 0.3, 28) },
   '29': { name: 'Doble nivel estable', fn: makeStablePattern((t) => t < 0.5 ? 0.3 : 0.55, 29) },
   '30': { name: 'Estable con micro tendencia', fn: makeStablePattern((t) => 0.35 + t * 0.15 + 0.05 * Math.sin(t * Math.PI * 4), 30) },
+  // Volatile always-active patterns (31-40) — line never retraces to zero
+  '31': { name: 'Volátil estable medio', fn: makeVolatilePattern(() => ({ min: 0.35, max: 0.7 }), 31) },
+  '32': { name: 'Volátil estable alto', fn: makeVolatilePattern(() => ({ min: 0.5, max: 0.85 }), 32) },
+  '33': { name: 'Volátil estable bajo', fn: makeVolatilePattern(() => ({ min: 0.2, max: 0.5 }), 33) },
+  '34': { name: 'Volátil tendencia bajista', fn: makeVolatilePattern((t) => ({ min: 0.45 - t * 0.2, max: 0.85 - t * 0.3 }), 34) },
+  '35': { name: 'Volátil tendencia alcista', fn: makeVolatilePattern((t) => ({ min: 0.25 + t * 0.2, max: 0.55 + t * 0.3 }), 35) },
+  '36': { name: 'Volátil banda estrecha', fn: makeVolatilePattern(() => ({ min: 0.45, max: 0.6 }), 36) },
+  '37': { name: 'Volátil banda ancha', fn: makeVolatilePattern(() => ({ min: 0.25, max: 0.85 }), 37) },
+  '38': { name: 'Volátil con pico inicial', fn: makeVolatilePattern((t) => t < 0.2 ? { min: 0.5, max: 0.95 } : { min: 0.3, max: 0.65 }, 38) },
+  '39': { name: 'Volátil con pico final', fn: makeVolatilePattern((t) => t > 0.8 ? { min: 0.5, max: 0.95 } : { min: 0.3, max: 0.65 }, 39) },
+  '40': { name: 'Volátil con valle central', fn: makeVolatilePattern((t) => {
+    const d = Math.abs(t - 0.5);
+    return d < 0.2 ? { min: 0.25, max: 0.5 } : { min: 0.45, max: 0.75 };
+  }, 40) },
 };
 
 export const PATTERN_LIST = Object.entries(CHART_PATTERNS).map(([id, p]) => ({ id, name: p.name }));
