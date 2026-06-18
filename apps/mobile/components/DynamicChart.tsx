@@ -143,44 +143,66 @@ function makeStablePattern(level: (t: number) => number, seed: number = 0) {
 
 /**
  * Build a VOLATILE pattern function — line oscillates in a mid-height band
- * with peaks at specific guaranteed positions. Floor stays at ~50% of chart.
+ * with peaks at specific guaranteed positions.
+ *
+ * MATHEMATICAL CONSTRAINT (key insight):
+ * niceStep rounds maxVal UP to a "nice" boundary, often overshooting 30%+.
+ * To make floor visible at ~50% of chart and peaks at ~100%, we cap peak
+ * multipliers below the niceStep boundary so yMax ≈ maxVal, not 1.3x maxVal.
+ *
+ * With per-day scaling peak*2.5 ≈ 0.11:
+ *   - PEAK_CAP = 0.89 → maxVal = 0.098 → niceStep yMax = 0.10
+ *   - Floor 0.445 → 44.5% of yMax = 0.0445 → 44.5% visual chart height
+ *   - Peak 0.89 → 89% of yMax = 89% visual chart height
+ *
  * `band` returns the moving baseline at position t.
  * `peaks` is an array of t positions (0-1) where strong peaks always appear.
+ * `preserveShape` (default false): when true, skip the floor-pull so trend/U
+ *   shapes stay visible (used for patterns 36-40 with band trends).
  */
 function makeVolatilePattern(
   band: (t: number) => { min: number; max: number },
   peaks: number[],
   seed: number = 0,
+  preserveShape: boolean = false,
 ) {
+  // Conservative cap below 0.91 niceStep boundary — 2% safety margin
+  const PEAK_CAP = 0.89;
+  const FLOOR_TARGET = 0.445; // 0.5 * PEAK_CAP → ~50% of chart height
+
   return (t: number, i: number, count: number): number => {
-    const { min, max } = band(t);
-    const safeMin = Math.max(0.5, min);
-    const safeMax = Math.max(safeMin + 0.08, max);
+    const rawBand = band(t);
+    // Clamp into safe range; allow wider bands when preserving shape
+    const safeMin = Math.min(Math.max(rawBand.min, 0.30), 0.55);
+    const safeMax = Math.min(Math.max(rawBand.max, safeMin + 0.05), 0.70);
     const center = (safeMin + safeMax) / 2;
     const halfBand = (safeMax - safeMin) / 2;
 
-    // Guaranteed peak at specific positions — uses tolerance based on count
-    // so peaks land on actual rendered days
-    const tolerance = 0.5 / count;
+    // Guaranteed peak at specific positions — tolerance based on count
+    const tolerance = Math.max(0.5 / count, 0.005);
     const isPeak = peaks.some((p) => Math.abs(t - p) < tolerance);
     if (isPeak) {
-      // Peak reaches near top of chart (ensures floor sits at ~50%)
-      return 0.95 + seededRand(i * 41.1 + seed) * 0.1;
+      // Peak reaches the top of the chart (within PEAK_CAP boundary)
+      return PEAK_CAP - seededRand(i * 41.1 + seed) * 0.03;
     }
 
-    // Normal variation around the band — softer normal-ish distribution
+    // Normal variation around the band — softened normal-ish distribution
     const r1 = seededRand(i * 13.37 + seed);
     const r2 = seededRand(i * 31.7 + seed * 2);
-    const noise = (r1 + r2 - 1) * 0.85;
+    const noise = (r1 + r2 - 1) * 0.9;
     let val = center + noise * halfBand;
 
-    // Very rare small extra spike (~1.5%)
-    const sp = seededRand(i * 29.3 + seed * 5.7);
-    if (sp > 0.985) {
-      val = safeMax + 0.15 + seededRand(i * 43.1 + seed) * 0.1;
+    // Optional floor-pull: gently center the band around FLOOR_TARGET
+    // (skipped when preserveShape=true so trend/U-shapes stay visible)
+    if (!preserveShape) {
+      val = val * 0.85 + FLOOR_TARGET * 0.15;
     }
 
-    return Math.max(safeMin * 0.95, val);
+    // Hard clamps: stay below PEAK_CAP boundary, keep visible floor
+    if (val > PEAK_CAP - 0.05) val = PEAK_CAP - 0.05;
+    if (val < safeMin * 0.85) val = safeMin * 0.85;
+
+    return val;
   };
 }
 
@@ -223,17 +245,17 @@ export const CHART_PATTERNS: Record<string, { name: string; fn: (t: number, i: n
   '28': { name: 'Plateau central', fn: makeStablePattern((t) => t > 0.25 && t < 0.75 ? 0.6 : 0.3, 28) },
   '29': { name: 'Doble nivel estable', fn: makeStablePattern((t) => t < 0.5 ? 0.3 : 0.55, 29) },
   '30': { name: 'Estable con micro tendencia', fn: makeStablePattern((t) => 0.35 + t * 0.15 + 0.05 * Math.sin(t * Math.PI * 4), 30) },
-  // Volatile always-active patterns (31-40) — floor at ~50% of chart, distinct peak positions
-  '31': { name: 'Volátil 1 pico medio', fn: makeVolatilePattern(() => ({ min: 0.55, max: 0.65 }), [0.5], 31) },
-  '32': { name: 'Volátil 1 pico inicio', fn: makeVolatilePattern(() => ({ min: 0.55, max: 0.65 }), [0.08], 32) },
-  '33': { name: 'Volátil 1 pico final', fn: makeVolatilePattern(() => ({ min: 0.55, max: 0.65 }), [0.92], 33) },
-  '34': { name: 'Volátil cluster inicio', fn: makeVolatilePattern((t) => ({ min: 0.6 - t * 0.1, max: 0.7 - t * 0.1 }), [0.05, 0.1, 0.15, 0.22], 34) },
-  '35': { name: 'Volátil cluster final', fn: makeVolatilePattern((t) => ({ min: 0.5 + t * 0.1, max: 0.6 + t * 0.1 }), [0.78, 0.85, 0.9, 0.95], 35) },
-  '36': { name: 'Volátil 3 picos espaciados', fn: makeVolatilePattern(() => ({ min: 0.55, max: 0.62 }), [0.2, 0.5, 0.8], 36) },
-  '37': { name: 'Volátil 5 picos regulares', fn: makeVolatilePattern(() => ({ min: 0.55, max: 0.62 }), [0.1, 0.3, 0.5, 0.7, 0.9], 37) },
-  '38': { name: 'Volátil 2 picos extremos', fn: makeVolatilePattern(() => ({ min: 0.55, max: 0.62 }), [0.1, 0.9], 38) },
-  '39': { name: 'Volátil tendencia bajista', fn: makeVolatilePattern((t) => ({ min: 0.65 - t * 0.15, max: 0.78 - t * 0.18 }), [0.05, 0.25], 39) },
-  '40': { name: 'Volátil tendencia alcista', fn: makeVolatilePattern((t) => ({ min: 0.5 + t * 0.15, max: 0.6 + t * 0.18 }), [0.75, 0.95], 40) },
+  // Volatile always-active patterns (31-40) — floor at ~50% of chart, each visibly distinct
+  '31': { name: 'Volátil 1 pico medio', fn: makeVolatilePattern(() => ({ min: 0.46, max: 0.56 }), [0.5], 31) },
+  '32': { name: 'Volátil 1 pico inicio', fn: makeVolatilePattern(() => ({ min: 0.46, max: 0.56 }), [0.08], 32) },
+  '33': { name: 'Volátil 1 pico final', fn: makeVolatilePattern(() => ({ min: 0.46, max: 0.56 }), [0.92], 33) },
+  '34': { name: 'Volátil 2 picos extremos', fn: makeVolatilePattern(() => ({ min: 0.46, max: 0.56 }), [0.1, 0.9], 34) },
+  '35': { name: 'Volátil 3 picos espaciados', fn: makeVolatilePattern(() => ({ min: 0.46, max: 0.54 }), [0.2, 0.5, 0.8], 35) },
+  '36': { name: 'Volátil tendencia alcista', fn: makeVolatilePattern((t) => ({ min: 0.35 + t * 0.18, max: 0.45 + t * 0.18 }), [0.95], 36, true) },
+  '37': { name: 'Volátil tendencia bajista', fn: makeVolatilePattern((t) => ({ min: 0.53 - t * 0.18, max: 0.63 - t * 0.18 }), [0.05], 37, true) },
+  '38': { name: 'Volátil banda ancha', fn: makeVolatilePattern(() => ({ min: 0.38, max: 0.62 }), [0.3, 0.75], 38) },
+  '39': { name: 'Volátil U invertida', fn: makeVolatilePattern((t) => { const d = Math.abs(t - 0.5); return { min: 0.55 - d * 0.20, max: 0.65 - d * 0.20 }; }, [0.5], 39, true) },
+  '40': { name: 'Volátil U valle central', fn: makeVolatilePattern((t) => { const d = Math.abs(t - 0.5); return { min: 0.38 + d * 0.20, max: 0.48 + d * 0.20 }; }, [0.05, 0.95], 40, true) },
 };
 
 export const PATTERN_LIST = Object.entries(CHART_PATTERNS).map(([id, p]) => ({ id, name: p.name }));
