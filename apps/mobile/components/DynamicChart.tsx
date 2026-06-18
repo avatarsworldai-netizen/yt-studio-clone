@@ -377,54 +377,98 @@ export const CHART_PATTERNS: Record<string, { name: string; fn: (t: number, i: n
     ),
   },
   // Pattern 41: exact clone of YT Studio "Total" reference image (multi-year span)
-  // Features: floor touches near zero, dense daily zigzag (no smoothing),
-  // band ramps up to ~2023 then ramps down to 2026.
+  // For Total: daily scale peak*2.5 ≈ 13.85. MAX_H=0.715 keeps max val ≤ 9.9,
+  // so niceStep yMax = 10 (no overshoot), peak hits ~99% of chart.
   '41': {
     name: 'Volátil total (referencia)',
     fn: (() => {
-      const PEAK_CAP = 0.89;
+      const MAX_H = 0.715; // tallest peak — lands cleanly under niceStep boundary
+      const HARD_CAP = 0.710; // upper noise clamp, just below MAX_H
       const peaks: Peak[] = [
-        { at: 0.13, h: 0.65 },
-        { at: 0.25, h: 0.78 },
-        { at: 0.40, h: 0.98 },
-        { at: 0.55, h: 0.85 },
-        { at: 0.68, h: 0.70 },
-        { at: 0.82, h: 0.50 },
+        { at: 0.18, h: 0.48 }, // early isolated spike rising from low plateau
+        { at: 0.27, h: MAX_H }, // tallest spike of entire chart (~95% in image)
+        { at: 0.30, h: 0.56 }, // secondary spike right after tallest (cluster tail)
+        { at: 0.38, h: 0.52 }, // spike entering dense activity zone
+        { at: 0.45, h: 0.54 }, // peak in mid-section dense cluster
+        { at: 0.50, h: 0.56 }, // spike around densest cluster center
+        { at: 0.54, h: 0.58 }, // cluster of tall peaks in densest area
+        { at: 0.58, h: 0.60 }, // high spike in dense middle
+        { at: 0.63, h: 0.52 }, // spike before decline begins
+        { at: 0.68, h: 0.64 }, // second-tallest isolated peak (~85% in image)
+        { at: 0.72, h: 0.48 }, // spike at start of declining phase
+        { at: 0.78, h: 0.42 }, // moderate spike in declining band
+        { at: 0.85, h: 0.38 }, // spike in late phase
+        { at: 0.92, h: 0.34 }, // small spike near end
+        { at: 0.97, h: 0.30 }, // final visible spike
       ];
-      return (t: number, i: number, count: number): number => {
-        // Band: ramps up to t=0.45 (peak in ~2023), then ramps down to t=1 (2026)
-        const rampUp = Math.min(1, t / 0.45);
-        const rampDown = Math.max(0, 1 - (t - 0.45) / 0.55);
-        const trend = rampUp * rampDown;
-        const safeMin = 0.02 + trend * 0.15;
-        const safeMax = 0.10 + trend * 0.50;
-        const center = (safeMin + safeMax) / 2;
-        const halfBand = (safeMax - safeMin) / 2;
 
-        // Guaranteed peaks
-        const tolerance = Math.max(0.5 / count, 0.005);
+      // Asymmetric "mountain" band envelope matching the image:
+      //   t=0:        floor 0, top ~0.18    (origin — line starts at zero)
+      //   t=0-0.10:   sharp rise to low plateau
+      //   t=0.10-0.30: gradual rise
+      //   t=0.30-0.65: broad HIGH plateau (densest activity)
+      //   t=0.65-0.85: gradual decline
+      //   t=0.85-1.00: late compression
+      const bandFloor = (t: number): number => {
+        if (t < 0.005) return 0;
+        if (t < 0.10) return 0.04 + (t / 0.10) * 0.04; // 0.04 → 0.08
+        if (t < 0.30) return 0.08 + ((t - 0.10) / 0.20) * 0.09; // 0.08 → 0.17
+        if (t < 0.65) return 0.17; // broad plateau
+        if (t < 0.85) return 0.17 - ((t - 0.65) / 0.20) * 0.05; // 0.17 → 0.12
+        return 0.12 - ((t - 0.85) / 0.15) * 0.03; // 0.12 → 0.09
+      };
+      const bandTop = (t: number): number => {
+        if (t < 0.005) return 0.18;
+        if (t < 0.10) return 0.20 + (t / 0.10) * 0.05; // 0.20 → 0.25
+        if (t < 0.30) return 0.25 + ((t - 0.10) / 0.20) * 0.20; // 0.25 → 0.45
+        if (t < 0.65) return 0.45 + Math.sin(((t - 0.30) / 0.35) * Math.PI) * 0.05; // bow 0.45→0.50→0.45
+        if (t < 0.85) return 0.45 - ((t - 0.65) / 0.20) * 0.13; // 0.45 → 0.32
+        return 0.32 - ((t - 0.85) / 0.15) * 0.07; // 0.32 → 0.25
+      };
+
+      return (t: number, i: number, count: number): number => {
+        // Literal zero at the very first point (chart origin)
+        if (i === 0) return 0;
+
+        const floor = bandFloor(t);
+        const top = bandTop(t);
+        const center = (floor + top) / 2;
+        const halfBand = (top - floor) / 2;
+
+        // Guaranteed peaks (priority over noise)
+        const tolerance = Math.max(0.5 / count, 0.004);
         for (let pi = 0; pi < peaks.length; pi++) {
           const p = peaks[pi];
           const pos = typeof p === 'number' ? p : p.at;
-          const height = typeof p === 'number' ? PEAK_CAP : Math.min(PEAK_CAP, p.h * PEAK_CAP);
+          const heightRaw = typeof p === 'number' ? MAX_H : p.h;
           if (Math.abs(t - pos) < tolerance) {
-            return height - seededRand(i * 41.1 + 41 + pi) * 0.02;
+            const jitter = seededRand(i * 41.1 + 41 + pi) * 0.015;
+            return Math.min(MAX_H, heightRaw) - jitter;
           }
         }
 
-        // DENSE daily noise (no smoothing — every day is random)
+        // DENSE daily noise — two seeds for genuine day-to-day chaos
         const r1 = seededRand(i * 13.37 + 41);
         const r2 = seededRand(i * 31.7 + 41 * 2);
         const noise = (r1 + r2 - 1) * 1.0;
         let val = center + noise * halfBand;
 
-        // Random small spikes (~6%) for the long-tail look
+        // Frequent medium spikes (~12%) in active range (t > 0.10 && t < 0.85)
+        // — recreates the dense "barcode of vertical strokes" look
         const sp = seededRand(i * 29.3 + 41 * 5.7);
-        if (sp > 0.94) {
-          val = safeMax + seededRand(i * 41.1 + 41) * (PEAK_CAP - safeMax) * 0.7;
+        if (t > 0.10 && t < 0.85 && sp > 0.88) {
+          const spikeHeight = top + seededRand(i * 17.9 + 41 * 3.1) * (MAX_H - top) * 0.55;
+          val = Math.max(val, spikeHeight);
         }
 
-        if (val > PEAK_CAP - 0.03) val = PEAK_CAP - 0.03;
+        // Occasional taller random spikes (~2%) in densest middle (t=0.30-0.70)
+        if (t > 0.30 && t < 0.70 && sp > 0.98) {
+          val = top + seededRand(i * 23.1 + 41 * 4.3) * (MAX_H - top) * 0.85;
+        }
+
+        // Hard clamps — never exceed HARD_CAP, never drop below half-floor
+        if (val > HARD_CAP) val = HARD_CAP;
+        if (val < floor * 0.5) val = floor * 0.5;
         if (val < 0.005) val = 0.005;
 
         return val;
