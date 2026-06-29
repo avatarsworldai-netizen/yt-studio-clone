@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, RefreshControl, Dimensions } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, RefreshControl, Dimensions, Platform } from 'react-native';
 import { useRouter, useNavigation } from 'expo-router';
 import { useAdminMode, sendEditMessage } from '../../hooks/useAdminMode';
 import { AE } from '../../components/AdminEditable';
@@ -243,19 +243,42 @@ export default function AnalyticsScreen() {
             <Text style={s.earningsSub}>Estimación · Últimos 6 meses</Text>
           </AE>
           {(rev || []).map((r: any, i: number) => {
-            const pct = ((Number(r.estimated_revenue) || 0) / maxRev) * 100;
+            const calcPct = ((Number(r.estimated_revenue) || 0) / maxRev) * 100;
+            const barOverride = getOverride('revenue', 'bar_pct', r.id);
+            const displayPct = barOverride !== undefined ? parseFloat(barOverride) : calcPct;
             const monthName = new Date(r.month).toLocaleDateString('es-ES', { month: 'long', year: i >= 3 ? 'numeric' : undefined });
+            const monthLabel = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+            const onBarPress = () => {
+              if (!isAdmin || Platform.OS !== 'web') return;
+              const ch = getActiveChannelForOverrides();
+              const scopedRowId = ch ? `${ch}_${r.id}` : r.id;
+              sendEditMessage({
+                id: `revenue_bar_pct_${scopedRowId}`,
+                label: `Relleno barra ${monthLabel} (0-100)`,
+                value: String(Math.round(displayPct)),
+                type: 'number',
+                table: 'revenue',
+                column: 'bar_pct',
+                rowId: scopedRowId,
+              });
+            };
             return (
               <View key={r.id} style={s.monthRow}>
                 <View style={s.monthTop}>
-                  <AE isAdmin={isAdmin} table="revenue" column="month" rowId={r.id} label={`Mes: ${monthName}`} value={monthName.charAt(0).toUpperCase() + monthName.slice(1) + (i === 0 ? ' (en curso)' : '')}>
-                    <Text style={s.monthName}>{monthName.charAt(0).toUpperCase() + monthName.slice(1)}{i === 0 ? ' (en curso)' : ''}</Text>
+                  <AE isAdmin={isAdmin} table="revenue" column="month" rowId={r.id} label={`Mes: ${monthName}`} value={monthLabel + (i === 0 ? ' (en curso)' : '')}>
+                    <Text style={s.monthName}>{monthLabel}{i === 0 ? ' (en curso)' : ''}</Text>
                   </AE>
                   <AE isAdmin={isAdmin} table="revenue" column="estimated_revenue" rowId={r.id} label={`Ingresos ${new Date(r.month).toLocaleDateString('es', {month:'long'})}`} value={r.estimated_revenue}>
                     <Text style={s.monthValue}>{r.estimated_revenue} €</Text>
                   </AE>
                 </View>
-                <View style={s.barBg}><View style={[s.barFill, { width: `${Math.min(pct, 100)}%` }]} /></View>
+                <TouchableOpacity
+                  activeOpacity={isAdmin ? 0.6 : 1}
+                  onPress={onBarPress}
+                  style={[s.barBg, isAdmin && Platform.OS === 'web' ? { cursor: 'pointer' } as any : null]}
+                >
+                  <View style={[s.barFill, { width: `${Math.min(Math.max(displayPct, 0), 100)}%` }]} />
+                </TouchableOpacity>
               </View>
             );
           })}
