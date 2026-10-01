@@ -119,7 +119,9 @@ export default function Dashboard() {
                   <AE isAdmin={isAdmin} table="videos" direct column="title" rowId={v.id} label="Título del video" value={v.title}>
                     <Text style={s.vTitle} numberOfLines={2}>{v.title}</Text>
                   </AE>
-                  <Text style={s.vDate}>{since(v.published_at)}</Text>
+                  <AE isAdmin={isAdmin} table="videos" column="published_label" rowId={v.id} label="Antigüedad del vídeo" value={since(v.published_at)}>
+                    <Text style={s.vDate}>{since(v.published_at)}</Text>
+                  </AE>
                 </View>
               </TouchableOpacity>
 
